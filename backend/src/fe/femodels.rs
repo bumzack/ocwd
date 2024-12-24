@@ -67,6 +67,7 @@ pub struct FeOllamaChat {
     pub model_id: i32,
     pub prompt_id: i32,
     pub model_name: String,
+    pub prompt: String,
     pub model_size: String,
     pub response: String,
     pub seed: Option<i64>,

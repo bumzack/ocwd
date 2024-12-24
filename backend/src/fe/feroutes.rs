@@ -10,7 +10,6 @@ use crate::fe::femodels::{
 };
 use crate::ollama::ollama_rest_api::get_all_local_models;
 use crate::ollama::ollama_rest_api_models::InsertModelsResponse;
-use crate::schema::ollama_chat::dsl::ollama_chat;
 use crate::server::ollamachat_error::OllamaChatError;
 use axum::extract::{Path, State};
 use axum::Json;
@@ -129,11 +128,16 @@ pub async fn chat_load_by_prompt_id(
             .await?
             .expect("expect the model to be present");
 
+        let db_prompt = ollama_prompt_load_by_id(&pool, chat.prompt_id)
+            .await?
+            .expect("expect the prompt to be present");
+
         let p = FeOllamaChat {
             id: chat.id,
             model_id: chat.model_id,
             prompt_id: chat.prompt_id,
             model_name: db_model.name,
+            prompt: db_prompt.prompt,
             model_size: db_model.detail_parameter_size,
             response: chat.response.clone(),
             seed: chat.seed,
@@ -154,7 +158,12 @@ pub async fn chat_load_by_prompt_id(
 pub async fn chat_load_all(
     State(pool): State<deadpool_diesel::postgres::Pool>,
 ) -> Result<Json<Vec<FeOllamaChat>>, OllamaChatError> {
+    println!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+    println!("i am here");
+    println!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
     let db_ollama_chats = ollama_chat_load_all(&pool).await?;
+
+    println!("{:?}", db_ollama_chats);
 
     let mut res = vec![];
 
@@ -163,10 +172,15 @@ pub async fn chat_load_all(
             .await?
             .expect("expect the model to be present");
 
+        let db_prompt = ollama_prompt_load_by_id(&pool, chat.prompt_id)
+            .await?
+            .expect("expect the prompt to be present");
+
         let p = FeOllamaChat {
             id: chat.id,
             model_id: chat.model_id,
             prompt_id: chat.prompt_id,
+            prompt: db_prompt.prompt,
             model_name: db_model.name,
             model_size: db_model.detail_parameter_size,
             response: chat.response.clone(),

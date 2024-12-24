@@ -19,6 +19,9 @@
 				<li class="nav-item">
 					<a class="nav-link" href="/prompt">Prompts</a>
 				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/allchats">All chats</a>
+				</li>
 			</ul>
 			<!--			<span class="navbar-text">-->
 			<!--        Navbar text with an inline element-->
