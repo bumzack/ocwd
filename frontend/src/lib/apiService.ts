@@ -7,9 +7,12 @@ import type {
 	InsertModelsResponse
 } from './models';
 
+const server = 'http://localhost:3023';
+
+
 export const load_models = async (): Promise<FeOllamaModel[]> => {
 	try {
-		const response = await fetch('http://localhost:3023/api/model', {
+		const response = await fetch(server + '/api/model', {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json, text/plain, */*'
@@ -57,7 +60,7 @@ export const load_models = async (): Promise<FeOllamaModel[]> => {
 
 export const enqueue_models = async (request: FeRunModelRequest): Promise<FeOllamaChatQueueResponse[]> => {
 	try {
-		const response = await fetch('http://localhost:3023/api/model/enqueue', {
+		const response = await fetch(server + '/api/model/enqueue', {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json, text/plain, */*'
@@ -95,7 +98,7 @@ export const enqueue_models = async (request: FeRunModelRequest): Promise<FeOlla
 
 export const models_import = async (): Promise<InsertModelsResponse[]> => {
 	try {
-		const response = await fetch('http://localhost:3023/api/model/import', {
+		const response = await fetch(server + '/api/model/import', {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json, text/plain, */*'
@@ -135,7 +138,7 @@ export const models_import = async (): Promise<InsertModelsResponse[]> => {
 
 export const prompts_load = async (): Promise<FeOllamaPrompt[]> => {
 	try {
-		const response = await fetch('http://localhost:3023/api/prompt', {
+		const response = await fetch(server + '/api/prompt', {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json, text/plain, */*'
@@ -174,7 +177,7 @@ export const prompts_load = async (): Promise<FeOllamaPrompt[]> => {
 
 export const chats_load_by_prompt_id = async (promptId: number): Promise<FeOllamaChat[]> => {
 	try {
-		const url = `http://localhost:3023/api/chat/${promptId}`;
+		const url = `${server}/api/chat/${promptId}`;
 
 		const response = await fetch(url, {
 			headers: {
@@ -215,7 +218,7 @@ export const chats_load_by_prompt_id = async (promptId: number): Promise<FeOllam
 
 export const prompt_by_id = async (promptId: number): Promise<FeOllamaPrompt> => {
 	try {
-		const url = `http://localhost:3023/api/prompt/${promptId}`;
+		const url = `${server}/api/prompt/${promptId}`;
 
 		const response = await fetch(url, {
 			headers: {
