@@ -104,3 +104,19 @@ pub async fn ollama_chat_load_by_prompt_id(
     .map_err(OllamaChatError::from)?
     .map_err(OllamaChatError::from)
 }
+
+pub async fn ollama_chat_load_all(
+    pool: &deadpool_diesel::postgres::Pool,
+) -> Result<Vec<DbOllamaChat>, OllamaChatError> {
+    let conn = pool.get().await?;
+
+    conn.interact(move |conn| {
+        ollama_chat::table
+            .order(ollama_chat::created.asc())
+            .select(DbOllamaChat::as_select())
+            .load(conn)
+    })
+    .await
+    .map_err(OllamaChatError::from)?
+    .map_err(OllamaChatError::from)
+}

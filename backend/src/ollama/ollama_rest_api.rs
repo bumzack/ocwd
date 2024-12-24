@@ -107,10 +107,7 @@ pub async fn execute_ollama_unload(model_name: String) -> Result<(), OllamaChatE
     if res.status().is_success() {
         let body = res.text().await.expect("Couldn't read body");
         let duration = start.elapsed().as_millis();
-        info!(
-            "unload model {} took {}ms",
-            req.model, duration,
-        );
+        info!("unload model {} took {}ms", req.model, duration,);
         let res = serde_json::from_str::<OllamaUnloadResponse>(&body).unwrap();
         let res_pretty = serde_json::to_string_pretty(&res).unwrap();
         // info!("unload response {}", res_pretty);

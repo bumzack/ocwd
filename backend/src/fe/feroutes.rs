@@ -1,6 +1,6 @@
 use crate::common::db_model::{ollama_model_insert, ollama_model_load_by_id, ollama_models_load};
 
-use crate::common::db_chat::ollama_chat_load_by_prompt_id;
+use crate::common::db_chat::{ollama_chat_load_all, ollama_chat_load_by_prompt_id};
 use crate::common::db_prompt::{
     ollama_prompt_insert, ollama_prompt_load, ollama_prompt_load_by_id,
 };
@@ -10,6 +10,7 @@ use crate::fe::femodels::{
 };
 use crate::ollama::ollama_rest_api::get_all_local_models;
 use crate::ollama::ollama_rest_api_models::InsertModelsResponse;
+use crate::schema::ollama_chat::dsl::ollama_chat;
 use crate::server::ollamachat_error::OllamaChatError;
 use axum::extract::{Path, State};
 use axum::Json;
@@ -120,6 +121,40 @@ pub async fn chat_load_by_prompt_id(
     Path(pprompt_id): Path<i32>,
 ) -> Result<Json<Vec<FeOllamaChat>>, OllamaChatError> {
     let db_ollama_chats = ollama_chat_load_by_prompt_id(&pool, pprompt_id).await?;
+
+    let mut res = vec![];
+
+    for chat in db_ollama_chats {
+        let db_model = ollama_model_load_by_id(&pool, chat.model_id)
+            .await?
+            .expect("expect the model to be present");
+
+        let p = FeOllamaChat {
+            id: chat.id,
+            model_id: chat.model_id,
+            prompt_id: chat.prompt_id,
+            model_name: db_model.name,
+            model_size: db_model.detail_parameter_size,
+            response: chat.response.clone(),
+            seed: chat.seed,
+            num_ctx: chat.num_ctx,
+            temperature: chat.temperature,
+            top_k: chat.top_k,
+            top_p: chat.top_p,
+            duration_ms: chat.duration_ms,
+            created: chat.created.and_utc(),
+        };
+        res.push(p);
+    }
+
+    Ok(Json(res))
+}
+
+#[axum::debug_handler]
+pub async fn chat_load_all(
+    State(pool): State<deadpool_diesel::postgres::Pool>,
+) -> Result<Json<Vec<FeOllamaChat>>, OllamaChatError> {
+    let db_ollama_chats = ollama_chat_load_all(&pool).await?;
 
     let mut res = vec![];
 

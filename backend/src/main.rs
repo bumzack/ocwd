@@ -4,7 +4,9 @@ mod ollama;
 mod schema;
 mod server;
 
-use crate::fe::feroutes::{chat_load_by_prompt_id, prompts_load, prompts_load_by_id};
+use crate::fe::feroutes::{
+    chat_load_all, chat_load_by_prompt_id, prompts_load, prompts_load_by_id,
+};
 use crate::server::models::Config;
 use crate::server::queue::{run_queue, start_queue, stop_queue};
 use crate::server::utils::cors_layer;
@@ -76,6 +78,7 @@ async fn main() -> Result<(), ()> {
         .route("/api/prompt", get(prompts_load))
         .route("/api/prompt/{pprompt_id}", get(prompts_load_by_id))
         .route("/api/chat/{pprompt_id}", get(chat_load_by_prompt_id))
+        .route("/api/chat", get(chat_load_all))
         .route("/api/queue/stop", post(stop_queue))
         .route("/api/queue/start", post(start_queue))
         .layer(

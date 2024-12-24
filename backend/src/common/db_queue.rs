@@ -81,7 +81,7 @@ pub async fn ollama_queue_next(
         ollama_chat_queue::table
             .order(ollama_chat_queue::created.asc())
             .filter(ollama_chat_queue::state.eq(QueueState::Enqueued.to_string()))
-       //     .filter(ollama_chat_queue::model_id.eq(10))
+            //     .filter(ollama_chat_queue::model_id.eq(10))
             .select(DbOllamaChatQueue::as_select())
             .first(conn)
             .optional()
