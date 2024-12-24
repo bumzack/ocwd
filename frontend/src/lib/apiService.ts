@@ -7,7 +7,7 @@ import type {
 	InsertModelsResponse
 } from './models';
 
-const server = 'http://localhost:3023';
+const server = 'http://10.0.0.48:3023';
 
 
 export const load_models = async (): Promise<FeOllamaModel[]> => {
