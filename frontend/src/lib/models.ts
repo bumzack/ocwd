@@ -10,13 +10,27 @@ export interface FeOllamaModel {
 	created: Date;
 }
 
+export interface OllamaModel {
+	id: number;
+	name: string;
+	model: string;
+	size: number;
+	created: Date;
+	temperature: number;
+	numCtx: number;
+	seed: number;
+	topK: number;
+	topP: number;
+	checked: boolean;
+}
+
 export interface FeRunModel {
 	modelId: number;
-	temperature: number | undefined;
-	numCtx: number | undefined;
-	seed: number | undefined;
-	topK: number | undefined;
-	topP: number | undefined;
+	temperature: number;
+	numCtx: number;
+	seed: number;
+	topK: number;
+	topP: number;
 }
 
 export interface FeRunModelRequest {
@@ -55,7 +69,7 @@ export interface FeOllamaChat {
 	topK: number | undefined;
 	topP: number | undefined;
 	created: Date;
-	prompt:string;
+	prompt: string;
 	durationMs: number;
 }
 
@@ -69,7 +83,7 @@ export type PropsAllPrompts = {
 };
 
 export type PropsAllModels = {
-	models: FeOllamaModel[];
+	models: OllamaModel[];
 };
 
 export type PropsAllChats = {
