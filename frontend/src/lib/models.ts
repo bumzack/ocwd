@@ -55,6 +55,7 @@ export interface FeOllamaChat {
 	topK: number | undefined;
 	topP: number | undefined;
 	created: Date;
+	prompt:string;
 	durationMs: number;
 }
 

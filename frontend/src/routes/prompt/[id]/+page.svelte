@@ -7,8 +7,6 @@
     let chats = $state(data.chats);
     let prompt = $state(data.prompt);
 
-    //	let  {chats, prompt}: { data: PageData } = $props();
-
     console.log(`chats ${JSON.stringify(chats, null, 4)}`);
     console.log(`prompt ${JSON.stringify(prompt, null, 4)}`);
 

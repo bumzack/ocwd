@@ -1,6 +1,7 @@
 import { error } from '@sveltejs/kit';
 import { load_models } from '$lib/apiService.ts';
 import { type PropsAllModels } from '$lib/models.ts';
+import type {PageServerLoad} from "./$types";
 
 export const ssr = true;
 

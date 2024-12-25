@@ -1,21 +1,20 @@
 <script lang="ts">
 
-    // import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
-    // import {marked} from "marked";
-    // import type { PageData } from "./$types";
-    //
-    // let {data}: { data: PageData } = $props();
-    // let chats = $state(data.chats);
 
-   //  console.log(`data ${JSON.stringify(chats, null, 4)}`);
-    //
-    // let chats = $state(data.chats);
-    //
-    // let hasData = $derived(chats != undefined && chats != null);
-    //
+    import {type PageData} from "./$types";
+    import LoadingSpinner from "$lib/components/LoadingSpinner.svelte";
+    import {marked} from "marked";
+
+    let {data}: { data: PageData } = $props();
+    let chats = $state(data.chats);
+
+    let hasData = $derived(chats != undefined && chats != null);
 </script>
 
-<!--<LoadingSpinner show={!hasData }/>-->
+{chats}
+{hasData}
+
+<LoadingSpinner show={!hasData }/>
 
 <div class="container">
     <div class="row">
@@ -23,42 +22,41 @@
         <div class="col-lg-12">
             <h1>Ollama Chats</h1>
 
-            <!--{#if hasData}-->
-            <!--    <div class="container-fluid">-->
-            <!--        {#each chats as chat}-->
-
-            <!--            <div class="row">-->
-            <!--                <div class="col-12">-->
-            <!--                    <div class="card">-->
-            <!--                        <div class="card-header">-->
-            <!--                            {chat.prompt}-->
-            <!--                        </div>-->
-            <!--                        <div class="card-header">-->
-            <!--                            {chat.modelName} / {chat.modelSize}-->
-            <!--                        </div>-->
-            <!--                        <div class="card-body">-->
-            <!--                            &lt;!&ndash;								<h5 class="card-title">Special title treatment</h5>&ndash;&gt;-->
-            <!--                            <p class="card-text">{@html marked(chat.response, {-->
-            <!--                                breaks: true,-->
-            <!--                                sanitize: true,-->
-            <!--                                smartypants: true,-->
-            <!--                            }) }-->
-            <!--                        </div>-->
-            <!--                        <div class="card-footer text-body-secondary">-->
-            <!--                            duration: {chat.durationMs}ms, numCtx: {chat.numCtx},-->
-            <!--                            seed: {chat.seed},-->
-            <!--                            temperature: {chat.temperature}-->
-            <!--                            , topK: {chat.topK}, topP: {chat.topP}, created: {chat.created}-->
-            <!--                        </div>-->
-            <!--                    </div>-->
-            <!--                    <hr/>-->
-            <!--                </div>-->
-            <!--            </div>-->
-            <!--        {/each}-->
-            <!--    </div>-->
-            <!--{:else}-->
-            <!--    <p>no data available</p>-->
-            <!--{/if}-->
+            {#if hasData}
+                <div class="container-fluid">
+                    {#each chats as chat}
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        {chat.prompt}
+                                    </div>
+                                    <div class="card-header">
+                                        {chat.modelName} / {chat.modelSize}
+                                    </div>
+                                    <div class="card-body">
+                                        <!--								<h5 class="card-title">Special title treatment</h5>-->
+                                        <p class="card-text">{@html marked(chat.response, {
+                                            breaks: true,
+                                            sanitize: true,
+                                            smartypants: true,
+                                        }) }
+                                    </div>
+                                    <div class="card-footer text-body-secondary">
+                                        duration: {chat.durationMs}ms, numCtx: {chat.numCtx},
+                                        seed: {chat.seed},
+                                        temperature: {chat.temperature}
+                                        , topK: {chat.topK}, topP: {chat.topP}, created: {chat.created}
+                                    </div>
+                                </div>
+                                <hr/>
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+            {:else}
+                <p>no data available</p>
+            {/if}
         </div>
     </div>
 </div>

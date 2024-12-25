@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 import { prompts_load } from '$lib/apiService.ts';
 import { type PropsAllPrompts } from '$lib/models.ts';
-import type {PageServerLoad} from "./$types";
+import type { PageServerLoad } from './$types';
 
 export const ssr = true;
 

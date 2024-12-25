@@ -1,11 +1,9 @@
 <script lang="ts">
-
     import type {PageData} from "./$types";
 
     let {data}: { data: PageData } = $props();
     let prompts = $state(data.prompts);
     let hasData = $derived(prompts != undefined && prompts != null);
-
 </script>
 
 <!--<LoadingSpinner show={!hasData}/>-->
