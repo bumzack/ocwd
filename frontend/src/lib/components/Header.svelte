@@ -30,6 +30,3 @@
 	</div>
 </nav>
 
-<style>
-    @import 'bootstrap/dist/css/bootstrap.min.css';
-</style>

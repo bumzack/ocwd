@@ -1,93 +1,78 @@
 <script lang="ts">
-	// let { chats, prompt }: { chats: FeOllamaChat[], prompt: FeOllamaPrompt } = $props();
-	import type { PageData } from './$types';
-	import { marked } from 'marked';
+    import {marked} from "marked";
+    import type { PageData } from './$types';
 
-	let { data }: { data: PageData } = $props();
-	let { chats, prompt } = data; // For propC, the default value is true when no value is passed
+	// let {chats, prompt} = $props();
+	let  {chats, prompt}: { data: PageData } = $props();
 
-	console.log(`chats ${JSON.stringify(chats, null, 4)}`);
-	console.log(`prompt ${JSON.stringify(prompt, null, 4)}`);
+    console.log(`chats ${JSON.stringify(chats, null, 4)}`);
+    console.log(`prompt ${JSON.stringify(prompt, null, 4)}`);
 
-	let hasData = $derived(chats != undefined && chats.length > 0);
-
+   	let hasData = $derived(chats != undefined && chats.length > 0);
 </script>
 
-
 <div class="container">
-	<div class="row">
-		<div class="col-12">
-			{#if prompt !== undefined}
-				<p>{prompt.prompt}</p>
-				<p>id: {prompt.id} / {prompt.created}</p>
-			{:else}
-				<p>no prompt found</p>
-			{/if}
+    <div class="row">
+        <div class="col-12">
+            {#if prompt !== undefined}
+                <p>{prompt.prompt}</p>
+                <p>id: {prompt.id} / {prompt.created}</p>
+            {:else}
+                <p>no prompt found</p>
+            {/if}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-2">
+            {#if hasData}
+                <ul>
+                    {#each chats as chat}
+                        <li>{chat.modelName} / {chat.modelSize} </li>
+                    {/each}
+                </ul>
+            {:else}
+                <p>no data available</p>
+            {/if}
+        </div>
 
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-lg-2">
-			{#if hasData}
-				<ul>
-					{#each chats as chat}
-						<li>{chat.modelName} / {chat.modelSize} </li>
-					{/each}
-				</ul>
-			{:else}
-				<p>no data available</p>
-			{/if}
-		</div>
-
-		<div class="col-lg-10">
-			{#if prompt !== undefined}
+        <div class="col-lg-10">
+            {#if prompt !== undefined}
 				{#if hasData}
-					<div class="container-fluid">
+            		<div class="container-fluid">
+            			{#each chats as chat}
 
-
-						{#each chats as chat}
-
-							<div class="row">
-								<div class="col-12">
-									<div class="card">
-										<div class="card-header">
-											{chat.modelName} / {chat.modelSize}
-										</div>
-										<div class="card-body">
-											<!--								<h5 class="card-title">Special title treatment</h5>-->
-											<p class="card-text">{@html marked(chat.response, {
-												breaks: true,
-												sanitize: true,
-												smartypants: true,
-											}) }
-										</div>
-										<div class="card-footer text-body-secondary">
-											duration: {chat.durationMs}ms, numCtx: {chat.numCtx}, seed: {chat.seed},
-											temperature: {chat.temperature}
-											, topK: {chat.topK}, topP: {chat.topP}, created: {chat.created}
-										</div>
-									</div>
-									<hr/>
-								</div>
-							</div>
-						{/each}
-					</div>
-				{:else}
-					<p>no data available</p>
-				{/if}
-			{:else}
-				<p>no prompt found</p>
-			{/if}
-
-		</div>
-
-
-	</div>
-
+            				<div class="row">
+            					<div class="col-12">
+            						<div class="card">
+            							<div class="card-header">
+            								{chat.modelName} / {chat.modelSize}
+            							</div>
+            							<div class="card-body">
+            								<!--								<h5 class="card-title">Special title treatment</h5>-->
+            								<p class="card-text">{@html marked(chat.response, {
+            									breaks: true,
+            									sanitize: true,
+            									smartypants: true,
+            								}) }
+            							</div>
+            							<div class="card-footer text-body-secondary">
+            								duration: {chat.durationMs}ms, numCtx: {chat.numCtx}, seed: {chat.seed},
+            								temperature: {chat.temperature}
+            								, topK: {chat.topK}, topP: {chat.topP}, created: {chat.created}
+            							</div>
+            						</div>
+            						<hr/>
+            					</div>
+            				</div>
+            			{/each}
+            		</div>
+            	{:else}
+            		<p>no data available</p>
+            	{/if}
+            {:else}
+            	<p>no prompt found</p>
+            {/if}
+        </div>
+    </div>
 </div>
 
-
-<style>
-    @import 'bootstrap/dist/css/bootstrap.min.css';
-
-</style>

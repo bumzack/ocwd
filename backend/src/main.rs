@@ -67,7 +67,7 @@ async fn main() -> Result<(), ()> {
 
     // let queue_running = Arc::new(Mutex::new(true));
 
-    run_queue(pool.clone()).await.expect("should start queue");
+   //  run_queue(pool.clone()).await.expect("should start queue");
 
     // build our application with some routes
     let app = Router::new()
