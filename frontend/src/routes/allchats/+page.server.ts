@@ -1,7 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { chats_load_all } from '$lib/apiService.ts';
 import { type PropsAllChats } from '$lib/models.ts';
-import type { PageServerLoad } from './$types';
 
 export const ssr = true;
 

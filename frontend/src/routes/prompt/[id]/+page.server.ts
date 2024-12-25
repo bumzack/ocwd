@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { chats_load_by_prompt_id, prompt_by_id } from '$lib/apiService.ts';
-import { type Props } from '$lib/models.ts';
+import { type PropsChatPrompt } from '$lib/models.ts';
 import type {PageServerLoad} from "./$types";
 
 export const ssr = true;
@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	console.log(`page.ts   prompt ${JSON.stringify(prompt)}`);
 
 	if (chats) {
-		const props: Props = {
+		const props: PropsChatPrompt = {
 			chats: chats,
 			prompt: prompt
 		};

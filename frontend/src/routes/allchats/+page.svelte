@@ -2,9 +2,12 @@
 
     // import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
     // import {marked} from "marked";
-    // import  {type PageData} from "./$types";
+    // import type { PageData } from "./$types";
     //
     // let {data}: { data: PageData } = $props();
+    // let chats = $state(data.chats);
+
+   //  console.log(`data ${JSON.stringify(chats, null, 4)}`);
     //
     // let chats = $state(data.chats);
     //

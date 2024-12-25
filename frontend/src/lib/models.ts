@@ -58,7 +58,7 @@ export interface FeOllamaChat {
 	durationMs: number;
 }
 
-export type Props = {
+export type PropsChatPrompt = {
 	chats: FeOllamaChat[];
 	prompt: FeOllamaPrompt;
 };
