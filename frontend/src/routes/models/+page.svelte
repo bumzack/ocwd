@@ -2,22 +2,22 @@
     import {models_import} from '$lib/apiService.ts';
     import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
     import type {PageData} from './$types';
+    import type {FeOllamaModel, InsertModelsResponse, OllamaModel} from "$lib/models.ts";
 
     let {data}: { data: PageData } = $props();
 
-    let models = $state(data.models);
+    let models: FeOllamaModel[] = $state(data.models);
 
     console.log(`models from page.server.ts ${JSON.stringify(models)}`)
 
     let hasData = $derived(models != undefined && models != null);
     let running = $state(false);
 
-    let importedModels = $state([]);
+    let importedModels: InsertModelsResponse[] = $state([]);
 
     const importModels = async (): Promise<void> => {
         running = true;
         importedModels = await models_import();
-        console.log(`importedModels  ` + JSON.stringify(importedModels, null, 4));
         running = false;
     };
 
@@ -109,7 +109,6 @@
     </div>
 
     {#if hasDataImportedModels}
-
         <div class="row">
             <div class="col-lg-12">
                 <h1>imported Ollama models local</h1>

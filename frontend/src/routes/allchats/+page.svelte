@@ -1,6 +1,4 @@
 <script lang="ts">
-
-
     import {type PageData} from "./$types";
     import LoadingSpinner from "$lib/components/LoadingSpinner.svelte";
     import {marked} from "marked";
@@ -10,9 +8,6 @@
 
     let hasData = $derived(chats != undefined && chats != null);
 </script>
-
-{chats}
-{hasData}
 
 <LoadingSpinner show={!hasData }/>
 
@@ -35,7 +30,6 @@
                                         {chat.modelName} / {chat.modelSize}
                                     </div>
                                     <div class="card-body">
-                                        <!--								<h5 class="card-title">Special title treatment</h5>-->
                                         <p class="card-text">{@html marked(chat.response, {
                                             breaks: true,
                                             sanitize: true,

@@ -2,7 +2,6 @@
     import {marked} from "marked";
     import type {PageData} from './$types';
 
-    // let {chats, prompt} = $props();
     let {data}: { data: PageData } = $props();
     let chats = $state(data.chats);
     let prompt = $state(data.prompt);
@@ -24,6 +23,7 @@
             {/if}
         </div>
     </div>
+
     <div class="row">
         <div class="col-lg-2">
             {#if hasData}
@@ -42,7 +42,6 @@
                 {#if hasData}
                     <div class="container-fluid">
                         {#each chats as chat}
-
                             <div class="row">
                                 <div class="col-12">
                                     <div class="card">
@@ -50,7 +49,6 @@
                                             {chat.modelName} / {chat.modelSize}
                                         </div>
                                         <div class="card-body">
-                                            <!--								<h5 class="card-title">Special title treatment</h5>-->
                                             <p class="card-text">{@html marked(chat.response, {
                                                 breaks: true,
                                                 sanitize: true,
@@ -77,4 +75,3 @@
         </div>
     </div>
 </div>
-

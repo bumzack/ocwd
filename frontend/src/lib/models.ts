@@ -82,6 +82,10 @@ export type PropsAllPrompts = {
 	prompts: FeOllamaPrompt[];
 };
 
+export type PropsFeAllModels = {
+	models: FeOllamaModel[];
+};
+
 export type PropsAllModels = {
 	models: OllamaModel[];
 };
