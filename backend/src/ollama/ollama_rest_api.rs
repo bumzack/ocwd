@@ -35,14 +35,26 @@ pub async fn get_loaded_models() -> Result<Vec<OllamaModel>, OllamaChatError> {
         .get(url)
         .send()
         .await
-        .map_err(OllamaChatError::from)
-        .map_err(|e| OllamaChatError::from(e))?;
+        .map_err(|e| {
+            error!("error1 getting running models {:?}", e);
+            OllamaChatError::from(e)
+        })
+        .map_err(|e| {
+            error!("error2 getting running models {:?}", e);
+            OllamaChatError::from(e)
+        })?;
 
     let body = res
         .text()
         .await
-        .map_err(OllamaChatError::from)
-        .map_err(|e| OllamaChatError::from(e))?;
+        .map_err(|e| {
+            error!("error3 getting running models {:?}", e);
+            OllamaChatError::from(e)
+        })
+        .map_err(|e| {
+            error!("error4 getting running models {:?}", e);
+            OllamaChatError::from(e)
+        })?;
 
     let models =
         serde_json::from_str::<OllamaModelResponse>(&body).map_err(|e| OllamaChatError::from(e))?;

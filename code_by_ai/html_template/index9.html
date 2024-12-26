@@ -1,8 +1,9 @@
 <!--
 
-mistral-small:latest / 22.2B
+athene-v2:latest / 72.7B
 
  -->
+
 
 
 
@@ -15,76 +16,146 @@ mistral-small:latest / 22.2B
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Analysis Application</title>
     <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Custom CSS (optional) -->
     <style>
-        body {
-            padding-top: 56px; /* Adjust based on your navbar height */
+        .stock-card {
+            border-left: 5px solid #28a745;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .chart-container {
+            height: 300px;
+        }
+        .news-item {
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 0;
         }
     </style>
 </head>
 <body>
+
 <!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <a class="navbar-brand" href="#">Stock Analysis</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Stocks</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Analysis</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Profile</a>
-            </li>
-        </ul>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Stock Analysis App</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#about">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#contact">Contact</a>
+                </li>
+            </ul>
+        </div>
     </div>
 </nav>
 
-<!-- Main Content Area -->
-<div class="container mt-5">
-    <h1 class="mb-4">Welcome to Stock Analysis Application</h1>
-    <p>This is a simple stock analysis application built using Bootstrap.</p>
+<!-- Main Content -->
+<div class="container mt-4">
 
-    <!-- Example Section: Search Form -->
-    <div class="card mb-3">
-        <div class="card-body">
-            <form>
-                <div class="form-group">
-                    <label for="stockSymbol">Stock Symbol</label>
-                    <input type="text" class="form-control" id="stockSymbol" placeholder="Enter stock symbol">
+    <!-- Stock Information Section -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Stock Overview</h2>
+            <div id="stock-info" class="card stock-card">
+                <div class="card-body">
+                    <h5 class="card-title">Apple Inc. (AAPL)</h5>
+                    <p class="card-text"><strong>Current Price:</strong> $150.75</p>
+                    <p class="card-text"><strong>Change:</strong> +2.34 (+1.58%)</p>
+                    <p class="card-text"><strong>Volume:</strong> 34,567,890</p>
                 </div>
-                <button type="submit" class="btn btn-primary">Search</button>
-            </form>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <h2>Quick Links</h2>
+            <ul class="list-group">
+                <li class="list-group-item"><a href="#">Market News</a></li>
+                <li class="list-group-item"><a href="#">Financial Reports</a></li>
+                <li class="list-group-item"><a href="#">Company Profile</a></li>
+            </ul>
         </div>
     </div>
 
-    <!-- Example Section: Stock Information -->
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">Stock Information</h5>
-            <p class="card-text">Details about the selected stock will be displayed here.</p>
+    <!-- Stock Chart Section -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2>Stock Price Chart</h2>
+            <div id="stock-chart" class="chart-container">
+                <!-- Placeholder for chart (e.g., using a library like Chart.js) -->
+                <canvas id="priceChart"></canvas>
+            </div>
         </div>
     </div>
+
+    <!-- News Section -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2>Latest News</h2>
+            <div id="news-feed" class="list-group">
+                <a href="#" class="list-group-item list-group-item-action news-item">
+                    <h5 class="mb-1">Apple Reports Strong Q3 Earnings</h5>
+                    <p class="mb-1">Apple Inc. reported strong earnings for the third quarter, beating analyst expectations.</p>
+                    <small>2 days ago</small>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action news-item">
+                    <h5 class="mb-1">New iPhone 15 Launch Date Announced</h5>
+                    <p class="mb-1">Apple has announced the launch date for the new iPhone 15, set to release on September 22.</p>
+                    <small>3 days ago</small>
+                </a>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <!-- Footer -->
-<footer class="bg-light text-center text-lg-start">
-    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
-        © 2023 Stock Analysis Application. All rights reserved.
+<footer class="bg-dark text-light text-center py-3">
+    <div class="container">
+        <p>&copy; 2023 Stock Analysis App. All rights reserved.</p>
     </div>
 </footer>
 
 <!-- Bootstrap JS and dependencies -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+<!-- Chart.js for stock chart (optional) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Initialize Chart.js -->
+<script>
+    const ctx = document.getElementById('priceChart').getContext('2d');
+    const priceChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+            datasets: [{
+                label: 'Stock Price (USD)',
+                data: [140, 145, 150, 155, 160, 165, 170],
+                borderColor: '#28a745',
+                backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: false
+                }
+            }
+        }
+    });
+</script>
+
 </body>
 </html>

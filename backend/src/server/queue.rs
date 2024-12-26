@@ -139,7 +139,7 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
                                 request,
                                 duration as i64,
                             )
-                            .await;
+                                .await;
 
                             match db_ollama_chat {
                                 Ok(res) => {
@@ -188,7 +188,16 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
 }
 
 async fn ollama_unload_all_models_except(model: &str) {
-    let db_models = get_loaded_models().await.unwrap();
+    let db_models = get_loaded_models()
+        .await;
+
+    let db_models = match db_models {
+        Ok(db_models) => db_models,
+        Err(e) => {
+            error!("error downloading loaded models. err {}", e);
+            return;
+        }
+    };
 
     // unload all models except the one
     for db_model in db_models.iter().filter(|m| m.model != model) {
