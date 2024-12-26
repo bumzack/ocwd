@@ -80,8 +80,9 @@ pub async fn ollama_queue_next(
     conn.interact(move |conn| {
         ollama_chat_queue::table
             .order(ollama_chat_queue::created.asc())
+            // sort by model_id to avoid too many model unload/load ops on the "ollama server"
+            .order(ollama_chat_queue::model_id.asc())
             .filter(ollama_chat_queue::state.eq(QueueState::Enqueued.to_string()))
-            //     .filter(ollama_chat_queue::model_id.eq(10))
             .select(DbOllamaChatQueue::as_select())
             .first(conn)
             .optional()
