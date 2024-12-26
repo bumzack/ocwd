@@ -27,18 +27,15 @@ pub async fn ollama_prompt_insert(
 
     let new_prompt = DbNewOllamaPrompt { prompt };
 
-    let db_ollama_prompt = conn
-        .interact(|conn| {
-            diesel::insert_into(ollama_prompt::table)
-                .values(new_prompt)
-                .returning(DbOllamaPrompt::as_returning())
-                .get_result(conn)
-        })
-        .await
-        .map_err(OllamaChatError::from)?
-        .map_err(OllamaChatError::from)?;
-
-    Ok(db_ollama_prompt)
+    conn.interact(|conn| {
+        diesel::insert_into(ollama_prompt::table)
+            .values(new_prompt)
+            .returning(DbOllamaPrompt::as_returning())
+            .get_result(conn)
+    })
+    .await
+    .map_err(OllamaChatError::from)?
+    .map_err(OllamaChatError::from)
 }
 
 pub async fn ollama_prompt_load_by_id(

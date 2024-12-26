@@ -17,6 +17,18 @@ pub struct FeOllamaModel {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
+pub struct FeOllamaRunningModel {
+    pub name: String,
+    pub model: String,
+    pub size: i64,
+    pub format: String,
+    pub family: String,
+    pub parameter_size: String,
+    pub quantization_level: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct FeRunModel {
     pub model_id: i32,
     pub temperature: Option<f64>,

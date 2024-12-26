@@ -95,7 +95,7 @@ pub async fn ollama_chat_load_by_prompt_id(
 
     conn.interact(move |conn| {
         ollama_chat::table
-            //  .order(ollama_chat::name.asc())
+            .order(ollama_chat::created.desc())
             .filter(ollama_chat::prompt_id.eq(pprompt_id))
             .select(DbOllamaChat::as_select())
             .load(conn)
@@ -112,7 +112,7 @@ pub async fn ollama_chat_load_all(
 
     conn.interact(move |conn| {
         ollama_chat::table
-            .order(ollama_chat::created.asc())
+            .order(ollama_chat::created.desc())
             .select(DbOllamaChat::as_select())
             .load(conn)
     })

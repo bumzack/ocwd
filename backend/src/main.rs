@@ -5,7 +5,7 @@ mod schema;
 mod server;
 
 use crate::fe::feroutes::{
-    chat_load_all, chat_load_by_prompt_id, prompts_load, prompts_load_by_id,
+    chat_load_all, chat_load_by_prompt_id, models_loaded, prompts_load, prompts_load_by_id,
 };
 use crate::server::models::Config;
 use crate::server::queue::{run_queue, start_queue, stop_queue};
@@ -65,16 +65,14 @@ async fn main() -> Result<(), ()> {
         .build()
         .expect("should work");
 
-    // let queue_running = Arc::new(Mutex::new(true));
-
-   //  run_queue(pool.clone()).await.expect("should start queue");
+    //run_queue(pool.clone()).await.expect("should start queue");
 
     // build our application with some routes
     let app = Router::new()
         .route("/api/model/import", post(import_local_models))
         .route("/api/model", get(list_local_models))
-        // .route("/api/model", post(work_your_magic_ai))
         .route("/api/model/enqueue", post(add_to_queue))
+        .route("/api/model/loaded", get(models_loaded))
         .route("/api/prompt", get(prompts_load))
         .route("/api/prompt/{pprompt_id}", get(prompts_load_by_id))
         .route("/api/chat/{pprompt_id}", get(chat_load_by_prompt_id))
@@ -102,11 +100,10 @@ async fn main() -> Result<(), ()> {
                     )
                 })
                 .on_request(|_request: &Request<_>, _span: &Span| {
-                    tracing::info!("tracing::on_request");
-                    println!("_request {:?}", _request);
+                    tracing::info!("tracing::on_request {:?}", _request);
                 })
                 .on_response(|_response: &Response, _latency: Duration, _span: &Span| {
-                    println!("response {:?}", _response);
+                    tracing::info!("response {:?}", _response);
                 })
                 .on_failure(
                     |_error: ServerErrorsFailureClass, _latency: Duration, _span: &Span| {

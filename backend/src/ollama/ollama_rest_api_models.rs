@@ -13,7 +13,7 @@ pub struct OllamaDetails {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct OllamaModel {
     pub name: String,
-    pub modified_at: String,
+    pub modified_at: Option<String>,
     pub model: String,
     pub size: i64,
     pub digest: String,

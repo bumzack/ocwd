@@ -1,6 +1,5 @@
-use crate::common::db_model::{ollama_model_insert, ollama_model_load_by_id, ollama_models_load};
-
 use crate::common::db_chat::{ollama_chat_load_all, ollama_chat_load_by_prompt_id};
+use crate::common::db_model::{ollama_model_insert, ollama_model_load_by_id, ollama_models_load};
 use crate::common::db_prompt::{
     ollama_prompt_insert, ollama_prompt_load, ollama_prompt_load_by_id,
 };
@@ -8,11 +7,12 @@ use crate::common::db_queue::ollama_queue_insert;
 use crate::fe::femodels::{
     FeOllamaChat, FeOllamaChatQueueResponse, FeOllamaModel, FeOllamaPrompt, FeRunModelRequest,
 };
-use crate::ollama::ollama_rest_api::get_all_local_models;
-use crate::ollama::ollama_rest_api_models::InsertModelsResponse;
+use crate::ollama::ollama_rest_api::{get_all_local_models, get_loaded_models};
+use crate::ollama::ollama_rest_api_models::{InsertModelsResponse, OllamaModel};
 use crate::server::ollamachat_error::OllamaChatError;
 use axum::extract::{Path, State};
 use axum::Json;
+use chrono::Utc;
 use tracing::info;
 
 pub async fn import_local_models(
@@ -46,7 +46,6 @@ pub async fn list_local_models(
     Ok(Json(models))
 }
 
-#[axum::debug_handler]
 pub async fn add_to_queue(
     State(pool): State<deadpool_diesel::postgres::Pool>,
     Json(fe_run_model_request): Json<FeRunModelRequest>,
@@ -77,7 +76,6 @@ pub async fn add_to_queue(
     Ok(Json(res))
 }
 
-#[axum::debug_handler]
 pub async fn prompts_load(
     State(pool): State<deadpool_diesel::postgres::Pool>,
 ) -> Result<Json<Vec<FeOllamaPrompt>>, OllamaChatError> {
@@ -95,7 +93,6 @@ pub async fn prompts_load(
     Ok(Json(prompts))
 }
 
-#[axum::debug_handler]
 pub async fn prompts_load_by_id(
     State(pool): State<deadpool_diesel::postgres::Pool>,
     Path(pprompt_id): Path<i32>,
@@ -114,7 +111,6 @@ pub async fn prompts_load_by_id(
     Ok(Json(res))
 }
 
-#[axum::debug_handler]
 pub async fn chat_load_by_prompt_id(
     State(pool): State<deadpool_diesel::postgres::Pool>,
     Path(pprompt_id): Path<i32>,
@@ -154,16 +150,10 @@ pub async fn chat_load_by_prompt_id(
     Ok(Json(res))
 }
 
-#[axum::debug_handler]
 pub async fn chat_load_all(
     State(pool): State<deadpool_diesel::postgres::Pool>,
 ) -> Result<Json<Vec<FeOllamaChat>>, OllamaChatError> {
-    println!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-    println!("i am here");
-    println!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
     let db_ollama_chats = ollama_chat_load_all(&pool).await?;
-
-    println!("{:?}", db_ollama_chats);
 
     let mut res = vec![];
 
@@ -196,4 +186,25 @@ pub async fn chat_load_all(
     }
 
     Ok(Json(res))
+}
+
+pub async fn models_loaded() -> Result<Json<Vec<FeOllamaModel>>, OllamaChatError> {
+    let loaded_models = get_loaded_models().await?;
+
+    let loaded_models: Vec<FeOllamaModel> = loaded_models
+        .iter()
+        .map(|x| FeOllamaModel {
+            id: -1,
+            name: x.name.clone(),
+            model: x.model.clone(),
+            size: x.size,
+            detail_format: x.details.format.clone(),
+            detail_family: x.details.family.clone(),
+            detail_parameter_size: x.details.parameter_size.clone(),
+            detail_quantization_level: x.details.quantization_level.clone(),
+            created: Utc::now(),
+        })
+        .collect();
+
+    Ok(Json(loaded_models))
 }

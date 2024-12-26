@@ -20,22 +20,20 @@ impl fmt::Display for OllamaChatError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             OllamaChatError::ReqwestErr(err) => write!(f, "Reqwest error: {}", err),
-
             OllamaChatError::DieselInteractError(err) => {
-                write!(f, "Diesel interact error. err:{} ", err)
+                write!(f, "Diesel interact error. err: {} ", err)
             }
             OllamaChatError::DieselError(err) => {
-                write!(f, "Diesel error. err:{} ", err)
+                write!(f, "Diesel error. err: {} ", err)
             }
-
-            OllamaChatError::DataError(msg) => {
-                write!(f, "data error. msg {}", msg)
+            OllamaChatError::DataError(err) => {
+                write!(f, "data error. err {}", err)
             }
-            OllamaChatError::DeadpoolErr(e) => {
-                write!(f, "deadpool error. msg {}", e)
+            OllamaChatError::DeadpoolErr(err) => {
+                write!(f, "deadpool error. err {}", err)
             }
-            OllamaChatError::DeadpoolPoolError(e) => {
-                write!(f, "deadpool pool error. msg {}", e)
+            OllamaChatError::DeadpoolPoolError(err) => {
+                write!(f, "deadpool pool error. err {}", err)
             }
         }
     }
@@ -78,7 +76,6 @@ impl IntoResponse for OllamaChatError {
                 error!("reqwest error. err {:?}", e);
                 (StatusCode::INTERNAL_SERVER_ERROR, "Reqwest error")
             }
-
             OllamaChatError::DieselInteractError(e) => {
                 error!("diesel interact error. err {:?}", e);
                 (StatusCode::INTERNAL_SERVER_ERROR, "diesel interact error")

@@ -2,7 +2,9 @@ use crate::common::db_chat::ollama_chat_insert;
 use crate::common::db_model::{ollama_model_load_by_id, ollama_models_load};
 use crate::common::db_prompt::ollama_prompt_load_by_id;
 use crate::common::db_queue::{ollama_queue_next, ollama_queue_update_state};
-use crate::ollama::ollama_rest_api::{execute_ollama_chat, execute_ollama_unload};
+use crate::ollama::ollama_rest_api::{
+    execute_ollama_chat, execute_ollama_unload, get_loaded_models,
+};
 use crate::ollama::ollama_rest_api_models::{OllamaOptions, OllamaRequest};
 use crate::server::models::QueueState;
 use crate::server::ollamachat_error::OllamaChatError;
@@ -13,7 +15,7 @@ use std::time::{Duration, Instant};
 use tokio::time::sleep;
 use tracing::{error, info};
 
-pub async fn run_queue(pool: deadpool_diesel::postgres::Pool) -> Result<(), OllamaChatError> {
+pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
     tokio::spawn(async move {
         let p = pool.clone();
 
@@ -27,7 +29,7 @@ pub async fn run_queue(pool: deadpool_diesel::postgres::Pool) -> Result<(), Olla
             info!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
             if !*running {
-                let sleep_duration = Duration::from_secs(30);
+                let sleep_duration = Duration::from_secs(60);
 
                 info!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
                 info!(
@@ -48,18 +50,19 @@ pub async fn run_queue(pool: deadpool_diesel::postgres::Pool) -> Result<(), Olla
 
             match next {
                 Some(db_queue) => {
-                    info!("start unloading models @ {}", Utc::now());
-                    ollama_unload_all_models(&pool).await;
-                    info!("finished unloading models @ {}", Utc::now());
+                    let db_model = ollama_model_load_by_id(&pool, db_queue.model_id)
+                        .await
+                        .expect("model element not found")
+                        .expect("model element not found");
+
+                    info!("start unloading models we don't need  @ {}", Utc::now());
+                    ollama_unload_all_models_except(&db_model.model).await;
+                    info!("finished unloading models we don't need @ {}", Utc::now());
 
                     let db_prompt = ollama_prompt_load_by_id(&pool, db_queue.prompt_id)
                         .await
                         .expect("queue element not found")
                         .expect("queue element not found");
-                    let db_model = ollama_model_load_by_id(&pool, db_queue.model_id)
-                        .await
-                        .expect("model element not found")
-                        .expect("model element not found");
 
                     let opt = OllamaOptions {
                         temperature: db_queue.temperature,
@@ -175,7 +178,7 @@ pub async fn run_queue(pool: deadpool_diesel::postgres::Pool) -> Result<(), Olla
                 }
                 None => {
                     info!("no 'next' element, waiting ... ");
-                    let sleep_duration = Duration::from_secs(30);
+                    let sleep_duration = Duration::from_secs(60);
                     sleep(sleep_duration).await;
                 }
             }
@@ -184,10 +187,11 @@ pub async fn run_queue(pool: deadpool_diesel::postgres::Pool) -> Result<(), Olla
     Ok(())
 }
 
-async fn ollama_unload_all_models(pool: &Pool) {
-    let db_models = ollama_models_load(pool).await.unwrap();
+async fn ollama_unload_all_models_except(model: &str) {
+    let db_models = get_loaded_models().await.unwrap();
 
-    for db_model in db_models {
+    // unload all models except the one
+    for db_model in db_models.iter().filter(|m| m.model != model) {
         let start = Utc::now();
         info!("unloading model {}", db_model.model);
         let res_unload = execute_ollama_unload(db_model.model.clone()).await;
@@ -220,12 +224,14 @@ async fn ollama_unload_all_models(pool: &Pool) {
     }
 }
 
+// untested ¯\_(ツ)_/¯
 pub async fn start_queue() -> Result<(), OllamaChatError> {
     let mut r = QUEUE_RUNNING.lock().await;
     *r = true;
     Ok(())
 }
 
+// untested ¯\_(ツ)_/¯
 pub async fn stop_queue() -> Result<(), OllamaChatError> {
     let mut r = QUEUE_RUNNING.lock().await;
     *r = false;

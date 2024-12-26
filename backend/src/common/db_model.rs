@@ -62,30 +62,30 @@ pub async fn ollama_model_insert(
             .await
             .map_err(OllamaChatError::from)?;
 
-        if db_ollama_model.is_err() {
-            let err = db_ollama_model.err().unwrap();
-            error!("error inserting a model into the DB {}", err);
-            let a = InsertModelsResponse {
-                model: model.model.clone(),
-                name: model.name.clone(),
-                model_id: None,
-                result: "error inserting model".to_string(),
-            };
-            res.push(a);
-        } else {
-            let db_model = db_ollama_model?;
-            let a = InsertModelsResponse {
-                model: model.model.clone(),
-                name: model.name.clone(),
-                model_id: Some(db_model.id),
-                result: "success inserting model".to_string(),
-            };
-            res.push(a);
-            tracing::info!(
-                "SUCCESS: result of inserting a ollama_model is ok:  {:?}",
-                db_model.id
-            );
-        }
+        let model_response = match db_ollama_model {
+            Ok(db_model) => {
+                tracing::info!(
+                    "SUCCESS: result of inserting a ollama_model is ok:  {:?}",
+                    db_model.id
+                );
+                InsertModelsResponse {
+                    model: model.model.clone(),
+                    name: model.name.clone(),
+                    model_id: Some(db_model.id),
+                    result: "success inserting model".to_string(),
+                }
+            }
+            Err(err) => {
+                error!("error inserting a model into the DB {}", err);
+                InsertModelsResponse {
+                    model: model.model.clone(),
+                    name: model.name.clone(),
+                    model_id: None,
+                    result: "error inserting model".to_string(),
+                }
+            }
+        };
+        res.push(model_response);
     }
 
     Ok(res)
