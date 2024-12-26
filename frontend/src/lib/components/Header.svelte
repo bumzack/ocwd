@@ -25,6 +25,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/allchats">All chats</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/queue">Queue</a>
+                </li>
             </ul>
         </div>
     </div>

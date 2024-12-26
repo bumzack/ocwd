@@ -17,12 +17,12 @@ pub async fn get_all_local_models() -> Result<Vec<OllamaModel>, OllamaChatError>
         .send()
         .await
         .map_err(OllamaChatError::from)
-        .map_err(|e| OllamaChatError::from(e))?;
+        .map_err( OllamaChatError::from)?;
 
-    let body = res.text().await.map_err(|e| OllamaChatError::from(e))?;
+    let body = res.text().await.map_err(OllamaChatError::from)?;
 
     let models =
-        serde_json::from_str::<OllamaModelResponse>(&body).map_err(|e| OllamaChatError::from(e))?;
+        serde_json::from_str::<OllamaModelResponse>(&body).map_err(OllamaChatError::from)?;
 
     Ok(models.models)
 }
@@ -37,11 +37,11 @@ pub async fn get_loaded_models() -> Result<Vec<OllamaModel>, OllamaChatError> {
         .await
         .map_err(|e| {
             error!("error1 getting running models {:?}", e);
-            OllamaChatError::from(e)
+           e
         })
         .map_err(|e| {
             error!("error2 getting running models {:?}", e);
-            OllamaChatError::from(e)
+            e
         })?;
 
     let body = res
@@ -49,15 +49,15 @@ pub async fn get_loaded_models() -> Result<Vec<OllamaModel>, OllamaChatError> {
         .await
         .map_err(|e| {
             error!("error3 getting running models {:?}", e);
-            OllamaChatError::from(e)
+            e
         })
         .map_err(|e| {
             error!("error4 getting running models {:?}", e);
-            OllamaChatError::from(e)
+            e
         })?;
 
     let models =
-        serde_json::from_str::<OllamaModelResponse>(&body).map_err(|e| OllamaChatError::from(e))?;
+        serde_json::from_str::<OllamaModelResponse>(&body).map_err(OllamaChatError::from)?;
 
     Ok(models.models)
 }
@@ -73,15 +73,15 @@ pub async fn execute_ollama_chat(req: OllamaRequest) -> Result<OllamaResponse, O
         .body(json.to_string())
         .send()
         .await
-        .map_err(|e| OllamaChatError::from(e))?;
+        .map_err(OllamaChatError::from)?;
 
     if res.status().is_success() {
-        let body = res.text().await.map_err(|e| OllamaChatError::from(e))?;
+        let body = res.text().await.map_err(OllamaChatError::from)?;
 
         let duration = start.elapsed().as_millis();
         info!("model {} took {}ms -> \n{}\n", req.model, duration, body);
         let res =
-            serde_json::from_str::<OllamaResponse>(&body).map_err(|e| OllamaChatError::from(e))?;
+            serde_json::from_str::<OllamaResponse>(&body).map_err(OllamaChatError::from)?;
         info!("response {}", res.response);
         return Ok(res);
     }
@@ -118,7 +118,7 @@ pub async fn execute_ollama_unload(model_name: String) -> Result<(), OllamaChatE
         .map_err(OllamaChatError::from)?;
 
     if res.status().is_success() {
-        let _ = res.text().await.map_err(|e| OllamaChatError::from(e))?;
+        let _ = res.text().await.map_err(OllamaChatError::from)?;
         let duration = start.elapsed().as_millis();
         info!("unload model {} took {}ms", req.model, duration);
         // let res = serde_json::from_str::<OllamaUnloadResponse>(&body).unwrap();

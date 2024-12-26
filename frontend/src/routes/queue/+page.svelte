@@ -1,17 +1,12 @@
 <script lang="ts">
-    import {models_import} from '$lib/apiService.ts';
-    import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
     import type {PageData} from './$types';
     import type {FeOllamaChatQueue} from "$lib/models.ts";
 
     let {data}: { data: PageData } = $props();
-
-    let models: FeOllamaChatQueue[] = $state(data.models);
-    let hasData = $derived(models != undefined && models != null);
-    let running = $state(false);
+    let queues: FeOllamaChatQueue[] = $state(data.queue);
+    let hasData = $derived(queues != undefined && queues != null);
 </script>
 
-<LoadingSpinner show={running}/>
 
 <div class="container">
     <div class="row">
@@ -21,64 +16,76 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>
+                        <td>
                             id
-                        </th>
-                        <th>
-                            name
-                        </th>
-                        <th>
-                            model
-                        </th>
-                        <th>
-                            size
-                        </th>
-                        <th>
-                            detail_format
-                        </th>
-                        <th>
-                            detail_family
-                        </th>
-                        <th>
-                            detail_parameter_size
-                        </th>
-                        <th>
-                            detail_quantization_level
-                        </th>
-                        <th>
+                        </td>
+                        <td>
+                            modelId
+                        </td>
+                        <td>
+                            promptId
+                        </td>
+                        <td>
+                            state
+                        </td>
+                        <td>
+                            temperature
+                        </td>
+                        <td>
+                            seed
+                        </td>
+                        <td>
+                            numCtx
+                        </td>
+                        <td>
+                            topK
+                        </td>
+                        <td>
+                            topP
+                        </td>
+                        <td>
                             created
-                        </th>
+                        </td>
+                        <td>
+                            updated
+                        </td>
                     </tr>
                     </thead>
                     <tbody>
-                    {#each models as model}
+                    {#each queues as entry}
                         <tr>
                             <td>
-                                {model.id}
+                                {entry.id}
                             </td>
                             <td>
-                                {model.name}
+                                {entry.modelId}
                             </td>
                             <td>
-                                {model.model}
+                                {entry.promptId}
                             </td>
                             <td>
-                                {model.size.toLocaleString('de-DE', {minimumFractionDigits: 0})}
+                                {entry.state}
                             </td>
                             <td>
-                                {model.detailFormat}
+                                {entry.temperature}
                             </td>
                             <td>
-                                {model.detailFamily}
+                                {entry.seed}
                             </td>
                             <td>
-                                {model.detailParameterSize}
+                                {entry.numCtx}
                             </td>
                             <td>
-                                {model.detailQuantizationLevel}
+                                {entry.topK}
                             </td>
                             <td>
-                                {model.created.toLocaleString()}
+                                {entry.topP}
+                            </td>
+                            <td>
+                                {entry.created.toLocaleString()}
+                            </td>
+                            <td>
+                                {entry.updated.toLocaleString()}
                             </td>
                         </tr>
                     {/each}
@@ -89,50 +96,5 @@
             {/if}
         </div>
     </div>
-
-    {#if hasDataImportedModels}
-        <div class="row">
-            <div class="col-lg-12">
-                <h1>imported Ollama models local</h1>
-
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>
-                            modelId
-                        </th>
-                        <th>
-                            name
-                        </th>
-                        <th>
-                            model
-                        </th>
-                        <th>
-                            result
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {#each importedModels as model}
-                        <tr>
-                            <td>
-                                {model.modelId}
-                            </td>
-                            <td>
-                                {model.name}
-                            </td>
-                            <td>
-                                {model.model}
-                            </td>
-                            <td>
-                                {model.result}
-                            </td>
-                        </tr>
-                    {/each}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    {/if}
 </div>
 

@@ -32,14 +32,15 @@ CREATE TABLE ollama_chat
     response             TEXT                                                        NOT NULL,
     ollama_response_json Jsonb                                                       NOT NULL,
     ollama_request_json  Jsonb                                                       NOT NULL,
-    num_ctx              BIGINT,
-    seed                 BIGINT,
-    temperature          DOUBLE PRECISION,
-    top_k                DOUBLE PRECISION,
-    top_p                DOUBLE PRECISION,
+    num_ctx              BIGINT                                                      NOT NULL,
+    seed                 BIGINT                                                      NOT NULL,
+    temperature          DOUBLE PRECISION                                            NOT NULL,
+    top_k                DOUBLE PRECISION                                            NOT NULL,
+    top_p                DOUBLE PRECISION                                            NOT NULL,
     duration_ms          BIGINT                                                      NOT NULL,
-    created              timestamp with time zone default (now() at time zone 'utc') NOT NULL,
-    updated              timestamp with time zone default (now() at time zone 'utc') NOT NULL
+    result               VARCHAR(500)             DEFAULT 'none'                     NOT NULL,
+    created              timestamp with time zone DEFAULT (now() at time zone 'utc') NOT NULL,
+    updated              timestamp with time zone DEFAULT (now() at time zone 'utc') NOT NULL
 );
 
 
@@ -51,11 +52,11 @@ CREATE TABLE ollama_chat_queue
     model_id    INTEGER REFERENCES ollama_model (id)                        NOT NULL,
     prompt_id   INTEGER REFERENCES ollama_prompt (id)                       NOT NULL,
     state       VARCHAR(100)                                                NOT NULL,
-    num_ctx     BIGINT,
-    temperature DOUBLE PRECISION,
-    seed        BIGINT,
-    top_k       DOUBLE PRECISION,
-    top_p       DOUBLE PRECISION,
+    num_ctx     BIGINT                                                      NOT NULL,
+    temperature DOUBLE PRECISION                                            NOT NULL,
+    seed        BIGINT                                                      NOT NULL,
+    top_k       DOUBLE PRECISION                                            NOT NULL,
+    top_p       DOUBLE PRECISION                                            NOT NULL,
     created     timestamp with time zone default (now() at time zone 'utc') NOT NULL,
     updated     timestamp with time zone default (now() at time zone 'utc') NOT NULL
 );

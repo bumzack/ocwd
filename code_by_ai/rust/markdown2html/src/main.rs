@@ -1,8 +1,10 @@
 use crate::aya_expanse::markdown_to_html;
-use crate::deepseekcoder::parse_markdown;
+use crate::aya_expanse2::aya_expanse_test;
 
 mod aya_expanse;
+mod aya_expanse2;
 mod deepseekcoder;
+mod mistral_largest;
 
 fn main() {
     let markdown = r#"
@@ -26,5 +28,7 @@ This is a **bold** and *italic* paragraph with [a link](https://example.com).
     //     println!("deepseekcoder   {}", element);
     // }
 
-
+    // tbe .lines() break the regex which is looking for the closing ```
+    println!("aya_expanse2 ");
+    aya_expanse_test();
 }

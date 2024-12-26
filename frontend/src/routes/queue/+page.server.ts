@@ -8,6 +8,7 @@ export const ssr = true;
 export const load: PageServerLoad = async () => {
 	const queue = await queue_load();
 	if (queue) {
+		console.log(`queue  ${JSON.stringify(queue, null, 4)}`);
 		const props: PropsFeAllQueue = {
 			queue: queue
 		};

@@ -9,13 +9,16 @@ diesel::table! {
         response -> Text,
         ollama_response_json -> Jsonb,
         ollama_request_json -> Jsonb,
-        num_ctx -> Nullable<Int8>,
-        seed -> Nullable<Int8>,
-        temperature -> Nullable<Float8>,
-        top_k -> Nullable<Float8>,
-        top_p -> Nullable<Float8>,
+        num_ctx -> Int8,
+        seed -> Int8,
+        temperature -> Float8,
+        top_k -> Float8,
+        top_p -> Float8,
         duration_ms -> Int8,
+        #[max_length = 500]
+        result -> Varchar,
         created -> Timestamptz,
+        updated -> Timestamptz,
     }
 }
 
@@ -26,12 +29,13 @@ diesel::table! {
         prompt_id -> Int4,
         #[max_length = 100]
         state -> Varchar,
-        num_ctx -> Nullable<Int8>,
-        temperature -> Nullable<Float8>,
-        seed -> Nullable<Int8>,
-        top_k -> Nullable<Float8>,
-        top_p -> Nullable<Float8>,
+        num_ctx -> Int8,
+        temperature -> Float8,
+        seed -> Int8,
+        top_k -> Float8,
+        top_p -> Float8,
         created -> Timestamptz,
+        updated -> Timestamptz,
     }
 }
 
@@ -52,6 +56,7 @@ diesel::table! {
         #[max_length = 1000]
         detail_quantization_level -> Varchar,
         created -> Timestamptz,
+        updated -> Timestamptz,
     }
 }
 
@@ -60,6 +65,7 @@ diesel::table! {
         id -> Int4,
         prompt -> Text,
         created -> Timestamptz,
+        updated -> Timestamptz,
     }
 }
 

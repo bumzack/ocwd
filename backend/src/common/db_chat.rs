@@ -1,7 +1,7 @@
 use crate::ollama::ollama_rest_api_models::{OllamaRequest, OllamaResponse};
 use crate::schema::ollama_chat;
 use crate::server::ollamachat_error::OllamaChatError;
-use chrono::NaiveDateTime;
+use chrono::{NaiveDateTime, Utc};
 use diesel::prelude::*;
 use diesel::{Insertable, Queryable, RunQueryDsl, Selectable};
 use serde::{Deserialize, Serialize};
@@ -18,13 +18,14 @@ pub struct DbOllamaChat {
     pub prompt_id: i32,
     pub parent_id: Option<i32>,
     pub response: String,
+    pub result: String,
     pub ollama_response_json: serde_json::Value,
     pub ollama_request_json: serde_json::Value,
-    pub seed: Option<i64>,
-    pub num_ctx: Option<i64>,
-    pub temperature: Option<f64>,
-    pub top_k: Option<f64>,
-    pub top_p: Option<f64>,
+    pub seed: i64,
+    pub num_ctx: i64,
+    pub temperature: f64,
+    pub top_k: f64,
+    pub top_p: f64,
     pub duration_ms: i64,
     pub created: NaiveDateTime,
     pub updated: NaiveDateTime,
@@ -42,11 +43,11 @@ pub struct DbNewOllamaChat {
     pub response: String,
     pub ollama_response_json: serde_json::Value,
     pub ollama_request_json: serde_json::Value,
-    pub seed: Option<i64>,
-    pub num_ctx: Option<i64>,
-    pub temperature: Option<f64>,
-    pub top_k: Option<f64>,
-    pub top_p: Option<f64>,
+    pub seed: i64,
+    pub num_ctx: i64,
+    pub temperature: f64,
+    pub top_k: f64,
+    pub top_p: f64,
     pub duration_ms: i64,
 }
 
@@ -67,11 +68,11 @@ pub async fn ollama_chat_insert(
         response: ollama_response.response.clone(),
         ollama_response_json: json!(ollama_response),
         ollama_request_json: json!(ollama_request),
-        temperature: ollama_request.options.temperature,
-        seed: ollama_request.options.seed,
-        num_ctx: ollama_request.options.num_ctx,
-        top_k: ollama_request.options.top_k,
-        top_p: ollama_request.options.top_p,
+        temperature: ollama_request.options.temperature.unwrap_or(-1.0),
+        seed: ollama_request.options.seed.unwrap_or(-1),
+        num_ctx: ollama_request.options.num_ctx.unwrap_or(-1),
+        top_k: ollama_request.options.top_k.unwrap_or(-1.0),
+        top_p: ollama_request.options.top_p.unwrap_or(-1.0),
         duration_ms,
     };
 
@@ -117,5 +118,24 @@ pub async fn ollama_chat_load_all(
     })
     .await
     .map_err(OllamaChatError::from)?
+    .map_err(OllamaChatError::from)
+}
+
+pub async fn ollama_cat_update_result(
+    pool: &deadpool_diesel::postgres::Pool,
+    chat_id: i32,
+    result: String,
+) -> Result<DbOllamaChat, OllamaChatError> {
+    let conn = pool.get().await?;
+
+    let now = Utc::now();
+    conn.interact(move |conn| {
+        diesel::update(ollama_chat::table.filter(ollama_chat::id.eq(chat_id)))
+            .set((ollama_chat::result.eq(result), ollama_chat::updated.eq(now)))
+            .returning(DbOllamaChat::as_returning())
+            .get_result(conn)
+            .unwrap()
+    })
+    .await
     .map_err(OllamaChatError::from)
 }

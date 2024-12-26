@@ -1,10 +1,12 @@
 import type {
-	FeOllamaChat, FeOllamaChatQueue,
+	FeOllamaChat,
+	FeOllamaChatQueue,
 	FeOllamaChatQueueResponse,
 	FeOllamaModel,
 	FeOllamaPrompt,
 	FeOllamaRunningModel,
 	FeRunModelRequest,
+	FeUpdateOllamaChatResult,
 	InsertModelsResponse
 } from './models'; // const server = 'http://10.0.0.48:3023';
 
@@ -194,16 +196,14 @@ export const chats_load_all = async (): Promise<FeOllamaChat[]> => {
 	return Promise.reject(new Error(`No model response received."`));
 };
 
-
-
 export const queue_load = async (): Promise<FeOllamaChatQueue[]> => {
 	try {
-		const response = await fetch(server + '/api/model/enqueue', {
+		const response = await fetch(server + '/api/queue', {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json, text/plain, */*'
 			},
-			method: 'GET',
+			method: 'GET'
 		});
 
 		if (response.ok) {
@@ -218,3 +218,29 @@ export const queue_load = async (): Promise<FeOllamaChatQueue[]> => {
 	return Promise.reject(new Error(`No model response received."`));
 };
 
+export const ollama_chat_update_result = async (
+	request: FeUpdateOllamaChatResult
+): Promise<FeOllamaChat> => {
+	try {
+		const url = `${server}/api/chat/result`;
+
+		const response = await fetch(url, {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json, text/plain, */*'
+			},
+			body: JSON.stringify(request),
+			method: 'PUT'
+		});
+
+		if (response.ok) {
+			return await response.json();
+		} else {
+			const error = new Error('error loading models');
+			return Promise.reject(error);
+		}
+	} catch (e) {
+		console.info(`error getting the company data ${e}`);
+	}
+	return Promise.reject(new Error(`No model response received."`));
+};

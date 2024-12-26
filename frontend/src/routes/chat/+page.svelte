@@ -2,8 +2,8 @@
 
     import type {PageData} from "./$types";
     import LoadingSpinner from "$lib/components/LoadingSpinner.svelte";
-    import {enqueue_models} from "$lib/apiService.ts";
-    import type {FeOllamaChatQueueResponse, OllamaModel} from "$lib/models.ts";
+    import {enqueue_models, ollama_chat_update_result} from "$lib/apiService.ts";
+    import type {FeOllamaChatQueueResponse, FeUpdateOllamaChatResult, OllamaModel} from "$lib/models.ts";
 
     let {data}: { data: PageData } = $props();
     let models: OllamaModel[] = $state(data.models);
@@ -62,6 +62,17 @@
             models.forEach(m => m.checked = true);
         }
         allSelected = !allSelected;
+    };
+
+    const update_result = async (): Promise<void> => {
+        const req: FeUpdateOllamaChatResult = {
+            chatId: -1,
+            result: "new result"
+        };
+        running = true;
+        const res = await ollama_chat_update_result(req);
+        console.log(`res update result ${JSON.stringify(res, null, 4)}`)
+        running = false;
     };
 
 </script>

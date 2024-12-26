@@ -5,8 +5,8 @@ mod schema;
 mod server;
 
 use crate::fe::feroutes::{
-    chat_load_all, chat_load_by_prompt_id, models_loaded, prompts_load, prompts_load_by_id,
-    queue_load,
+    chat_load_all, chat_load_by_prompt_id, chat_update_result, models_loaded, prompts_load,
+    prompts_load_by_id, queue_load,
 };
 use crate::server::models::Config;
 use crate::server::queue::{run_queue, start_queue, stop_queue};
@@ -14,7 +14,7 @@ use crate::server::utils::cors_layer;
 use axum::extract::MatchedPath;
 use axum::http::Request;
 use axum::response::Response;
-use axum::routing::{get, post};
+use axum::routing::{get, post, put};
 use axum::Router;
 use dotenvy::dotenv;
 use fe::feroutes::{add_to_queue, import_local_models, list_local_models};
@@ -77,6 +77,7 @@ async fn main() -> Result<(), ()> {
         .route("/api/prompt", get(prompts_load))
         .route("/api/prompt/{pprompt_id}", get(prompts_load_by_id))
         .route("/api/chat/{pprompt_id}", get(chat_load_by_prompt_id))
+        .route("/api/chat/result", put(chat_update_result))
         .route("/api/chat", get(chat_load_all))
         .route("/api/queue/stop", post(stop_queue))
         .route("/api/queue/start", post(start_queue))

@@ -65,11 +65,11 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
                         .expect("queue element not found");
 
                     let opt = OllamaOptions {
-                        temperature: db_queue.temperature,
-                        num_ctx: db_queue.num_ctx,
-                        seed: db_queue.seed,
-                        top_k: db_queue.top_k,
-                        top_p: db_queue.top_p,
+                        temperature: Some(db_queue.temperature),
+                        num_ctx: Some(db_queue.num_ctx),
+                        seed: Some(db_queue.seed),
+                        top_k: Some(db_queue.top_k),
+                        top_p: Some(db_queue.top_p),
                     };
 
                     let request = OllamaRequest {
@@ -139,7 +139,7 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
                                 request,
                                 duration as i64,
                             )
-                                .await;
+                            .await;
 
                             match db_ollama_chat {
                                 Ok(res) => {
@@ -188,8 +188,7 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
 }
 
 async fn ollama_unload_all_models_except(model: &str) {
-    let db_models = get_loaded_models()
-        .await;
+    let db_models = get_loaded_models().await;
 
     let db_models = match db_models {
         Ok(db_models) => db_models,

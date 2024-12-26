@@ -31,11 +31,11 @@ pub struct FeOllamaRunningModel {
 #[serde(rename_all = "camelCase")]
 pub struct FeRunModel {
     pub model_id: i32,
-    pub temperature: Option<f64>,
-    pub num_ctx: Option<i64>,
-    pub seed: Option<i64>,
-    pub top_k: Option<f64>,
-    pub top_p: Option<f64>,
+    pub temperature: f64,
+    pub num_ctx: i64,
+    pub seed: i64,
+    pub top_k: f64,
+    pub top_p: f64,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -82,11 +82,12 @@ pub struct FeOllamaChat {
     pub prompt: String,
     pub model_size: String,
     pub response: String,
-    pub seed: Option<i64>,
-    pub num_ctx: Option<i64>,
-    pub temperature: Option<f64>,
-    pub top_k: Option<f64>,
-    pub top_p: Option<f64>,
+    pub result: String,
+    pub seed: i64,
+    pub num_ctx: i64,
+    pub temperature: f64,
+    pub top_k: f64,
+    pub top_p: f64,
     pub duration_ms: i64,
     pub created: DateTime<Utc>,
 }
@@ -98,11 +99,19 @@ pub struct FeOllamaChatQueue {
     pub model_id: i32,
     pub prompt_id: i32,
     pub state: String,
-    pub temperature: Option<f64>,
-    pub seed: Option<i64>,
-    pub num_ctx: Option<i64>,
-    pub top_k: Option<f64>,
-    pub top_p: Option<f64>,
+    pub temperature: f64,
+    pub seed: i64,
+    pub num_ctx: i64,
+    pub top_k: f64,
+    pub top_p: f64,
     pub created: DateTime<Utc>,
     pub updated: DateTime<Utc>,
+}
+
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct FeUpdateOllamaChatResult {
+    pub chat_id: i32,
+    pub result: String,
 }

@@ -17,11 +17,11 @@ pub struct DbOllamaChatQueue {
     pub model_id: i32,
     pub prompt_id: i32,
     pub state: String,
-    pub temperature: Option<f64>,
-    pub seed: Option<i64>,
-    pub num_ctx: Option<i64>,
-    pub top_k: Option<f64>,
-    pub top_p: Option<f64>,
+    pub temperature: f64,
+    pub seed: i64,
+    pub num_ctx: i64,
+    pub top_k: f64,
+    pub top_p: f64,
     pub created: NaiveDateTime,
     pub updated: NaiveDateTime,
 }
@@ -35,11 +35,11 @@ pub struct DbNewOllamaChatQueue {
     pub model_id: i32,
     pub prompt_id: i32,
     pub state: String,
-    pub temperature: Option<f64>,
-    pub seed: Option<i64>,
-    pub num_ctx: Option<i64>,
-    pub top_k: Option<f64>,
-    pub top_p: Option<f64>,
+    pub temperature: f64,
+    pub seed: i64,
+    pub num_ctx: i64,
+    pub top_k: f64,
+    pub top_p: f64,
 }
 
 pub async fn ollama_queue_insert(
@@ -103,8 +103,10 @@ pub async fn ollama_queue_update_state(
     let now = Utc::now();
     conn.interact(move |conn| {
         diesel::update(ollama_chat_queue::table.filter(ollama_chat_queue::id.eq(queue_id)))
-            .set((ollama_chat_queue::state.eq(new_state.to_string()),ollama_chat_queue::updated.eq(now) ))
-
+            .set((
+                ollama_chat_queue::state.eq(new_state.to_string()),
+                ollama_chat_queue::updated.eq(now),
+            ))
             .returning(DbOllamaChatQueue::as_returning())
             .get_result(conn)
             .unwrap()
@@ -120,10 +122,11 @@ pub async fn ollama_queue_all(
 
     conn.interact(move |conn| {
         ollama_chat_queue::table
-            .order(ollama_chat_queue::created.asc())
             // sort by model_id to avoid too many model unload/load ops on the "ollama server"
-            .order(ollama_chat_queue::model_id.asc())
-            .filter(ollama_chat_queue::state.eq(QueueState::Enqueued.to_string()))
+            .order((
+                ollama_chat_queue::updated.desc(),
+                ollama_chat_queue::model_id.asc(),
+            ))
             .select(DbOllamaChatQueue::as_select())
             .load(conn)
     })

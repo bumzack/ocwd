@@ -63,6 +63,7 @@ export interface FeOllamaChat {
 	modelName: string;
 	modelSize: string;
 	response: string;
+	result: string;
 	temperature: number;
 	numCtx: number;
 	seed: number;
@@ -111,14 +112,14 @@ export type PropsFeAllRunningModels = {
 
 export interface FeOllamaChatQueue {
 	id: number;
-	model_id: number;
-	prompt_id: number;
+	modelId: number;
+	promptId: number;
 	state: String;
 	temperature: number;
 	seed: number;
-	num_ctx: number;
-	top_k: number;
-	top_p: number;
+	numCtx: number;
+	topK: number;
+	topP: number;
 	created: Date;
 	updated: Date;
 }
@@ -127,3 +128,7 @@ export type PropsFeAllQueue = {
 	queue: FeOllamaChatQueue[];
 };
 
+export interface FeUpdateOllamaChatResult {
+	chatId: number;
+	result: string;
+}
