@@ -12,7 +12,6 @@ use serde_json::json;
 #[diesel(check_for_backend(diesel::pg::Pg))]
 #[diesel(belongs_to(DbOllamaModel, foreign_key = model_id))]
 #[diesel(belongs_to(DbOllamaPrompt, foreign_key = prompt_id))]
-// #[diesel(belongs_to(DbOllamaChat, foreign_key = parent_id))]
 pub struct DbOllamaChat {
     pub id: i32,
     pub model_id: i32,
@@ -28,6 +27,7 @@ pub struct DbOllamaChat {
     pub top_p: Option<f64>,
     pub duration_ms: i64,
     pub created: NaiveDateTime,
+    pub updated: NaiveDateTime,
 }
 
 #[derive(Insertable, Debug, Serialize, Deserialize)]
@@ -35,7 +35,6 @@ pub struct DbOllamaChat {
 #[diesel(check_for_backend(diesel::pg::Pg))]
 #[diesel(belongs_to(DbOllamaModel, foreign_key = model_id))]
 #[diesel(belongs_to(DbOllamaPrompt, foreign_key = prompt_id))]
-// #[diesel(belongs_to(DbOllamaChat, foreign_key = parent_id))]
 pub struct DbNewOllamaChat {
     pub model_id: i32,
     pub parent_id: Option<i32>,

@@ -10,6 +10,7 @@ pub struct DbOllamaPrompt {
     pub id: i32,
     pub prompt: String,
     pub created: NaiveDateTime,
+    pub updated: NaiveDateTime,
 }
 
 #[derive(Insertable, Debug, PartialEq)]

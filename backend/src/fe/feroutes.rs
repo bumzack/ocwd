@@ -3,9 +3,10 @@ use crate::common::db_model::{ollama_model_insert, ollama_model_load_by_id, olla
 use crate::common::db_prompt::{
     ollama_prompt_insert, ollama_prompt_load, ollama_prompt_load_by_id,
 };
-use crate::common::db_queue::ollama_queue_insert;
+use crate::common::db_queue::{ollama_queue_all, ollama_queue_insert};
 use crate::fe::femodels::{
-    FeOllamaChat, FeOllamaChatQueueResponse, FeOllamaModel, FeOllamaPrompt, FeRunModelRequest,
+    FeOllamaChat, FeOllamaChatQueue, FeOllamaChatQueueResponse, FeOllamaModel, FeOllamaPrompt,
+    FeRunModelRequest,
 };
 use crate::ollama::ollama_rest_api::{get_all_local_models, get_loaded_models};
 use crate::ollama::ollama_rest_api_models::InsertModelsResponse;
@@ -207,4 +208,29 @@ pub async fn models_loaded() -> Result<Json<Vec<FeOllamaModel>>, OllamaChatError
         .collect();
 
     Ok(Json(loaded_models))
+}
+
+pub async fn queue_load(
+    State(pool): State<deadpool_diesel::postgres::Pool>,
+) -> Result<Json<Vec<FeOllamaChatQueue>>, OllamaChatError> {
+    let ollama_queues = ollama_queue_all(&pool).await?;
+
+    let ollama_queues: Vec<FeOllamaChatQueue> = ollama_queues
+        .iter()
+        .map(|x| FeOllamaChatQueue {
+            id: x.id,
+            model_id: x.model_id,
+            prompt_id: x.prompt_id,
+            state: x.state.clone(),
+            temperature: x.temperature,
+            seed: x.seed,
+            num_ctx: x.num_ctx,
+            top_k: x.top_k,
+            top_p: x.top_p,
+            created: x.created.and_utc(),
+            updated: x.updated.and_utc(),
+        })
+        .collect();
+
+    Ok(Json(ollama_queues))
 }

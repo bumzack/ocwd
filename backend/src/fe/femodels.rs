@@ -90,3 +90,19 @@ pub struct FeOllamaChat {
     pub duration_ms: i64,
     pub created: DateTime<Utc>,
 }
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct FeOllamaChatQueue {
+    pub id: i32,
+    pub model_id: i32,
+    pub prompt_id: i32,
+    pub state: String,
+    pub temperature: Option<f64>,
+    pub seed: Option<i64>,
+    pub num_ctx: Option<i64>,
+    pub top_k: Option<f64>,
+    pub top_p: Option<f64>,
+    pub created: DateTime<Utc>,
+    pub updated: DateTime<Utc>,
+}

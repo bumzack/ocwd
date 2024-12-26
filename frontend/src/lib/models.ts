@@ -108,3 +108,22 @@ export type PropsAllChats = {
 export type PropsFeAllRunningModels = {
 	models: FeOllamaRunningModel[];
 };
+
+export interface FeOllamaChatQueue {
+	id: number;
+	model_id: number;
+	prompt_id: number;
+	state: String;
+	temperature: number;
+	seed: number;
+	num_ctx: number;
+	top_k: number;
+	top_p: number;
+	created: Date;
+	updated: Date;
+}
+
+export type PropsFeAllQueue = {
+	queue: FeOllamaChatQueue[];
+};
+

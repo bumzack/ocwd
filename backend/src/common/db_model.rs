@@ -18,6 +18,7 @@ pub struct DbOllamaModel {
     pub detail_parameter_size: String,
     pub detail_quantization_level: String,
     pub created: NaiveDateTime,
+    pub updated: NaiveDateTime,
 }
 
 #[derive(Insertable, Debug, PartialEq)]

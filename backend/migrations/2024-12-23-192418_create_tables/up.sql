@@ -11,15 +11,16 @@ CREATE TABLE ollama_model
     detail_parameter_size     VARCHAR(1000)                                               NOT NULL,
     detail_quantization_level VARCHAR(1000)                                               NOT NULL,
     created                   timestamp with time zone default (now() at time zone 'utc') NOT NULL,
+    updated                   timestamp with time zone default (now() at time zone 'utc') NOT NULL,
     UNIQUE (name, model, size)
 );
 
 CREATE TABLE ollama_prompt
 (
     id      SERIAL PRIMARY KEY,
-    prompt  TEXT                                                  NOT NULL,
-    created timestamp
-                with time zone default (now() at time zone 'utc') NOT NULL
+    prompt  TEXT                                                        NOT NULL,
+    created timestamp with time zone default (now() at time zone 'utc') NOT NULL,
+    updated timestamp with time zone default (now() at time zone 'utc') NOT NULL
 );
 
 CREATE TABLE ollama_chat
@@ -36,8 +37,9 @@ CREATE TABLE ollama_chat
     temperature          DOUBLE PRECISION,
     top_k                DOUBLE PRECISION,
     top_p                DOUBLE PRECISION,
-    duration_ms                 BIGINT NOT NULL,
-    created              timestamp with time zone default (now() at time zone 'utc') NOT NULL
+    duration_ms          BIGINT                                                      NOT NULL,
+    created              timestamp with time zone default (now() at time zone 'utc') NOT NULL,
+    updated              timestamp with time zone default (now() at time zone 'utc') NOT NULL
 );
 
 
@@ -54,5 +56,6 @@ CREATE TABLE ollama_chat_queue
     seed        BIGINT,
     top_k       DOUBLE PRECISION,
     top_p       DOUBLE PRECISION,
-    created     timestamp with time zone default (now() at time zone 'utc') NOT NULL
+    created     timestamp with time zone default (now() at time zone 'utc') NOT NULL,
+    updated     timestamp with time zone default (now() at time zone 'utc') NOT NULL
 );

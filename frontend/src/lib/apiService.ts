@@ -1,5 +1,5 @@
 import type {
-	FeOllamaChat,
+	FeOllamaChat, FeOllamaChatQueue,
 	FeOllamaChatQueueResponse,
 	FeOllamaModel,
 	FeOllamaPrompt,
@@ -193,3 +193,28 @@ export const chats_load_all = async (): Promise<FeOllamaChat[]> => {
 	}
 	return Promise.reject(new Error(`No model response received."`));
 };
+
+
+
+export const queue_load = async (): Promise<FeOllamaChatQueue[]> => {
+	try {
+		const response = await fetch(server + '/api/model/enqueue', {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json, text/plain, */*'
+			},
+			method: 'GET',
+		});
+
+		if (response.ok) {
+			return await response.json();
+		} else {
+			const error = new Error('error loading models');
+			return Promise.reject(error);
+		}
+	} catch (e) {
+		console.info(`error getting queue entries ${e}`);
+	}
+	return Promise.reject(new Error(`No model response received."`));
+};
+

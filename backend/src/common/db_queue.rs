@@ -2,7 +2,7 @@ use crate::fe::femodels::FeRunModel;
 use crate::schema::ollama_chat_queue;
 use crate::server::models::QueueState;
 use crate::server::ollamachat_error::OllamaChatError;
-use chrono::NaiveDateTime;
+use chrono::{NaiveDateTime, Utc};
 use diesel::prelude::*;
 use diesel::{Insertable, Queryable, Selectable};
 use serde::{Deserialize, Serialize};
@@ -23,6 +23,7 @@ pub struct DbOllamaChatQueue {
     pub top_k: Option<f64>,
     pub top_p: Option<f64>,
     pub created: NaiveDateTime,
+    pub updated: NaiveDateTime,
 }
 
 #[derive(Insertable, Debug, Serialize, Deserialize)]
@@ -99,13 +100,34 @@ pub async fn ollama_queue_update_state(
 ) -> Result<DbOllamaChatQueue, OllamaChatError> {
     let conn = pool.get().await?;
 
+    let now = Utc::now();
     conn.interact(move |conn| {
         diesel::update(ollama_chat_queue::table.filter(ollama_chat_queue::id.eq(queue_id)))
-            .set(ollama_chat_queue::state.eq(new_state.to_string()))
+            .set((ollama_chat_queue::state.eq(new_state.to_string()),ollama_chat_queue::updated.eq(now) ))
+
             .returning(DbOllamaChatQueue::as_returning())
             .get_result(conn)
             .unwrap()
     })
     .await
+    .map_err(OllamaChatError::from)
+}
+
+pub async fn ollama_queue_all(
+    pool: &deadpool_diesel::postgres::Pool,
+) -> Result<Vec<DbOllamaChatQueue>, OllamaChatError> {
+    let conn = pool.get().await?;
+
+    conn.interact(move |conn| {
+        ollama_chat_queue::table
+            .order(ollama_chat_queue::created.asc())
+            // sort by model_id to avoid too many model unload/load ops on the "ollama server"
+            .order(ollama_chat_queue::model_id.asc())
+            .filter(ollama_chat_queue::state.eq(QueueState::Enqueued.to_string()))
+            .select(DbOllamaChatQueue::as_select())
+            .load(conn)
+    })
+    .await?
+    .map_err(OllamaChatError::from)
     .map_err(OllamaChatError::from)
 }

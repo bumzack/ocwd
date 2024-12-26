@@ -6,6 +6,7 @@ mod server;
 
 use crate::fe::feroutes::{
     chat_load_all, chat_load_by_prompt_id, models_loaded, prompts_load, prompts_load_by_id,
+    queue_load,
 };
 use crate::server::models::Config;
 use crate::server::queue::{run_queue, start_queue, stop_queue};
@@ -79,6 +80,7 @@ async fn main() -> Result<(), ()> {
         .route("/api/chat", get(chat_load_all))
         .route("/api/queue/stop", post(stop_queue))
         .route("/api/queue/start", post(start_queue))
+        .route("/api/queue", get(queue_load))
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(|request: &Request<_>| {
