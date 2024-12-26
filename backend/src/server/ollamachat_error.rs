@@ -14,6 +14,7 @@ pub enum OllamaChatError {
     DataError(String),
     DeadpoolErr(deadpool_diesel::Error),
     DeadpoolPoolError(deadpool_diesel::PoolError),
+    SerdeJsonErr(serde_json::error::Error),
 }
 
 impl fmt::Display for OllamaChatError {
@@ -35,6 +36,7 @@ impl fmt::Display for OllamaChatError {
             OllamaChatError::DeadpoolPoolError(err) => {
                 write!(f, "deadpool pool error. err {}", err)
             }
+            OllamaChatError::SerdeJsonErr(err) => write!(f, "serde json error. err: {}", err),
         }
     }
 }
@@ -69,6 +71,12 @@ impl From<deadpool_diesel::Error> for OllamaChatError {
     }
 }
 
+impl From<serde_json::Error> for OllamaChatError {
+    fn from(error: serde_json::Error) -> Self {
+        OllamaChatError::SerdeJsonErr(error)
+    }
+}
+
 impl IntoResponse for OllamaChatError {
     fn into_response(self) -> axum::response::Response {
         let (status, message) = match self {
@@ -96,6 +104,11 @@ impl IntoResponse for OllamaChatError {
                 error!("deadpool pool error to INTERNAL_ERROR. err: {:?}", e);
                 error!("deadpool pool error: {}", e);
                 (StatusCode::INTERNAL_SERVER_ERROR, "deadpool pool error")
+            }
+            OllamaChatError::SerdeJsonErr(e) => {
+                error!("serde json to INTERNAL_ERROR. err: {:?}", e);
+                error!("serde json: {}", e);
+                (StatusCode::INTERNAL_SERVER_ERROR, "serde json error")
             }
         };
         (status, message).into_response()

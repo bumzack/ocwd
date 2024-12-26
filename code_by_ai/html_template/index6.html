@@ -1,0 +1,101 @@
+<!--
+
+mistral-nemo:12b / 12.2B
+ -->
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Analysis App</title>
+
+    <!-- Add Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQApptIUBcSA34Ff2+G/jEmCKl+HhSXBF3/SN1aPh" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5fdQSAkjzrFZHcVK/N2EiIehHzDZ3uO3EUVxSCw" crossorigin="anonymous"></script>
+
+    <!-- Add custom styles -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .stock-card {
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+<header class="bg-dark py-3">
+    <div class="container">
+        <h1 class="text-white display-4">Stock Analysis App</h1>
+    </div>
+</header>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="#">Stocks</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#stocks">Stocks</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#analysis">Analysis</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main class="container my-5">
+    <!-- Stock Cards -->
+    <div id="stocks" class="row mb-4">
+        <h2 class="col-12 text-center mb-3">Stocks</h2>
+        <div class="col-md-6 col-lg-4 stock-card">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">AAPL</h5>
+                    <p class="card-text"><strong>Price:</strong> $135.25</p>
+                    <p class="card-text"><strong>Change:</strong> +0.54 (+0.39%)</p>
+                </div>
+            </div>
+        </div>
+        <!-- Add more stock cards as needed -->
+    </div>
+
+    <!-- Analysis Cards -->
+    <div id="analysis" class="row">
+        <h2 class="col-12 text-center mb-3">Analysis</h2>
+        <div class="col-md-6 col-lg-4 stock-card">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Moving Average</h5>
+                    <p class="card-text"><strong>50-day:</strong> $132.89</p>
+                    <p class="card-text"><strong>200-day:</strong> $127.64</p>
+                </div>
+            </div>
+        </div>
+        <!-- Add more analysis cards as needed -->
+    </div>
+</main>
+
+<footer class="bg-dark py-3">
+    <div class="container text-center text-white">
+        &copy; 2023 Stock Analysis App. All rights reserved.
+    </div>
+</footer>
+
+</body>
+</html>

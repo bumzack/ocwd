@@ -1,0 +1,156 @@
+<!--
+
+qwen2.5-coder:32b / 32.8B
+
+ -->
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Analysis Application</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Optional: Include a charting library like Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Stock Analysis App</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Contact</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <h1>Stock Analysis Dashboard</h1>
+
+    <!-- Search Bar -->
+    <form class="mb-4">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Enter stock symbol..." aria-label="Recipient's username" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button">Search</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Stock Data Section -->
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Stock Information</h3>
+            <table class="table table-striped">
+                <tbody>
+                <tr>
+                    <th scope="row">Company Name:</th>
+                    <td id="company-name">-</td>
+                </tr>
+                <tr>
+                    <th scope="row">Current Price:</th>
+                    <td id="current-price">-</td>
+                </tr>
+                <tr>
+                    <th scope="row">Market Cap:</th>
+                    <td id="market-cap">-</td>
+                </tr>
+                <tr>
+                    <th scope="row">52 Week High:</th>
+                    <td id="week-high">-</td>
+                </tr>
+                <tr>
+                    <th scope="row">52 Week Low:</th>
+                    <td id="week-low">-</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Stock Chart Section -->
+        <div class="col-md-6">
+            <h3>Stock Price History</h3>
+            <canvas id="stockChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+
+    <!-- News and Analysis Section -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h3>Latest News</h3>
+            <ul id="news-list" class="list-group">
+                <!-- News items will be dynamically inserted here -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-5 text-center">
+        <p>&copy; 2023 Stock Analysis Application. All rights reserved.</p>
+    </footer>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Optional: JavaScript for dynamic content and chart rendering -->
+<script>
+    // Example of initializing a Chart.js chart
+    var ctx = document.getElementById('stockChart').getContext('2d');
+    var stockChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            datasets: [{
+                label: 'Stock Price',
+                data: [65, 59, 80, 81, 56, 55, 40],
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Example of dynamically adding news items
+    var newsList = document.getElementById('news-list');
+    var newsItems = [
+        { title: 'Stock Market Update for Today', link: '#' },
+        { title: 'Economic Indicators Show Positive Trends', link: '#' },
+        { title: 'Company Reports Q4 Earnings', link: '#' }
+    ];
+
+    newsItems.forEach(function(item) {
+        var li = document.createElement('li');
+        li.className = 'list-group-item';
+        li.innerHTML = `<a href="${item.link}" target="_blank">${item.title}</a>`;
+        newsList.appendChild(li);
+    });
+</script>
+
+</body>
+</html>

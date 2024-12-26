@@ -1,6 +1,5 @@
 use crate::ollama::ollama_rest_api_models::{
     OllamaModel, OllamaModelResponse, OllamaRequest, OllamaResponse, OllamaUnloadRequest,
-    OllamaUnloadResponse,
 };
 use crate::server::ollamachat_error::OllamaChatError;
 use crate::CONFIG;

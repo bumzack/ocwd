@@ -25,20 +25,10 @@
                             size
                         </th>
                         <th>
-                            detail_format
-                        </th>
-                        <th>
-                            detail_family
-                        </th>
-                        <th>
                             detail_parameter_size
                         </th>
                         <th>
-                            detail_quantization_level
-                        </th>
-                        <th>
-                            detail_quantization_level
-                        </th>
+                            quantizationLevel
                     </tr>
                     </thead>
                     <tbody>
@@ -51,19 +41,13 @@
                                 {model.model}
                             </td>
                             <td>
-                                {model.size}
+                                {model.size.toLocaleString('de-DE', {minimumFractionDigits: 0})}
                             </td>
                             <td>
-                                {model.format}
+                                {model.detailParameterSize}
                             </td>
                             <td>
-                                {model.family}
-                            </td>
-                            <td>
-                                {model.parameter_size}
-                            </td>
-                            <td>
-                                {model.quantization_level}
+                                {model.detailQuantizationLevel}
                             </td>
 
                         </tr>

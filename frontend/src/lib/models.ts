@@ -63,11 +63,11 @@ export interface FeOllamaChat {
 	modelName: string;
 	modelSize: string;
 	response: string;
-	temperature: number | undefined;
-	numCtx: number | undefined;
-	seed: number | undefined;
-	topK: number | undefined;
-	topP: number | undefined;
+	temperature: number;
+	numCtx: number;
+	seed: number;
+	topK: number;
+	topP: number;
 	created: Date;
 	prompt: string;
 	durationMs: number;
@@ -79,8 +79,9 @@ export interface FeOllamaRunningModel {
 	size: number;
 	format: string;
 	family: string;
-	parameter_size: string;
-	quantization_level: string;
+	parameterSize: string;
+	detailQuantizationLevel: string;
+	detailParameterSize: string;
 }
 
 export type PropsChatPrompt = {

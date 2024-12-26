@@ -8,7 +8,7 @@ use crate::fe::femodels::{
     FeOllamaChat, FeOllamaChatQueueResponse, FeOllamaModel, FeOllamaPrompt, FeRunModelRequest,
 };
 use crate::ollama::ollama_rest_api::{get_all_local_models, get_loaded_models};
-use crate::ollama::ollama_rest_api_models::{InsertModelsResponse, OllamaModel};
+use crate::ollama::ollama_rest_api_models::InsertModelsResponse;
 use crate::server::ollamachat_error::OllamaChatError;
 use axum::extract::{Path, State};
 use axum::Json;

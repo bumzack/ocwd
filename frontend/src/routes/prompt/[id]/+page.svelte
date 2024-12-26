@@ -12,16 +12,25 @@
     <div class="row">
         <div class="col-12">
             {#if prompt !== undefined}
-                <p>{prompt.prompt}</p>
-                <p>id: {prompt.id} / {prompt.created}</p>
+                <div class="card">
+                    <div class="card-header">
+                        Prompt
+                    </div>
+                    <div class="card-body">
+                        <p>{prompt.prompt}</p>
+                    </div>
+                    <div class="card-footer text-body-secondary">
+                        id: {prompt.id} / {prompt.created}
+                    </div>
+                </div>
             {:else}
                 <p>no prompt found</p>
             {/if}
         </div>
     </div>
-
+    <br/>
     <div class="row">
-        <div class="col-lg-2">
+        <div class="col-lg-3">
             {#if hasData}
                 <ul>
                     {#each chats as chat}
@@ -33,7 +42,7 @@
             {/if}
         </div>
 
-        <div class="col-lg-10">
+        <div class="col-lg-9">
             {#if prompt !== undefined}
                 {#if hasData}
                     <div class="container-fluid">
@@ -42,7 +51,11 @@
                                 <div class="col-12">
                                     <div class="card">
                                         <div class="card-header">
-                                            {chat.modelName} / {chat.modelSize}
+                                            <h4>{chat.modelName} / {chat.modelSize}</h4>
+                                                <br/>
+                                            <p>
+                                                duration: {chat.durationMs}ms, numCtx: {chat.numCtx}, seed: {chat.seed}, temperature: {chat.temperature}, topK: {chat.topK}, topP: {chat.topP}, created: {chat.created}
+                                            </p>
                                         </div>
                                         <div class="card-body">
                                             <p class="card-text">{@html marked(chat.response, {
@@ -52,9 +65,7 @@
                                             }) }
                                         </div>
                                         <div class="card-footer text-body-secondary">
-                                            duration: {chat.durationMs}ms, numCtx: {chat.numCtx}, seed: {chat.seed},
-                                            temperature: {chat.temperature}
-                                            , topK: {chat.topK}, topP: {chat.topP}, created: {chat.created}
+
                                         </div>
                                     </div>
                                     <hr/>

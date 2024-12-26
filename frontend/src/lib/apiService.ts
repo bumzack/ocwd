@@ -34,7 +34,7 @@ export const load_models = async (): Promise<FeOllamaModel[]> => {
 
 export const load_running_models = async (): Promise<FeOllamaRunningModel[]> => {
 	try {
-		const response = await fetch(server + '/api/model/running', {
+		const response = await fetch(server + '/api/model/loaded', {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json, text/plain, */*'
@@ -44,7 +44,7 @@ export const load_running_models = async (): Promise<FeOllamaRunningModel[]> => 
 		if (response.ok) {
 			return await response.json();
 		} else {
-			const error = new Error('error loading running models');
+			const error = new Error('error loading loaded models');
 			return Promise.reject(error);
 		}
 	} catch (e) {

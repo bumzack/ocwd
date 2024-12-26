@@ -63,9 +63,6 @@
                             detail_quantization_level
                         </th>
                         <th>
-                            detail_quantization_level
-                        </th>
-                        <th>
                             created
                         </th>
                     </tr>
@@ -83,7 +80,7 @@
                                 {model.model}
                             </td>
                             <td>
-                                {model.size}
+                                {model.size.toLocaleString('de-DE', {minimumFractionDigits: 0})}
                             </td>
                             <td>
                                 {model.detailFormat}

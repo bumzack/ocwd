@@ -1,5 +1,5 @@
 use crate::common::db_chat::ollama_chat_insert;
-use crate::common::db_model::{ollama_model_load_by_id, ollama_models_load};
+use crate::common::db_model::ollama_model_load_by_id;
 use crate::common::db_prompt::ollama_prompt_load_by_id;
 use crate::common::db_queue::{ollama_queue_next, ollama_queue_update_state};
 use crate::ollama::ollama_rest_api::{
@@ -178,7 +178,7 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
                 }
                 None => {
                     info!("no 'next' element, waiting ... ");
-                    let sleep_duration = Duration::from_secs(60);
+                    let sleep_duration = Duration::from_secs(5);
                     sleep(sleep_duration).await;
                 }
             }
