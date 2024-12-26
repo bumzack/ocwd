@@ -16,7 +16,6 @@
 
         <div class="col-lg-12">
             <h1>Ollama Chats</h1>
-
             {#if hasData}
                 <div class="container-fluid">
                     {#each chats as chat}

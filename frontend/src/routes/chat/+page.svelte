@@ -8,7 +8,6 @@
     let {data}: { data: PageData } = $props();
     let models: OllamaModel[] = $state(data.models);
 
-    console.log(`all models ${JSON.stringify(models, null, 4)}`)
     let hasData: boolean = $derived(models != undefined && models != null);
     let prompt: string = $state('');
 
@@ -33,7 +32,6 @@
     const start_magic = async (): Promise<void> => {
         responses = [];
         const selected_models = models.filter(m => m.checked);
-        console.log(`selected_models  ${JSON.stringify(selected_models, null, 4)}`)
         const modelReq = selected_models.map(model => {
             return {
                 modelId: model.id,
@@ -53,7 +51,6 @@
         running = true;
         const res = await enqueue_models(req);
         responses = res;
-        console.log(`res  ` + JSON.stringify(res, null, 4));
 
         running = false;
     };

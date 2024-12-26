@@ -73,6 +73,16 @@ export interface FeOllamaChat {
 	durationMs: number;
 }
 
+export interface FeOllamaRunningModel {
+	name: String;
+	model: string;
+	size: number;
+	format: string;
+	family: string;
+	parameter_size: string;
+	quantization_level: string;
+}
+
 export type PropsChatPrompt = {
 	chats: FeOllamaChat[];
 	prompt: FeOllamaPrompt;
@@ -92,4 +102,8 @@ export type PropsAllModels = {
 
 export type PropsAllChats = {
 	chats: FeOllamaChat[];
+};
+
+export type PropsFeAllRunningModels = {
+	models: FeOllamaRunningModel[];
 };

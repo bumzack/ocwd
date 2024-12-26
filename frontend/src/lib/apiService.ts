@@ -3,13 +3,13 @@ import type {
 	FeOllamaChatQueueResponse,
 	FeOllamaModel,
 	FeOllamaPrompt,
+	FeOllamaRunningModel,
 	FeRunModelRequest,
 	InsertModelsResponse
-} from './models';
+} from './models'; // const server = 'http://10.0.0.48:3023';
 
 // const server = 'http://10.0.0.48:3023';
 const server = 'http://127.0.0.1:3023';
-
 
 export const load_models = async (): Promise<FeOllamaModel[]> => {
 	try {
@@ -21,45 +21,41 @@ export const load_models = async (): Promise<FeOllamaModel[]> => {
 		});
 
 		if (response.ok) {
-			console.log(`response from Backend is ok!`);
-		} else {
-			console.log(`error: response from Backend is not ok!`);
-		}
-
-		const j: FeOllamaModel[] = await response.json();
-
-		if (response.ok) {
-			const models = j.map(m => {
-				const model: FeOllamaModel = {
-					created: m.created,
-					detailFormat: m.detailFamily,
-					detailFamily: m.detailFormat,
-					detailParameterSize: m.detailParameterSize,
-					detailQuantizationLevel: m.detailQuantizationLevel,
-					id: m.id,
-					model: m.model,
-					name: m.name,
-					size: m.size
-				};
-				return model;
-			});
-			if (models) {
-				return models as FeOllamaModel[];
-			} else {
-				return Promise.reject(new Error(`No companies found "`));
-			}
+			return await response.json();
 		} else {
 			const error = new Error('error loading models');
 			return Promise.reject(error);
 		}
 	} catch (e) {
-		console.info(`error getting the company data ${e}`);
+		console.info(`error getting model data ${e}`);
 	}
 	return [];
 };
 
+export const load_running_models = async (): Promise<FeOllamaRunningModel[]> => {
+	try {
+		const response = await fetch(server + '/api/model/running', {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json, text/plain, */*'
+			}
+		});
 
-export const enqueue_models = async (request: FeRunModelRequest): Promise<FeOllamaChatQueueResponse[]> => {
+		if (response.ok) {
+			return await response.json();
+		} else {
+			const error = new Error('error loading running models');
+			return Promise.reject(error);
+		}
+	} catch (e) {
+		console.info(`error getting running model data ${e}`);
+	}
+	return [];
+};
+
+export const enqueue_models = async (
+	request: FeRunModelRequest
+): Promise<FeOllamaChatQueueResponse[]> => {
 	try {
 		const response = await fetch(server + '/api/model/enqueue', {
 			headers: {
@@ -71,31 +67,16 @@ export const enqueue_models = async (request: FeRunModelRequest): Promise<FeOlla
 		});
 
 		if (response.ok) {
-			console.log(`response from Backend is ok!`);
-		} else {
-			console.log(`error: response from Backend is not ok!`);
-		}
-
-		const j: FeOllamaChatQueueResponse[] = await response.json();
-
-		if (response.ok) {
-			if (response) {
-				// add fetchedAt helper (used in the UI to help differentiate requests)
-				// 	return Object.assign(companies, { fetchedAt: formatDate(new Date()) });
-				return j as FeOllamaChatQueueResponse[];
-			} else {
-				return Promise.reject(new Error(`No response found "`));
-			}
+			return await response.json();
 		} else {
 			const error = new Error('error loading models');
 			return Promise.reject(error);
 		}
 	} catch (e) {
-		console.info(`error getting the company data ${e}`);
+		console.info(`error getting enqueing the new prompts ${e}`);
 	}
 	return Promise.reject(new Error(`No model response received."`));
 };
-
 
 export const models_import = async (): Promise<InsertModelsResponse[]> => {
 	try {
@@ -108,24 +89,7 @@ export const models_import = async (): Promise<InsertModelsResponse[]> => {
 		});
 
 		if (response.ok) {
-			console.log(`response from Backend is ok!`);
-		} else {
-			console.log(`error: response from Backend is not ok!`);
-		}
-
-		if (response.ok) {
-			const j: InsertModelsResponse[] = await response.json();
-
-			if (response) {
-				console.log(`response from Backend is ok! response ${JSON.stringify(response, null, 4)}`);
-
-				// add fetchedAt helper (used in the UI to help differentiate requests)
-				// 	return Object.assign(companies, { fetchedAt: formatDate(new Date()) });
-				return j as InsertModelsResponse[];
-
-			} else {
-				return Promise.reject(new Error(`No response found "`));
-			}
+			return await response.json();
 		} else {
 			const error = new Error('error loading models');
 			return Promise.reject(error);
@@ -135,7 +99,6 @@ export const models_import = async (): Promise<InsertModelsResponse[]> => {
 	}
 	return Promise.reject(new Error(`No model response received."`));
 };
-
 
 export const prompts_load = async (): Promise<FeOllamaPrompt[]> => {
 	try {
@@ -148,24 +111,7 @@ export const prompts_load = async (): Promise<FeOllamaPrompt[]> => {
 		});
 
 		if (response.ok) {
-			console.log(`response from Backend is ok!`);
-		} else {
-			console.log(`error: response from Backend is not ok!`);
-		}
-
-		if (response.ok) {
-			const j: FeOllamaPrompt[] = await response.json();
-
-			if (response) {
-				console.log(`response from Backend is ok! response ${JSON.stringify(response, null, 4)}`);
-
-				// add fetchedAt helper (used in the UI to help differentiate requests)
-				// 	return Object.assign(companies, { fetchedAt: formatDate(new Date()) });
-				return j as FeOllamaPrompt[];
-
-			} else {
-				return Promise.reject(new Error(`No response found "`));
-			}
+			return await response.json();
 		} else {
 			const error = new Error('error loading models');
 			return Promise.reject(error);
@@ -189,24 +135,7 @@ export const chats_load_by_prompt_id = async (promptId: number): Promise<FeOllam
 		});
 
 		if (response.ok) {
-			console.log(`response from Backend is ok!`);
-		} else {
-			console.log(`error: response from Backend is not ok!`);
-		}
-
-		if (response.ok) {
-			const j: FeOllamaChat[] = await response.json();
-
-			if (response) {
-				console.log(`response from Backend is ok! response ${JSON.stringify(response, null, 4)}`);
-
-				// add fetchedAt helper (used in the UI to help differentiate requests)
-				// 	return Object.assign(companies, { fetchedAt: formatDate(new Date()) });
-				return j as FeOllamaChat[];
-
-			} else {
-				return Promise.reject(new Error(`No response found "`));
-			}
+			return await response.json();
 		} else {
 			const error = new Error('error loading models');
 			return Promise.reject(error);
@@ -230,24 +159,7 @@ export const prompt_by_id = async (promptId: number): Promise<FeOllamaPrompt> =>
 		});
 
 		if (response.ok) {
-			console.log(`response from Backend is ok!`);
-		} else {
-			console.log(`error: response from Backend is not ok!`);
-		}
-
-		if (response.ok) {
-			const j: FeOllamaPrompt = await response.json();
-
-			if (response) {
-				console.log(`response from Backend is ok! response ${JSON.stringify(response, null, 4)}`);
-
-				// add fetchedAt helper (used in the UI to help differentiate requests)
-				// 	return Object.assign(companies, { fetchedAt: formatDate(new Date()) });
-				return j as FeOllamaPrompt;
-
-			} else {
-				return Promise.reject(new Error(`No response found "`));
-			}
+			return await response.json();
 		} else {
 			const error = new Error('error loading models');
 			return Promise.reject(error);
@@ -257,7 +169,6 @@ export const prompt_by_id = async (promptId: number): Promise<FeOllamaPrompt> =>
 	}
 	return Promise.reject(new Error(`No model response received."`));
 };
-
 
 export const chats_load_all = async (): Promise<FeOllamaChat[]> => {
 	try {
@@ -272,24 +183,7 @@ export const chats_load_all = async (): Promise<FeOllamaChat[]> => {
 		});
 
 		if (response.ok) {
-			console.log(`response from Backend is ok!`);
-		} else {
-			console.log(`error: response from Backend is not ok!`);
-		}
-
-		if (response.ok) {
-			const j: FeOllamaChat[] = await response.json();
-
-			if (response) {
-				console.log(`response from Backend is ok! response ${JSON.stringify(response, null, 4)}`);
-
-				// add fetchedAt helper (used in the UI to help differentiate requests)
-				// 	return Object.assign(companies, { fetchedAt: formatDate(new Date()) });
-				return j as FeOllamaChat[];
-
-			} else {
-				return Promise.reject(new Error(`No response found "`));
-			}
+			return await response.json();
 		} else {
 			const error = new Error('error loading models');
 			return Promise.reject(error);
@@ -299,4 +193,3 @@ export const chats_load_all = async (): Promise<FeOllamaChat[]> => {
 	}
 	return Promise.reject(new Error(`No model response received."`));
 };
-

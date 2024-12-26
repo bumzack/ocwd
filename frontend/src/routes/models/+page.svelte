@@ -2,14 +2,11 @@
     import {models_import} from '$lib/apiService.ts';
     import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
     import type {PageData} from './$types';
-    import type {FeOllamaModel, InsertModelsResponse, OllamaModel} from "$lib/models.ts";
+    import type {FeOllamaModel, InsertModelsResponse} from "$lib/models.ts";
 
     let {data}: { data: PageData } = $props();
 
     let models: FeOllamaModel[] = $state(data.models);
-
-    console.log(`models from page.server.ts ${JSON.stringify(models)}`)
-
     let hasData = $derived(models != undefined && models != null);
     let running = $state(false);
 
@@ -56,15 +53,20 @@
                         <th>
                             detail_format
                         </th>
-                        <th> detail_family
+                        <th>
+                            detail_family
                         </th>
-                        <th>detail_parameter_size
+                        <th>
+                            detail_parameter_size
                         </th>
-                        <th>detail_quantization_level
+                        <th>
+                            detail_quantization_level
                         </th>
-                        <th>detail_quantization_level
+                        <th>
+                            detail_quantization_level
                         </th>
-                        <th>created
+                        <th>
+                            created
                         </th>
                     </tr>
                     </thead>
