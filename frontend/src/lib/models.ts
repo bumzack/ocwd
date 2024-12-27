@@ -75,7 +75,7 @@ export interface FeOllamaChat {
 }
 
 export interface FeOllamaRunningModel {
-	name: String;
+	name: string;
 	model: string;
 	size: number;
 	format: string;
@@ -114,7 +114,7 @@ export interface FeOllamaChatQueue {
 	id: number;
 	modelId: number;
 	promptId: number;
-	state: String;
+	state: string;
 	temperature: number;
 	seed: number;
 	numCtx: number;
