@@ -19,12 +19,11 @@
     };
 
     let hasDataImportedModels = $derived(importedModels !== undefined && importedModels.length > 0);
-
 </script>
 
 <LoadingSpinner show={running}/>
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-lg-12">
             <h1>Import models</h1>
@@ -34,6 +33,8 @@
     <div class="row">
         <div class="col-lg-12">
             <h1>Ollama models local</h1>
+            <p>{models.length} models</p>
+
             {#if hasData}
                 <table class="table table-striped">
                     <thead>
@@ -51,16 +52,16 @@
                             size
                         </th>
                         <th>
-                            detail_format
+                            format
                         </th>
                         <th>
-                            detail_family
+                            family
                         </th>
                         <th>
-                            detail_parameter_size
+                            parameter size
                         </th>
                         <th>
-                            detail_quantization_level
+                            quantization level
                         </th>
                         <th>
                             created
@@ -111,6 +112,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <h1>imported Ollama models local</h1>
+                <p>{importedModels.length} models imported</p>
 
                 <table class="table table-striped">
                     <thead>
@@ -152,4 +154,3 @@
         </div>
     {/if}
 </div>
-

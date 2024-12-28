@@ -8,11 +8,12 @@
 </script>
 
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-lg-12">
             <h1>Ollama chat queue</h1>
             {#if hasData}
+                <p>{queues.length} entries in queue</p>
                 <table class="table table-striped">
                     <thead>
                     <tr>

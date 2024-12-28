@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 import { chats_load_by_prompt_id, prompt_by_id } from '$lib/apiService.ts';
 import { type PropsChatPrompt } from '$lib/models.ts';
-import type {PageServerLoad} from "./$types";
+import type { PageServerLoad } from './$types';
 
 export const ssr = true;
 

@@ -7,11 +7,12 @@
     let hasData = $derived(models != undefined && models != null);
 </script>
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-lg-12">
             <h1>Running Ollama models</h1>
             {#if hasData}
+                <p>{models.length} models</p>
                 <table class="table table-striped">
                     <thead>
                     <tr>
@@ -25,10 +26,11 @@
                             size
                         </th>
                         <th>
-                            detail_parameter_size
+                            parameter size
                         </th>
                         <th>
-                            quantizationLevel
+                            quantization level
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
@@ -49,7 +51,6 @@
                             <td>
                                 {model.detailQuantizationLevel}
                             </td>
-
                         </tr>
                     {/each}
                     </tbody>

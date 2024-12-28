@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 
-	export let show = false;
+	let show: boolean = $state(false);
 
 	// Optional: Add event listener to prevent clicks
 	let overlayEl;
@@ -26,11 +26,13 @@
 	}
 
 	// Add event listener when show is true
-	$: if (show) {
-		addEventListener();
-	} else {
-		removeEventListener();
-	}
+	$effect(() => {
+		if (show) {
+			addEventListener();
+		} else {
+			removeEventListener();
+		}
+	});
 
 	// Remove event listener on component destroy
 	onDestroy(removeEventListener);

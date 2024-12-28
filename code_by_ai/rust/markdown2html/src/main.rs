@@ -1,10 +1,12 @@
 use crate::aya_expanse::markdown_to_html;
 use crate::aya_expanse2::aya_expanse_test;
+use crate::mistral_largest2::mistral_largest2;
 
 mod aya_expanse;
 mod aya_expanse2;
 mod deepseekcoder;
 mod mistral_largest;
+mod mistral_largest2;
 
 fn main() {
     let markdown = r#"
@@ -31,4 +33,7 @@ This is a **bold** and *italic* paragraph with [a link](https://example.com).
     // tbe .lines() break the regex which is looking for the closing ```
     println!("aya_expanse2 ");
     aya_expanse_test();
+
+    println!("mistral_largest2 ");
+    mistral_largest2();
 }

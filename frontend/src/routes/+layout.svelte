@@ -8,7 +8,7 @@
 </script>
 
 <Header/>
-<main class="container mt-5">
+<main class="container-fluid mt-5">
     {@render children()}
 </main>
 <Footer/>

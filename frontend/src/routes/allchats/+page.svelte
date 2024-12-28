@@ -11,19 +11,25 @@
 
 <LoadingSpinner show={!hasData }/>
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
-
         <div class="col-lg-12">
             <h1>Ollama Chats</h1>
             {#if hasData}
                 <div class="container-fluid">
+                    <p>{chats.length} chats</p>
                     {#each chats as chat}
                         <div class="row">
                             <div class="col-12">
                                 <div class="card">
                                     <div class="card-header">
                                         {chat.prompt}
+
+                                        <p> duration: {chat.durationMs}ms, numCtx: {chat.numCtx},
+                                            seed: {chat.seed},
+                                            temperature: {chat.temperature}
+                                            , topK: {chat.topK}, topP: {chat.topP}, created: {chat.created}
+                                        </p>
                                     </div>
                                     <div class="card-header">
                                         {chat.modelName} / {chat.modelSize}
@@ -34,12 +40,6 @@
                                             sanitize: true,
                                             smartypants: true,
                                         }) }
-                                    </div>
-                                    <div class="card-footer text-body-secondary">
-                                        duration: {chat.durationMs}ms, numCtx: {chat.numCtx},
-                                        seed: {chat.seed},
-                                        temperature: {chat.temperature}
-                                        , topK: {chat.topK}, topP: {chat.topP}, created: {chat.created}
                                     </div>
                                 </div>
                                 <hr/>

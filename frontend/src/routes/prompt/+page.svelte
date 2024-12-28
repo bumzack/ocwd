@@ -8,12 +8,14 @@
 
 <!--<LoadingSpinner show={!hasData}/>-->
 
-<div class="container">
+<div class="container-fluid">
 
     <div class="row">
         <div class="col-lg-12">
             <h1>Prompts</h1>
             {#if hasData}
+                <p>{prompts.length} prompts</p>
+
                 <table class="table table-striped">
                     <thead>
                     <tr>
@@ -32,7 +34,7 @@
                     {#each prompts as prompt}
                         <tr>
                             <td>
-                                {prompt.id} /<a href="/prompt/{prompt.id}">Chat Results</a>
+                                <a href="/prompt/{prompt.id}">{prompt.id} / results</a>
                             </td>
                             <td>
                                 {prompt.prompt}

@@ -79,7 +79,7 @@
 
 <LoadingSpinner show={!hasData || running}/>
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-lg-6">
             <h1>Ollama Chat</h1>
@@ -114,6 +114,7 @@
                 <form>
                     <button onclick={select_all_models} class="btn btn-primary">{btnText}</button>
                 </form>
+                <p>{models.length} models</p>
 
                 {#each models as model}
                     <div class="card">
@@ -122,8 +123,7 @@
                                 <input class="form-check-input flex-shrink-0" type="checkbox"
                                        bind:checked={model.checked}>
                                 <span>
-								<small class="d-block text-body-secondary">{model.name}
-                                    / {model.size}</small>
+								<small class="d-block text-body-secondary">{model.name} / {model.size}</small>
 							</span>
                             </label>
                         </div>
