@@ -7,11 +7,11 @@ use crate::server::ollamachat_error::OllamaChatError;
 use crate::{CONFIG, QUEUE_RUNNING};
 use chrono::Utc;
 use deadpool_diesel::postgres::Pool;
+use ollama::api::OllamaImpl;
 use ollama::models::{ChatRequest, ChatRequestOptions, Ollama};
 use std::time::{Duration, Instant};
 use tokio::time::sleep;
 use tracing::{error, info};
-use ollama::api::OllamaImpl;
 
 pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
     tokio::spawn(async move {
@@ -63,12 +63,14 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
                         .expect("queue element not found")
                         .expect("queue element not found");
 
-                    let mut opt =   ChatRequestOptions::default();
-                    opt.temperature =  Some(db_queue.temperature as f32);
-                    opt.num_ctx =  Some(db_queue.num_ctx as u32);
-                    opt.seed =  Some(db_queue.seed as u32);
-                    opt.top_k =  Some(db_queue.top_k as f32);
-                    opt.top_p =  Some(db_queue.top_p as f32);
+                    let  opt = ChatRequestOptions {
+                        temperature: Some(db_queue.temperature as f32),
+                        num_ctx: Some(db_queue.num_ctx as u32),
+                        seed: Some(db_queue.seed as u32),
+                        top_k: Some(db_queue.top_k as f32),
+                        top_p: Some(db_queue.top_p as f32),
+                        ..Default::default()
+                    };
 
                     let request = ChatRequest {
                         model: db_model.model,
@@ -91,18 +93,18 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
                             info!("successfully updated ollamaold queue status. id {}", res.id);
                         }
                         Err(e) => {
-                            error ! ("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
+                            error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
                             error!(
                                 "error updating queue in DB, queue.id {} {:?}",
                                 db_queue.id, e
                             );
-                            error !("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
+                            error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
                         }
                     }
 
                     info!("------------------------------------------------------------------------------------------");
                     info!("starting request to Ollama.");
-                    let ollama_response =o.chat(&request).await;
+                    let ollama_response = o.chat(&request).await;
                     let duration = start.elapsed().as_millis();
                     info!("finished request to Ollama.");
                     info!("------------------------------------------------------------------------------------------");
@@ -121,12 +123,12 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
                                     );
                                 }
                                 Err(e) => {
-                                    error ! ("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
+                                    error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
                                     error!(
                                         "error updating queue in DB, queue.id {} {:?}",
                                         db_queue.id, e
                                     );
-                                    error !("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
+                                    error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
                                 }
                             }
 
@@ -150,16 +152,16 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
                                     );
                                 }
                                 Err(e) => {
-                                    error ! ("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
+                                    error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
                                     error!("error inserting into DB {:?}", e);
-                                    error ! ("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
+                                    error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
                                 }
                             }
                         }
                         Err(e) => {
-                            error ! ("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
+                            error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
                             error!("error executing request by ollamaold server {:?}", e);
-                            error ! ("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
+                            error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
                             let db_ollama_queue_update =
                                 ollama_queue_update_state(&pool, db_queue.id, QueueState::Error)
                                     .await;
@@ -169,12 +171,12 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
                                     info!("successfully updated queue status. id {}", res.id);
                                 }
                                 Err(e) => {
-                                    error ! ("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
-                                    error ! (
+                                    error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
+                                    error!(
                     "error updating queue status in DB. queue.id {}, error: {:?}",
                     db_queue.id, e
                     );
-                                    error !("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
+                                    error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
                                 }
                             }
                         }

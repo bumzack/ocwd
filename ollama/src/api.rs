@@ -7,13 +7,13 @@ use reqwest::{Client, Response};
 use serde_json::json;
 use std::time::Instant;
 
+//  using async fn in a trait, which could be a problem for multithreaded use cases
+// if problems arise, read again here: https://blog.rust-lang.org/2023/12/21/async-fn-rpit-in-traits.html
 pub trait OllamaImpl {
     async fn local_models(&self) -> Result<Vec<ListModel>, OllamaError>;
     async fn loaded_models(&self) -> Result<Vec<RunningModel>, OllamaError>;
     async fn chat(&self, request: &ChatRequest) -> Result<ChatResponse, OllamaError>;
-
     async fn chat_streaming(&self, request: &ChatRequest) -> Result<Response, OllamaError>;
-
     async fn unload(&self, model: &str) -> Result<(), OllamaError>;
 }
 

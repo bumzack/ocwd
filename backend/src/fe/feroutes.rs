@@ -360,7 +360,7 @@ pub async fn list_db_models(
             id: x.id,
             name: x.name.clone(),
             model: x.model.clone(),
-            size: x.size as i64,
+            size: x.size,
             detail_format: x.detail_format.clone(),
             detail_family: x.detail_family.clone(),
             detail_parameter_size: x.detail_parameter_size.clone(),
