@@ -1,12 +1,12 @@
 mod common;
 mod fe;
-mod ollama;
 mod schema;
 mod server;
 
+use crate::fe::feroutes::list_db_models;
 use crate::fe::feroutes::{
     chat_load_all, chat_load_by_prompt_id, chat_update_result, models_loaded, prompts_load,
-    prompts_load_by_id, queue_load,
+    prompts_load_by_id, queue_load, streaming_response,
 };
 use crate::server::models::Config;
 use crate::server::queue::{run_queue, start_queue, stop_queue};
@@ -74,6 +74,7 @@ async fn main() -> Result<(), ()> {
         .route("/api/model", get(list_local_models))
         .route("/api/model/enqueue", post(add_to_queue))
         .route("/api/model/loaded", get(models_loaded))
+        .route("/api/dbmodel", get(list_db_models))
         .route("/api/prompt", get(prompts_load))
         .route("/api/prompt/{pprompt_id}", get(prompts_load_by_id))
         .route("/api/chat/{pprompt_id}", get(chat_load_by_prompt_id))
@@ -82,6 +83,7 @@ async fn main() -> Result<(), ()> {
         .route("/api/queue/stop", post(stop_queue))
         .route("/api/queue/start", post(start_queue))
         .route("/api/queue", get(queue_load))
+        .route("/ollama/api/stream", get(streaming_response))
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(|request: &Request<_>| {

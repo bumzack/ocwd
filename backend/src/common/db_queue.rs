@@ -81,7 +81,7 @@ pub async fn ollama_queue_next(
     conn.interact(move |conn| {
         ollama_chat_queue::table
             .order(ollama_chat_queue::created.asc())
-            // sort by model_id to avoid too many model unload/load ops on the "ollama server"
+            // sort by model_id to avoid too many model unload/load ops on the "ollamaold server"
             .order(ollama_chat_queue::model_id.asc())
             .filter(ollama_chat_queue::state.eq(QueueState::Enqueued.to_string()))
             .select(DbOllamaChatQueue::as_select())
@@ -122,7 +122,7 @@ pub async fn ollama_queue_all(
 
     conn.interact(move |conn| {
         ollama_chat_queue::table
-            // sort by model_id to avoid too many model unload/load ops on the "ollama server"
+            // sort by model_id to avoid too many model unload/load ops on the "ollamaold server"
             .order((
                 ollama_chat_queue::updated.desc(),
                 ollama_chat_queue::model_id.asc(),

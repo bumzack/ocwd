@@ -28,6 +28,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/queue">Queue</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/streaming">Streaming Response</a>
+                </li>
             </ul>
         </div>
     </div>

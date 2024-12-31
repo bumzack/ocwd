@@ -1,12 +1,12 @@
 import { error } from '@sveltejs/kit';
-import { load_models } from '$lib/apiService.ts';
+import { load_db_models, load_local_models } from '$lib/apiService.ts';
 import { type OllamaModel, type PropsAllModels } from '$lib/models.ts';
 import type { PageServerLoad } from './$types';
 
 export const ssr = true;
 
 export const load: PageServerLoad = async () => {
-	const models = await load_models();
+	const models = await load_db_models();
 	if (models) {
 		let mms = models.map((mod) => {
 			const om: OllamaModel = {

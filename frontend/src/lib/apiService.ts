@@ -1,4 +1,5 @@
 import type {
+	FeDbOllamaModel,
 	FeOllamaChat,
 	FeOllamaChatQueue,
 	FeOllamaChatQueueResponse,
@@ -8,14 +9,36 @@ import type {
 	FeRunModelRequest,
 	FeUpdateOllamaChatResult,
 	InsertModelsResponse
-} from './models'; // const server = 'http://10.0.0.48:3023';
+} from './models';
 
-// const server = 'http://10.0.0.48:3023';
+//const server = 'http://10.0.0.48:3023';
 const server = 'http://127.0.0.1:3023';
 
-export const load_models = async (): Promise<FeOllamaModel[]> => {
+export const load_local_models = async (): Promise<FeOllamaModel[]> => {
 	try {
 		const response = await fetch(server + '/api/model', {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json, text/plain, */*'
+			}
+		});
+
+		if (response.ok) {
+			return await response.json();
+		} else {
+			const error = new Error('error loading models');
+			return Promise.reject(error);
+		}
+	} catch (e) {
+		console.info(`error getting model data ${e}`);
+	}
+	return [];
+};
+
+
+export const load_db_models = async (): Promise<FeDbOllamaModel[]> => {
+	try {
+		const response = await fetch(server + '/api/dbmodel', {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json, text/plain, */*'
@@ -243,4 +266,17 @@ export const ollama_chat_update_result = async (
 		console.info(`error getting the company data ${e}`);
 	}
 	return Promise.reject(new Error(`No model response received."`));
+};
+
+// https://stackoverflow.com/questions/74330190/how-to-respond-with-a-stream-in-a-sveltekit-server-load-function
+// this is probably not the way
+export const streaming_response = async (): Promise<Response> => {
+	try {
+		const url = `${server}/api/chat/result`;
+		return await fetch(url);
+	} catch (e) {
+		console.info(`error getting the streaming chat data. err: ${e}`);
+	}
+
+	return Promise.reject(new Error(`No chat response received."`));
 };

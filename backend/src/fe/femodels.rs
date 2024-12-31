@@ -4,6 +4,18 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct FeOllamaModel {
+    pub name: String,
+    pub model: String,
+    pub size: i64,
+    pub detail_format: String,
+    pub detail_family: String,
+    pub detail_parameter_size: String,
+    pub detail_quantization_level: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct FeDbOllamaModel {
     pub id: i32,
     pub name: String,
     pub model: String,
@@ -115,3 +127,12 @@ pub struct FeUpdateOllamaChatResult {
     pub chat_id: i32,
     pub result: String,
 }
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct InsertModelsResponse {
+    pub model: String,
+    pub name: String,
+    pub model_id: Option<i32>,
+    pub result: String,
+}
+

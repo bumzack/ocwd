@@ -1,13 +1,13 @@
 [package]
-name = "ollama"
+name = "ocwd"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 reqwest = "0.12.9"
-tokio = {version = "1.42.0", features = [ "macros", "rt-multi-thread"] }
+tokio = { version = "1.42.0", features = ["macros", "rt-multi-thread"] }
 serde_json = "1.0.134"
-serde = { version = "1.0.216", features = ["derive"]}
+serde = { version = "1.0.216", features = ["derive"] }
 diesel = { version = "2.2.6", features = [
     "postgres",
     "chrono",
@@ -29,6 +29,10 @@ tracing-subscriber = { version = "0.3.19", features = [
 tower-http = { version = "0.6.2", features = ["cors", "trace"] }
 lazy_static = "1.5.0"
 tracing-appender = "0.2.3"
+ollama = { path = "../ollama" }
+axum-streams = { version = "0.19.0", features = ["json"]}
+futures = "0.3.31"
+reqwest-streams="0.8.2"
 
 [dependencies.uuid]
 version = "1.11.0"

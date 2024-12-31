@@ -1,4 +1,15 @@
 export interface FeOllamaModel {
+
+	name: string;
+	model: string;
+	size: number;
+	detailFormat: string;
+	detailFamily: string;
+	detailParameterSize: string;
+	detailQuantizationLevel: string;
+}
+
+export interface FeDbOllamaModel {
 	id: number;
 	name: string;
 	model: string;
@@ -9,6 +20,7 @@ export interface FeOllamaModel {
 	detailQuantizationLevel: string;
 	created: Date;
 }
+
 
 export interface OllamaModel {
 	id: number;
@@ -95,7 +107,7 @@ export type PropsAllPrompts = {
 };
 
 export type PropsFeAllModels = {
-	models: FeOllamaModel[];
+	models: FeDbOllamaModel[];
 };
 
 export type PropsAllModels = {
@@ -131,4 +143,28 @@ export type PropsFeAllQueue = {
 export interface FeUpdateOllamaChatResult {
 	chatId: number;
 	result: string;
+}
+
+// TODO any
+export interface Message {
+	role: String;
+	content: String;
+	images: Array<string> | undefined;
+	tool_calls: any | undefined;
+}
+
+export interface ChatResponse {
+	model: string;
+	created_at: string;
+	response: string;
+	done: boolean;
+	context: Array<number> | undefined;
+	total_duration: number | undefined;
+	load_duration: number | undefined;
+	prompt_eval_count: number | undefined;
+	prompt_eval_duration: number | undefined;
+	eval_count: number | undefined;
+	eval_duration: number | undefined;
+	done_reason: string | undefined;
+	message: Message | undefined;
 }

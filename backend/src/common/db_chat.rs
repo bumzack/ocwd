@@ -1,9 +1,9 @@
-use crate::ollama::ollama_rest_api_models::{OllamaRequest, OllamaResponse};
 use crate::schema::ollama_chat;
 use crate::server::ollamachat_error::OllamaChatError;
 use chrono::{NaiveDateTime, Utc};
 use diesel::prelude::*;
 use diesel::{Insertable, Queryable, RunQueryDsl, Selectable};
+use ollama::models::{ChatRequest, ChatResponse};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -55,11 +55,22 @@ pub async fn ollama_chat_insert(
     pool: &deadpool_diesel::postgres::Pool,
     mmodel_id: i32,
     pprompt_id: i32,
-    ollama_response: OllamaResponse,
-    ollama_request: OllamaRequest,
+    ollama_response: ChatResponse,
+    ollama_request: ChatRequest,
     duration_ms: i64,
 ) -> Result<DbOllamaChat, OllamaChatError> {
     let conn = pool.get().await?;
+
+    let (temperature, seed, num_ctx, top_k, top_p) = match ollama_request.options {
+        Some(ref options) => (
+            options.temperature.unwrap_or(-1.0),
+            options.seed.unwrap_or(0),
+            options.num_ctx.unwrap_or(0),
+            options.top_k.unwrap_or(-1.0),
+            options.top_p.unwrap_or(-1.0),
+        ),
+        None => (-1.0, 0, 0, -1.0, -1.0),
+    };
 
     let new_chat = DbNewOllamaChat {
         model_id: mmodel_id,
@@ -68,11 +79,11 @@ pub async fn ollama_chat_insert(
         response: ollama_response.response.clone(),
         ollama_response_json: json!(ollama_response),
         ollama_request_json: json!(ollama_request),
-        temperature: ollama_request.options.temperature.unwrap_or(-1.0),
-        seed: ollama_request.options.seed.unwrap_or(-1),
-        num_ctx: ollama_request.options.num_ctx.unwrap_or(-1),
-        top_k: ollama_request.options.top_k.unwrap_or(-1.0),
-        top_p: ollama_request.options.top_p.unwrap_or(-1.0),
+        temperature: temperature as f64,
+        seed: seed as i64,
+        num_ctx: num_ctx as i64,
+        top_k: top_k as f64,
+        top_p: top_p as f64,
         duration_ms,
     };
 

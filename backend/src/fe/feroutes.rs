@@ -7,42 +7,44 @@ use crate::common::db_prompt::{
 };
 use crate::common::db_queue::{ollama_queue_all, ollama_queue_insert};
 use crate::fe::femodels::{
-    FeOllamaChat, FeOllamaChatQueue, FeOllamaChatQueueResponse, FeOllamaModel, FeOllamaPrompt,
-    FeRunModelRequest, FeUpdateOllamaChatResult,
+    FeDbOllamaModel, FeOllamaChat, FeOllamaChatQueue, FeOllamaChatQueueResponse, FeOllamaModel,
+    FeOllamaPrompt, FeRunModelRequest, FeUpdateOllamaChatResult, InsertModelsResponse,
 };
-use crate::ollama::ollama_rest_api::{get_all_local_models, get_loaded_models};
-use crate::ollama::ollama_rest_api_models::InsertModelsResponse;
 use crate::server::ollamachat_error::OllamaChatError;
+use crate::CONFIG;
+use axum::body::Body;
 use axum::extract::{Path, State};
+use axum::http::Response;
+use axum::response::IntoResponse;
 use axum::Json;
-use chrono::Utc;
+use ollama::api::OllamaImpl;
+use ollama::models::{ChatRequest, Function, Ollama, Parameter, Property, Tool};
+use std::collections::HashMap;
 use tracing::info;
 
 pub async fn import_local_models(
     State(pool): State<deadpool_diesel::postgres::Pool>,
 ) -> Result<Json<Vec<InsertModelsResponse>>, OllamaChatError> {
-    let models = get_all_local_models().await?;
+    let o = Ollama::new(CONFIG.ollama_url.clone())?;
+    let models = o.local_models().await?;
     let res = ollama_model_insert(&pool, &models).await?;
     Ok(Json(res))
 }
 
-pub async fn list_local_models(
-    State(pool): State<deadpool_diesel::postgres::Pool>,
-) -> Result<Json<Vec<FeOllamaModel>>, OllamaChatError> {
-    let models = ollama_models_load(&pool).await?;
+pub async fn list_local_models() -> Result<Json<Vec<FeOllamaModel>>, OllamaChatError> {
+    let o = Ollama::new(CONFIG.ollama_url.clone())?;
+    let models = o.local_models().await?;
 
     let models: Vec<FeOllamaModel> = models
         .iter()
         .map(|x| FeOllamaModel {
-            id: x.id,
             name: x.name.clone(),
             model: x.model.clone(),
-            size: x.size,
-            detail_format: x.detail_format.clone(),
-            detail_family: x.detail_family.clone(),
-            detail_parameter_size: x.detail_parameter_size.clone(),
-            detail_quantization_level: x.detail_quantization_level.clone(),
-            created: x.created.and_utc(),
+            size: x.size as i64,
+            detail_format: x.details.format.clone(),
+            detail_family: x.details.family.clone(),
+            detail_parameter_size: x.details.parameter_size.clone(),
+            detail_quantization_level: x.details.quantization_level.clone(),
         })
         .collect();
 
@@ -194,20 +196,22 @@ pub async fn chat_load_all(
 }
 
 pub async fn models_loaded() -> Result<Json<Vec<FeOllamaModel>>, OllamaChatError> {
-    let loaded_models = get_loaded_models().await?;
+    let o = Ollama::new(CONFIG.ollama_url.clone())?;
+    println!("o {:?}", o);
 
-    let loaded_models: Vec<FeOllamaModel> = loaded_models
+    let models = o.loaded_models().await?;
+    println!("got some models {:?}", models);
+
+    let loaded_models: Vec<FeOllamaModel> = models
         .iter()
         .map(|x| FeOllamaModel {
-            id: -1,
             name: x.name.clone(),
             model: x.model.clone(),
-            size: x.size,
+            size: x.size as i64,
             detail_format: x.details.format.clone(),
             detail_family: x.details.family.clone(),
             detail_parameter_size: x.details.parameter_size.clone(),
             detail_quantization_level: x.details.quantization_level.clone(),
-            created: Utc::now(),
         })
         .collect();
 
@@ -237,6 +241,78 @@ pub async fn queue_load(
         .collect();
 
     Ok(Json(ollama_queues))
+}
+
+// https://github.com/tokio-rs/axum/blob/main/examples/reqwest-response/src/main.rs
+pub async fn streaming_response() -> impl IntoResponse {
+    println!("got a request");
+    let o = Ollama::new("http://localhost:11434".to_string()).expect("Couldn't open old sdk SDK");
+    let models = o.local_models().await.expect("Couldn't get local models");
+    let model = models.first().expect("expected at least one model");
+
+    let property_location = Property {
+        typ: "string".to_string(),
+        description: "The location to get the weather for, e.g. San Francisco, CA".to_string(),
+        enums: None,
+    };
+
+    let property_format = Property {
+        typ: "string".to_string(),
+        description: "The format to return the weather in, e.g. 'celsius' or 'fahrenheit'"
+            .to_string(),
+        enums: Some(vec!["celsius".to_string(), "fahrenheit".to_string()]),
+    };
+
+    let mut properties = HashMap::new();
+    properties.insert("location".to_string(), property_location);
+    properties.insert("format".to_string(), property_format);
+    let parameters = Parameter {
+        typ: "object".to_string(),
+        properties,
+        required: Some(vec!["location".to_string(), "format".to_string()]),
+    };
+
+    let function = Function {
+        name: "get_current_weather".to_string(),
+        description: "Get the current weather for a location".to_string(),
+        parameters,
+    };
+
+    let tool = Tool {
+        typ: "function".to_string(),
+        function,
+    };
+    // let request = ChatRequest {
+    //     model: model.name.clone(),
+    //     prompt: "Write a fibonacci function in Rust.".to_string(),
+    //     stream: true,
+    //     options: None,
+    //     messages: None,
+    //     format: None,
+    //     tools: Some(vec![tool]),
+    // };
+
+    let request = ChatRequest {
+        model: model.name.clone(),
+        prompt: "How is the weather in Vienna".to_string(),
+        stream: false,
+        options: None,
+        messages: None,
+        format: None,
+        tools: Some(vec![tool]),
+    };
+    let res = o
+        .chat_streaming(&request)
+        .await
+        .expect("couldn't send chat plain response");
+
+    let mut response_builder = Response::builder().status(res.status());
+    *response_builder.headers_mut().unwrap() = res.headers().clone();
+    println!("done?");
+    response_builder
+        .body(Body::from_stream(res.bytes_stream()))
+        // This unwrap is fine because the body is empty here
+        .unwrap()
 }
 
 pub async fn chat_update_result(
@@ -272,4 +348,26 @@ pub async fn chat_update_result(
     };
 
     Ok(Json(p))
+}
+
+pub async fn list_db_models(
+    State(pool): State<deadpool_diesel::postgres::Pool>,
+) -> Result<Json<Vec<FeDbOllamaModel>>, OllamaChatError> {
+    let models = ollama_models_load(&pool).await?;
+    let loaded_models: Vec<FeDbOllamaModel> = models
+        .iter()
+        .map(|x| FeDbOllamaModel {
+            id: x.id,
+            name: x.name.clone(),
+            model: x.model.clone(),
+            size: x.size as i64,
+            detail_format: x.detail_format.clone(),
+            detail_family: x.detail_family.clone(),
+            detail_parameter_size: x.detail_parameter_size.clone(),
+            detail_quantization_level: x.detail_quantization_level.clone(),
+            created: x.created.and_utc(),
+        })
+        .collect();
+
+    Ok(Json(loaded_models))
 }

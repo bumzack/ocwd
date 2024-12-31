@@ -1,9 +1,10 @@
-use crate::ollama::ollama_rest_api_models::{InsertModelsResponse, OllamaModel};
 use crate::schema::ollama_model;
 use crate::server::ollamachat_error::OllamaChatError;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use tracing::error;
+use ollama::models::ListModel;
+use crate::fe::femodels::InsertModelsResponse;
 
 #[derive(Queryable, Selectable, Debug, PartialEq, Clone)]
 #[diesel(table_name = crate::schema::ollama_model)]
@@ -36,7 +37,7 @@ pub struct DbNewOllamaModel {
 
 pub async fn ollama_model_insert(
     pool: &deadpool_diesel::postgres::Pool,
-    models: &[OllamaModel],
+    models: &[ListModel],
 ) -> Result<Vec<InsertModelsResponse>, OllamaChatError> {
     let conn = pool.get().await?;
 
@@ -46,7 +47,7 @@ pub async fn ollama_model_insert(
         let u = DbNewOllamaModel {
             name: model.name.clone(),
             model: model.model.clone(),
-            size: model.size,
+            size: model.size as i64,
             detail_format: model.details.format.clone(),
             detail_family: model.details.family.clone(),
             detail_parameter_size: model.details.parameter_size.clone(),
