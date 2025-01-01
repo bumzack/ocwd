@@ -1,5 +1,4 @@
 export interface FeOllamaModel {
-
 	name: string;
 	model: string;
 	size: number;
@@ -20,7 +19,6 @@ export interface FeDbOllamaModel {
 	detailQuantizationLevel: string;
 	created: Date;
 }
-
 
 export interface OllamaModel {
 	id: number;
@@ -147,8 +145,8 @@ export interface FeUpdateOllamaChatResult {
 
 // TODO any
 export interface Message {
-	role: String;
-	content: String;
+	role: string;
+	content: string;
 	images: Array<string> | undefined;
 	tool_calls: any | undefined;
 }
@@ -168,3 +166,35 @@ export interface ChatResponse {
 	done_reason: string | undefined;
 	message: Message | undefined;
 }
+
+export interface ModelDetails {
+	format: string;
+	family: string;
+	families: Array<string> | undefined;
+	parameter_size: string;
+	quantization_level: string;
+}
+
+export interface OllamaInformation {
+	modelfile: string;
+	parameters: string;
+	details: ModelDetails;
+	model_info: Map<string, string | number>;
+	license: string;
+	template: string;
+}
+
+export type PropsModelInformation = {
+	information: OllamaInformation;
+};
+
+export type CreateModelRequest = {
+	model: string;
+	modelfile: string;
+	quantize: string | undefined;
+};
+
+export interface CreateModelResponse {
+	status: string;
+}
+

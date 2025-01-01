@@ -1,4 +1,5 @@
 import type {
+	CreateModelRequest,
 	FeDbOllamaModel,
 	FeOllamaChat,
 	FeOllamaChatQueue,
@@ -8,7 +9,8 @@ import type {
 	FeOllamaRunningModel,
 	FeRunModelRequest,
 	FeUpdateOllamaChatResult,
-	InsertModelsResponse
+	InsertModelsResponse,
+	OllamaInformation
 } from './models';
 
 //const server = 'http://10.0.0.48:3023';
@@ -34,7 +36,6 @@ export const load_local_models = async (): Promise<FeOllamaModel[]> => {
 	}
 	return [];
 };
-
 
 export const load_db_models = async (): Promise<FeDbOllamaModel[]> => {
 	try {
@@ -272,11 +273,55 @@ export const ollama_chat_update_result = async (
 // this is probably not the way
 export const streaming_response = async (): Promise<Response> => {
 	try {
-		const url = `${server}/api/chat/result`;
+		const url = `${server}/ollama/api/stream`;
 		return await fetch(url);
 	} catch (e) {
 		console.info(`error getting the streaming chat data. err: ${e}`);
 	}
 
 	return Promise.reject(new Error(`No chat response received."`));
+};
+
+export const create_model = async (request: CreateModelRequest): Promise<Response> => {
+	try {
+		const url = `${server}/api/model/create`;
+		return await fetch(url, {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json, text/plain, */*'
+			},
+			body: JSON.stringify(request),
+			method: 'POST'
+		});
+	} catch (e) {
+		console.info(`error getting the streaming chat data. err: ${e}`);
+	}
+
+	return Promise.reject(new Error(`No chat response received."`));
+};
+
+export const ollama_model_information = async (model: string): Promise<OllamaInformation> => {
+	try {
+		const url = `${server}/api/model/details/${model}`;
+
+		console.log(`url  ${url}`);
+		const response = await fetch(url, {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json, text/plain, */*'
+			},
+			method: 'GET'
+		});
+
+		if (response.ok) {
+			return await response.json();
+		} else {
+			const error = new Error('error loading model information');
+			console.log(`error ${error}`);
+			return Promise.reject(error);
+		}
+	} catch (e) {
+		console.info(`error getting the model information ${e}`);
+	}
+	return Promise.reject(new Error(`No model information received."`));
 };

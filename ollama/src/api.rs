@@ -1,7 +1,8 @@
 use crate::error::OllamaError;
 use crate::models::{
-    ChatRequest, ChatResponse, ListModel, ListModelResponse, Ollama, OllamaUnloadRequest,
-    RunningModel, RunningModelResponse,
+    ChatRequest, ChatResponse, CreateModelRequest, ListModel, ListModelResponse, Ollama,
+    OllamaInformation, OllamaInformationRequest, OllamaUnloadRequest, RunningModel,
+    RunningModelResponse,
 };
 use reqwest::{Client, Response};
 use serde_json::json;
@@ -15,6 +16,9 @@ pub trait OllamaImpl {
     async fn chat(&self, request: &ChatRequest) -> Result<ChatResponse, OllamaError>;
     async fn chat_streaming(&self, request: &ChatRequest) -> Result<Response, OllamaError>;
     async fn unload(&self, model: &str) -> Result<(), OllamaError>;
+    async fn details(&self, model: &str) -> Result<OllamaInformation, OllamaError>;
+
+    async fn create(&self, request: CreateModelRequest) -> Result<Response, OllamaError>;
 }
 
 impl Ollama {
@@ -140,6 +144,52 @@ impl OllamaImpl for Ollama {
         let duration = start.elapsed().as_millis();
         println!("unload model {} took {}ms", req.model, duration);
         Ok(())
+    }
+
+    async fn details(&self, model: &str) -> Result<OllamaInformation, OllamaError> {
+        let url = format!("{}/api/show", self.url);
+        let start = Instant::now();
+
+        let req = OllamaInformationRequest {
+            model: model.to_string(),
+            verbose: false,
+        };
+
+        let json = json!(req);
+        println!("json {:?}", json);
+        let res = self.client.post(url).body(json.to_string()).send().await;
+
+        let res = match res {
+            Ok(res) => res,
+            Err(err) => {
+                println!(" error {:?}", err);
+                return Err(OllamaError::ReqwestErr(err));
+            }
+        };
+        println!("res {:?}", res);
+
+        if !res.status().is_success() {
+            let err = res.bytes().await?;
+            println!(
+                "some sort of error occurred while executing the request. model '{}'\nresponse body \n{:?}\n",
+                req.model, err
+            );
+            let msg = format!("reqwest returned an println. response body:  {:?}", err);
+            return Err(OllamaError::AllTheOtherErrors(msg));
+        }
+
+        let duration = start.elapsed().as_millis();
+        let body = res.text().await.map_err(OllamaError::from)?;
+        println!("body {:?}", body);
+        let res = serde_json::from_str::<OllamaInformation>(&body).map_err(OllamaError::from)?;
+        Ok(res)
+    }
+
+    async fn create(&self, request: CreateModelRequest) -> Result<Response, OllamaError> {
+        let url = format!("{}/api/create", self.url);
+        let json = json!(request);
+        let res = self.client.post(url).body(json.to_string()).send().await?;
+        Ok(res)
     }
 }
 

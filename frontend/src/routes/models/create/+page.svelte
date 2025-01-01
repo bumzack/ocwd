@@ -1,13 +1,22 @@
 <script lang="ts">
-	import type { ChatResponse } from '$lib/models.ts';
-	import { marked } from 'marked';
-	import { streaming_response } from '$lib/apiService.ts';
+	import type { CreateModelRequest, CreateModelResponse } from '$lib/models.ts';
+	import { create_model } from '$lib/apiService.ts';
 
 	let result: string = $state('');
+	let modelName: string = $state('');
+	let modelFile: string = $state('');
+	let quantize: string = $state('');
 
 	// close
-	const start_magic = async (): Promise<void> => {
-		streaming_response().then(response => {
+	const send_create_model = async (): Promise<void> => {
+		let q = quantize.trim();
+		let req: CreateModelRequest = {
+			model: modelName,
+			modelfile: modelFile,
+			quantize: q
+		};
+
+		create_model(req).then(response => {
 			result = '';
 			// `response` is a stream!
 			const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
@@ -30,8 +39,6 @@
 				// If it's not done, increment the received variable, and the bar's fill.
 				// received += chunk.;
 				console.log(`received ${received}`);
-				console.log(`new chunk is done ${JSON.stringify( chunk.value)}`);
-
 				const values = chunk.value.trim().split('}\n');
 
 				// I tried this npm package "@streamparser/json-whatwg": "^0.0.21",
@@ -48,16 +55,14 @@
 					if (!v.endsWith('}')) {
 						js += '}';
 					}
-					let chatResponse: ChatResponse = JSON.parse(js);
+					let chatResponse: CreateModelResponse = JSON.parse(js);
 					return chatResponse;
 				});
 				responses.forEach(r => {
-					if (!r.done) {
-						console.log(`adding response:  ||${JSON.stringify(r)}||`);
-						result += r.response;
-					}
-				});
+					console.log(`adding response:  ||${JSON.stringify(r)}||`);
+					result += r.status + '<br/>';
 
+				});
 
 				// Keep reading, and keep doing this AS LONG AS IT'S NOT DONE.
 				reader.read().then(onReadChunk);
@@ -67,20 +72,40 @@
 			reader.read().then(onReadChunk);
 		});
 	};
+
+	let showResult: boolean = $derived(result !== undefined && result.trim().length > 0);
 </script>
 
 
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-lg-12">
-			<h1>Import models</h1>
-			<button class="btn btn-primary" onclick={start_magic}>Let the magic do its work!</button>
+			<h1>Create model</h1>
+			<form class="row g-3">
+				<div class="col-md-3">
+					<label for="modelName" class="form-label">Model name</label>
+					<input bind:value={modelName} type="text" class="form-control" id="modelName">
+				</div>
+				<div class="col-md-12">
+					<label class="form-label" for="exampleFormControlTextarea1">Model file:</label>
+					<textarea bind:value={modelFile} class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+				</div>
+				<div class="col-md-2">
+					<label for="inputTopK" class="form-label">quantize</label>
+					<input bind:value={quantize} type="text" class="form-control" id="inputTopK">
+				</div>
+				<button class="btn btn-primary" onclick={send_create_model}>Create Model</button>
 
-			<p>{@html marked(result, {
-				breaks: true,
-				sanitize: true,
-				smartypants: true,
-			}) }</p>
+			</form>
 		</div>
 	</div>
+
+	{#if showResult}
+		<div class="row">
+			<div class="col-lg-12">
+				<h1>Response</h1>
+				<p>{@html result}</p>
+			</div>
+		</div>
+	{/if}
 </div>

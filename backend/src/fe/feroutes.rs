@@ -14,11 +14,13 @@ use crate::server::ollamachat_error::OllamaChatError;
 use crate::CONFIG;
 use axum::body::Body;
 use axum::extract::{Path, State};
-use axum::http::Response;
+use axum::http::{Response, StatusCode};
 use axum::response::IntoResponse;
 use axum::Json;
 use ollama::api::OllamaImpl;
-use ollama::models::{ChatRequest, Function, Ollama, Parameter, Property, Tool};
+use ollama::models::{
+    ChatRequest, CreateModelRequest, Function, Ollama, OllamaInformation, Parameter, Property, Tool,
+};
 use std::collections::HashMap;
 use tracing::info;
 
@@ -294,8 +296,8 @@ pub async fn streaming_response() -> impl IntoResponse {
 
     let request = ChatRequest {
         model: model.name.clone(),
-        prompt: "How is the weather in Vienna".to_string(),
-        stream: false,
+        prompt: "Why is an iceberg made of freshwater and not salt water?".to_string(),
+        stream: true,
         options: None,
         messages: None,
         format: None,
@@ -370,4 +372,35 @@ pub async fn list_db_models(
         .collect();
 
     Ok(Json(loaded_models))
+}
+
+pub async fn models_details(
+    Path(model): Path<String>,
+) -> Result<Json<OllamaInformation>, OllamaChatError> {
+    let o = Ollama::new(CONFIG.ollama_url.clone())?;
+    let details = o.details(&model).await?;
+    Ok(Json(details))
+}
+
+pub async fn model_create(Json(request): Json<CreateModelRequest>) -> impl IntoResponse {
+    let o = Ollama::new(CONFIG.ollama_url.clone()).expect("should create Ollama");
+    let res = o.create(request).await;
+    match res {
+        Ok(r) => {
+            let mut response_builder = Response::builder().status(r.status());
+            *response_builder.headers_mut().unwrap() = r.headers().clone();
+            println!("done?");
+            response_builder
+                .body(Body::from_stream(r.bytes_stream()))
+                // This unwrap is fine because the body is empty here
+                .unwrap()
+        }
+        Err(e) => {
+            println!("error: {:?}", e);
+            let mut response_builder = Response::builder().status(StatusCode::INTERNAL_SERVER_ERROR);
+            response_builder.status(500)
+                .body(format!("error: {}", e).into())
+                .unwrap()
+        }
+    }
 }

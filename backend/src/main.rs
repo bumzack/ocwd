@@ -3,7 +3,7 @@ mod fe;
 mod schema;
 mod server;
 
-use crate::fe::feroutes::list_db_models;
+use crate::fe::feroutes::{list_db_models, model_create, models_details};
 use crate::fe::feroutes::{
     chat_load_all, chat_load_by_prompt_id, chat_update_result, models_loaded, prompts_load,
     prompts_load_by_id, queue_load, streaming_response,
@@ -66,7 +66,7 @@ async fn main() -> Result<(), ()> {
         .build()
         .expect("should work");
 
-    run_queue(pool.clone()).await.expect("should start queue");
+    // run_queue(pool.clone()).await.expect("should start queue");
 
     // build our application with some routes
     let app = Router::new()
@@ -74,6 +74,8 @@ async fn main() -> Result<(), ()> {
         .route("/api/model", get(list_local_models))
         .route("/api/model/enqueue", post(add_to_queue))
         .route("/api/model/loaded", get(models_loaded))
+        .route("/api/model/create", post(model_create))
+        .route("/api/model/details/{model}", get(models_details))
         .route("/api/dbmodel", get(list_db_models))
         .route("/api/prompt", get(prompts_load))
         .route("/api/prompt/{pprompt_id}", get(prompts_load_by_id))

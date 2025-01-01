@@ -91,37 +91,45 @@ impl IntoResponse for OllamaChatError {
         let (status, message) = match self {
             OllamaChatError::ReqwestErr(e) => {
                 error!("reqwest error. err {:?}", e);
+                println!("reqwest error. err {:?}", e);
                 (StatusCode::INTERNAL_SERVER_ERROR, "Reqwest error")
             }
             OllamaChatError::DieselInteractError(e) => {
                 error!("diesel interact error. err {:?}", e);
+                println!("diesel interact error. err {:?}", e);
                 (StatusCode::INTERNAL_SERVER_ERROR, "diesel interact error")
             }
             OllamaChatError::DieselError(e) => {
                 error!("diesel error. err {:?}", e);
+                println!("diesel error. err {:?}", e);
                 (StatusCode::INTERNAL_SERVER_ERROR, "diesel error")
             }
             OllamaChatError::DataError(msg) => {
                 error!("data error to INTERNAL_ERROR. err: {:?}", msg);
+                println!("data error to INTERNAL_ERROR. err: {:?}", msg);
                 (StatusCode::INTERNAL_SERVER_ERROR, "internal data error")
             }
             OllamaChatError::DeadpoolErr(e) => {
                 error!("deadpool error to INTERNAL_ERROR. err: {:?}", e);
+                println!("deadpool error to INTERNAL_ERROR. err: {:?}", e);
                 (StatusCode::INTERNAL_SERVER_ERROR, "deadpool error")
             }
             OllamaChatError::DeadpoolPoolError(e) => {
                 error!("deadpool pool error to INTERNAL_ERROR. err: {:?}", e);
                 error!("deadpool pool error: {}", e);
+                println!("deadpool pool error: {}", e);
                 (StatusCode::INTERNAL_SERVER_ERROR, "deadpool pool error")
             }
             OllamaChatError::SerdeJsonErr(e) => {
                 error!("serde json to INTERNAL_ERROR. err: {:?}", e);
                 error!("serde json: {}", e);
+                println!("serde json: {}", e);
                 (StatusCode::INTERNAL_SERVER_ERROR, "serde json error")
             }
             OllamaChatError::OllamaError(e) => {
                 error!("ollama error to INTERNAL_ERROR. err: {:?}", e);
                 error!("ollama error: {}", e);
+                println!("ollama error: {}", e);
                 (StatusCode::INTERNAL_SERVER_ERROR, "ollama error error")
             }
         };

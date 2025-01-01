@@ -32,7 +32,7 @@
 	</div>
 	<div class="row">
 		<div class="col-lg-12">
-			<h1>Ollama models local</h1>
+			<h1>Ollama models in DB</h1>
 			<p>{models.length} models</p>
 
 			{#if hasData}
@@ -78,7 +78,7 @@
 								{model.name}
 							</td>
 							<td>
-								{model.model}
+								<a href="/models/information/{model.model}">{model.model}</a>
 							</td>
 							<td>
 								{(model.size / 1024 / 1024 / 1024).toLocaleString('de-DE', { minimumFractionDigits: 0 })}
