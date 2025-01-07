@@ -6,9 +6,11 @@
 	let modelName: string = $state('');
 	let modelFile: string = $state('');
 	let quantize: string = $state('');
+	let disabled: boolean = $state(false);
 
 	// close
 	const send_create_model = async (): Promise<void> => {
+		disabled = true;
 		let q = quantize.trim();
 		let req: CreateModelRequest = {
 			model: modelName,
@@ -71,6 +73,8 @@
 			// Do the first read().
 			reader.read().then(onReadChunk);
 		});
+
+		disabled = false;
 	};
 
 	let showResult: boolean = $derived(result !== undefined && result.trim().length > 0);
@@ -80,8 +84,8 @@
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-lg-12">
-			<h1>Create model</h1>
-			<form class="row g-3">
+			<h1>Create A Model</h1>
+			<form class="row g-12">
 				<div class="col-md-3">
 					<label for="modelName" class="form-label">Model name</label>
 					<input bind:value={modelName} type="text" class="form-control" id="modelName">
@@ -91,11 +95,10 @@
 					<textarea bind:value={modelFile} class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
 				</div>
 				<div class="col-md-2">
-					<label for="inputTopK" class="form-label">quantize</label>
-					<input bind:value={quantize} type="text" class="form-control" id="inputTopK">
+					<label for="inputQuantitize" class="form-label">quantize</label>
+					<input bind:value={quantize} type="text" class="form-control" id="inputQuantitize">
 				</div>
-				<button class="btn btn-primary" onclick={send_create_model}>Create Model</button>
-
+				<button class="btn btn-primary" {disabled} onclick={send_create_model}>Create Model</button>
 			</form>
 		</div>
 	</div>

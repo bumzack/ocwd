@@ -1,5 +1,7 @@
 use chrono::{DateTime, Utc};
+use ollama::models::{ModelDetails, StringOrNumber};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -120,7 +122,6 @@ pub struct FeOllamaChatQueue {
     pub updated: DateTime<Utc>,
 }
 
-
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct FeUpdateOllamaChatResult {
@@ -136,3 +137,14 @@ pub struct InsertModelsResponse {
     pub result: String,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct FeOllamaInformation {
+    pub modelfile: String,
+    pub parameters: Option<String>,
+    pub template: String,
+    pub details: ModelDetails,
+    pub model_info: Option<HashMap<String, Option<StringOrNumber>>>,
+    pub license: String,
+    pub modified_at: String,
+}

@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 
-	let show: boolean = $state(false);
+
+	let { show } = $props();
 
 	// Optional: Add event listener to prevent clicks
-	let overlayEl;
+	let overlayEl: HTMLElement;
 
-	const handleClick = (event) => {
+	const handleClick = (event: Event) => {
 		event.preventDefault();
 		event.stopPropagation();
 	};

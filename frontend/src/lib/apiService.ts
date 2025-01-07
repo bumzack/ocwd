@@ -3,14 +3,13 @@ import type {
 	FeDbOllamaModel,
 	FeOllamaChat,
 	FeOllamaChatQueue,
-	FeOllamaChatQueueResponse,
+	FeOllamaChatQueueResponse, FeOllamaInformation,
 	FeOllamaModel,
 	FeOllamaPrompt,
 	FeOllamaRunningModel,
 	FeRunModelRequest,
 	FeUpdateOllamaChatResult,
 	InsertModelsResponse,
-	OllamaInformation
 } from './models';
 
 //const server = 'http://10.0.0.48:3023';
@@ -300,7 +299,7 @@ export const create_model = async (request: CreateModelRequest): Promise<Respons
 	return Promise.reject(new Error(`No chat response received."`));
 };
 
-export const ollama_model_information = async (model: string): Promise<OllamaInformation> => {
+export const ollama_model_information = async (model: string): Promise<FeOllamaInformation> => {
 	try {
 		const url = `${server}/api/model/details/${model}`;
 

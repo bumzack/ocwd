@@ -3,11 +3,11 @@ mod fe;
 mod schema;
 mod server;
 
-use crate::fe::feroutes::{list_db_models, model_create, models_details};
 use crate::fe::feroutes::{
     chat_load_all, chat_load_by_prompt_id, chat_update_result, models_loaded, prompts_load,
     prompts_load_by_id, queue_load, streaming_response,
 };
+use crate::fe::feroutes::{list_db_models, model_create, models_details};
 use crate::server::models::Config;
 use crate::server::queue::{run_queue, start_queue, stop_queue};
 use crate::server::utils::cors_layer;
@@ -66,7 +66,7 @@ async fn main() -> Result<(), ()> {
         .build()
         .expect("should work");
 
-    // run_queue(pool.clone()).await.expect("should start queue");
+    run_queue(pool.clone()).await.expect("should start enqueue");
 
     // build our application with some routes
     let app = Router::new()
@@ -82,9 +82,9 @@ async fn main() -> Result<(), ()> {
         .route("/api/chat/{pprompt_id}", get(chat_load_by_prompt_id))
         .route("/api/chat/result", put(chat_update_result))
         .route("/api/chat", get(chat_load_all))
-        .route("/api/queue/stop", post(stop_queue))
-        .route("/api/queue/start", post(start_queue))
-        .route("/api/queue", get(queue_load))
+        .route("/api/enqueue/stop", post(stop_queue))
+        .route("/api/enqueue/start", post(start_queue))
+        .route("/api/enqueue", get(queue_load))
         .route("/ollama/api/stream", get(streaming_response))
         .layer(
             TraceLayer::new_for_http()

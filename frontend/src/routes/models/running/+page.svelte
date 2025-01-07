@@ -10,7 +10,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-12">
-            <h1>Running Ollama models</h1>
+            <h1>Locally Running Ollama Models</h1>
             {#if hasData}
                 <p>{models.length} models</p>
                 <table class="table table-striped">
@@ -56,7 +56,7 @@
                     </tbody>
                 </table>
             {:else}
-                <p>no data available</p>
+                <p>no locally running models found</p>
             {/if}
         </div>
     </div>

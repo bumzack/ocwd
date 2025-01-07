@@ -7,8 +7,9 @@ use crate::common::db_prompt::{
 };
 use crate::common::db_queue::{ollama_queue_all, ollama_queue_insert};
 use crate::fe::femodels::{
-    FeDbOllamaModel, FeOllamaChat, FeOllamaChatQueue, FeOllamaChatQueueResponse, FeOllamaModel,
-    FeOllamaPrompt, FeRunModelRequest, FeUpdateOllamaChatResult, InsertModelsResponse,
+    FeDbOllamaModel, FeOllamaChat, FeOllamaChatQueue, FeOllamaChatQueueResponse,
+    FeOllamaInformation, FeOllamaModel, FeOllamaPrompt, FeRunModelRequest,
+    FeUpdateOllamaChatResult, InsertModelsResponse,
 };
 use crate::server::ollamachat_error::OllamaChatError;
 use crate::CONFIG;
@@ -19,7 +20,7 @@ use axum::response::IntoResponse;
 use axum::Json;
 use ollama::api::OllamaImpl;
 use ollama::models::{
-    ChatRequest, CreateModelRequest, Function, Ollama, OllamaInformation, Parameter, Property, Tool,
+    ChatRequest, CreateModelRequest, Function, Ollama, Parameter, Property, Tool,
 };
 use std::collections::HashMap;
 use tracing::info;
@@ -57,7 +58,7 @@ pub async fn add_to_queue(
     State(pool): State<deadpool_diesel::postgres::Pool>,
     Json(fe_run_model_request): Json<FeRunModelRequest>,
 ) -> Result<Json<Vec<FeOllamaChatQueueResponse>>, OllamaChatError> {
-    info!("inserting requests into queue {:?}", fe_run_model_request);
+    info!("inserting requests into enqueue {:?}", fe_run_model_request);
 
     let db_ollama_prompt = ollama_prompt_insert(&pool, fe_run_model_request.prompt.clone()).await?;
 
@@ -66,7 +67,7 @@ pub async fn add_to_queue(
     for model in fe_run_model_request.models {
         let db_queue = ollama_queue_insert(&pool, db_ollama_prompt.id, model.clone()).await?;
         info!(
-            "inserted queue element id {:?}, queue id {}, model id {}",
+            "inserted enqueue element id {:?}, enqueue id {}, model id {}",
             db_queue.id, db_queue.model_id, db_queue.prompt_id
         );
 
@@ -246,6 +247,7 @@ pub async fn queue_load(
 }
 
 // https://github.com/tokio-rs/axum/blob/main/examples/reqwest-response/src/main.rs
+// you have to make sure, that the request has set "streaming" to true, otherwise all bets are off
 pub async fn streaming_response() -> impl IntoResponse {
     println!("got a request");
     let o = Ollama::new("http://localhost:11434".to_string()).expect("Couldn't open old sdk SDK");
@@ -284,19 +286,10 @@ pub async fn streaming_response() -> impl IntoResponse {
         typ: "function".to_string(),
         function,
     };
-    // let request = ChatRequest {
-    //     model: model.name.clone(),
-    //     prompt: "Write a fibonacci function in Rust.".to_string(),
-    //     stream: true,
-    //     options: None,
-    //     messages: None,
-    //     format: None,
-    //     tools: Some(vec![tool]),
-    // };
 
     let request = ChatRequest {
         model: model.name.clone(),
-        prompt: "Why is an iceberg made of freshwater and not salt water?".to_string(),
+        prompt: "Write a Rust program that downloads product data from a SolR server. The products should be sorted be the \"code_string\" field. Write the data to a csv file.".to_string(),
         stream: true,
         options: None,
         messages: None,
@@ -376,9 +369,18 @@ pub async fn list_db_models(
 
 pub async fn models_details(
     Path(model): Path<String>,
-) -> Result<Json<OllamaInformation>, OllamaChatError> {
+) -> Result<Json<FeOllamaInformation>, OllamaChatError> {
     let o = Ollama::new(CONFIG.ollama_url.clone())?;
     let details = o.details(&model).await?;
+    let details = FeOllamaInformation {
+        modelfile: details.modelfile.to_string(),
+        parameters: details.parameters,
+        template: details.template.to_string(),
+        details: details.details,
+        model_info: details.model_info,
+        license: details.license.to_string(),
+        modified_at: details.modified_at.clone(),
+    };
     Ok(Json(details))
 }
 
@@ -397,8 +399,9 @@ pub async fn model_create(Json(request): Json<CreateModelRequest>) -> impl IntoR
         }
         Err(e) => {
             println!("error: {:?}", e);
-            let mut response_builder = Response::builder().status(StatusCode::INTERNAL_SERVER_ERROR);
-            response_builder.status(500)
+            let response_builder = Response::builder().status(StatusCode::INTERNAL_SERVER_ERROR);
+            response_builder
+                .status(500)
                 .body(format!("error: {}", e).into())
                 .unwrap()
         }

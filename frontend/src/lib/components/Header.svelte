@@ -10,26 +10,26 @@
                 <li class="nav-item">
                     <a aria-current="page" class="nav-link active" href="/">Home</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/models">Models</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Models</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/models/listdb">List DB Models</a></li>
+                        <li><a class="dropdown-item" href="/models/listlocal">List Local Models</a></li>
+                        <li><a class="dropdown-item" href="/models/running">Show Locally Running Models</a></li>
+                        <li><a class="dropdown-item" href="/models/create">Create Model</a></li>
+                    </ul>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/models/running">Running Models</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/chat">Chat</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/prompt">Prompts</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/allchats">All chats</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Chat</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/chat">Live Chat</a></li>
+                        <li><a class="dropdown-item" href="/chat/queue">Chat Queue</a></li>
+                        <li><a class="dropdown-item" href="/prompt">All prompts</a></li>
+                        <li><a class="dropdown-item" href="/chat/all">All Chats</a></li>
+                    </ul>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/queue">Queue</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/streaming">Streaming Response</a>
                 </li>
             </ul>
         </div>

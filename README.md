@@ -17,7 +17,7 @@ echo 'export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"' >> ~/.zshrc
 see:  https://www.codementor.io/@engineerapart/getting-started-with-postgresql-on-mac-osx-are8jcopb
 
 ```
-CREATE ROLE ollamachat WITH LOGIN PASSWORD 'ollamachat';
+CREATE ROLE webshop WITH LOGIN PASSWORD 'webshop';
 ```
 
 ### list users
@@ -27,7 +27,7 @@ CREATE ROLE ollamachat WITH LOGIN PASSWORD 'ollamachat';
 ```
 
 ```
-ALTER ROLE ollamachat CREATEDB;
+ALTER ROLE webshop CREATEDB;
 ```
 
 ```
@@ -39,21 +39,21 @@ quit
 ```
 
 ```
-psql postgres -U ollamachat
+psql postgres -U webshop
 ```
 
 ```
-GRANT ALL on  SCHEMA public  TO  ollamachat;
+GRANT ALL on  SCHEMA public  TO  webshop;
 ```
 
 
 ```
-CREATE DATABASE ollamachat ;
+CREATE DATABASE webshop ;
 ```
 
 ```
-GRANT ALL PRIVILEGES ON DATABASE ollamachat TO ollamachat;
+GRANT ALL PRIVILEGES ON DATABASE webshop TO webshop;
 ```
 ```
-\connect ollamachat
+\connect webshop
 ```

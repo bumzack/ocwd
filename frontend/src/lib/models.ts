@@ -104,8 +104,12 @@ export type PropsAllPrompts = {
 	prompts: FeOllamaPrompt[];
 };
 
-export type PropsFeAllModels = {
+export type PropsFeDbModels = {
 	models: FeDbOllamaModel[];
+};
+
+export type PropsFeLocalModels = {
+	localModels: FeOllamaModel[];
 };
 
 export type PropsAllModels = {
@@ -175,17 +179,18 @@ export interface ModelDetails {
 	quantization_level: string;
 }
 
-export interface OllamaInformation {
+export interface FeOllamaInformation {
 	modelfile: string;
-	parameters: string;
+	parameters: string | undefined;
 	details: ModelDetails;
-	model_info: Map<string, string | number>;
+	modelInfo: Map<string, string | number | boolean | Array<string>>;
 	license: string;
 	template: string;
+	modifiedAt: Date;
 }
 
 export type PropsModelInformation = {
-	information: OllamaInformation;
+	information: FeOllamaInformation;
 };
 
 export type CreateModelRequest = {
@@ -197,4 +202,3 @@ export type CreateModelRequest = {
 export interface CreateModelResponse {
 	status: string;
 }
-

@@ -76,6 +76,8 @@ impl OllamaImpl for Ollama {
                 e
             })?;
 
+        println!("body = {:?}", body);
+
         let models =
             serde_json::from_str::<RunningModelResponse>(&body).map_err(OllamaError::from)?;
 

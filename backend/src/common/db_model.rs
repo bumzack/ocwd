@@ -1,10 +1,10 @@
+use crate::fe::femodels::InsertModelsResponse;
 use crate::schema::ollama_model;
 use crate::server::ollamachat_error::OllamaChatError;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
-use tracing::error;
 use ollama::models::ListModel;
-use crate::fe::femodels::InsertModelsResponse;
+use tracing::error;
 
 #[derive(Queryable, Selectable, Debug, PartialEq, Clone)]
 #[diesel(table_name = crate::schema::ollama_model)]

@@ -33,6 +33,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@popperjs/core": "^2.11.8",
 		"@streamparser/json-whatwg": "^0.0.21",
 		"@types/d3": "^7.4.3",
 		"d3": "^7.9.0",

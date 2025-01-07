@@ -24,7 +24,7 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
             let running = QUEUE_RUNNING.lock().await;
 
             info!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-            info!("processing queue @ {:?}. running {:?}", now, *running);
+            info!("processing enqueue @ {:?}. running {:?}", now, *running);
             info!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
             if !*running {
@@ -32,7 +32,7 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
 
                 info!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
                 info!(
-                    "processing queue NOT running @ {:?}. waiting for {:?}",
+                    "processing enqueue NOT running @ {:?}. waiting for {:?}",
                     now, sleep_duration
                 );
                 info!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
@@ -41,11 +41,11 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
                 continue;
             } else {
                 info!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-                info!("processing queue  running @ {:?}", now);
+                info!("processing enqueue  running @ {:?}", now);
                 info!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
             }
 
-            let next = ollama_queue_next(&p).await.expect("queue next failed");
+            let next = ollama_queue_next(&p).await.expect("enqueue next failed");
 
             match next {
                 Some(db_queue) => {
@@ -60,10 +60,10 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
 
                     let db_prompt = ollama_prompt_load_by_id(&pool, db_queue.prompt_id)
                         .await
-                        .expect("queue element not found")
-                        .expect("queue element not found");
+                        .expect("enqueue element not found")
+                        .expect("enqueue element not found");
 
-                    let  opt = ChatRequestOptions {
+                    let opt = ChatRequestOptions {
                         temperature: Some(db_queue.temperature as f32),
                         num_ctx: Some(db_queue.num_ctx as u32),
                         seed: Some(db_queue.seed as u32),
@@ -90,12 +90,12 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
 
                     match db_ollama_queue_update {
                         Ok(res) => {
-                            info!("successfully updated ollamaold queue status. id {}", res.id);
+                            info!("successfully updated ollamaold enqueue status. id {}", res.id);
                         }
                         Err(e) => {
                             error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
                             error!(
-                                "error updating queue in DB, queue.id {} {:?}",
+                                "error updating enqueue in DB, enqueue.id {} {:?}",
                                 db_queue.id, e
                             );
                             error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
@@ -118,14 +118,14 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
                             match db_ollama_queue_update {
                                 Ok(res) => {
                                     info!(
-                                        "successfully updated ollamaold queue status. id {}",
+                                        "successfully updated ollamaold enqueue status. id {}",
                                         res.id
                                     );
                                 }
                                 Err(e) => {
                                     error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
                                     error!(
-                                        "error updating queue in DB, queue.id {} {:?}",
+                                        "error updating enqueue in DB, enqueue.id {} {:?}",
                                         db_queue.id, e
                                     );
                                     error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
@@ -168,12 +168,12 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
 
                             match db_ollama_queue_update {
                                 Ok(res) => {
-                                    info!("successfully updated queue status. id {}", res.id);
+                                    info!("successfully updated enqueue status. id {}", res.id);
                                 }
                                 Err(e) => {
                                     error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
                                     error!(
-                    "error updating queue status in DB. queue.id {}, error: {:?}",
+                    "error updating enqueue status in DB. enqueue.id {}, error: {:?}",
                     db_queue.id, e
                     );
                                     error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");

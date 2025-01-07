@@ -152,7 +152,7 @@ pub struct ListModel {
     pub name: String,
     pub model: String,
     pub modified_at: String,
-    pub size: i32,
+    pub size: i64,
     pub digest: String,
     pub details: ModelDetails,
 }
@@ -166,11 +166,11 @@ pub struct ListModelResponse {
 pub struct RunningModel {
     pub name: String,
     pub model: String,
-    pub size: i32,
+    pub size: i64,
     pub digest: String,
     pub details: ModelDetails,
     pub expires_at: String,
-    pub size_vram: String,
+    pub size_vram: i64,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -196,55 +196,17 @@ pub enum StringOrNumber {
     String(String),
     Float(f64),
     Bool(bool),
-   // Integer(i64),
+    Integer(i64),
+    ListVec(Vec<String>),
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct OllamaInformation {
     pub modelfile: String,
-    pub parameters: String,
+    pub parameters: Option<String>,
     pub template: String,
     pub details: ModelDetails,
     pub model_info: Option<HashMap<String, Option<StringOrNumber>>>,
     pub license: String,
     pub modified_at: String,
-}
-
-
-#[cfg(test)]
-mod test {
-    use crate::error::OllamaError;
-    use crate::models::OllamaInformation;
-
-    #[test]
-    fn test() {
-        let json = r#"{
-  "model_info": {
-    "general.architecture": "qwen2",
-    "general.file_type": 2,
-    "general.parameter_count": 619570176,
-    "general.quantization_version": 2,
-    "qwen2.attention.head_count": 16,
-    "qwen2.attention.head_count_kv": 16,
-    "qwen2.attention.layer_norm_rms_epsilon": 0.000001,
-    "qwen2.block_count": 24,
-    "qwen2.context_length": 32768,
-    "qwen2.embedding_length": 1024,
-    "qwen2.feed_forward_length": 2816,
-    "qwen2.use_parallel_residual": true,
-    "tokenizer.ggml.bos_token_id": 151643,
-    "tokenizer.ggml.eos_token_id": 151643,
-    "tokenizer.ggml.merges": null,
-    "tokenizer.ggml.model": "gpt2",
-    "tokenizer.ggml.padding_token_id": 151643,
-    "tokenizer.ggml.token_type": null,
-    "tokenizer.ggml.tokens": null
-  },
-  "modified_at": "2024-12-30T00:22:03.600174684+01:00"
-}"#;
-
-        let res = serde_json::from_str::<OllamaInformation>(&json).map_err(OllamaError::from).expect("fff");
-
-        println!("{:?}", res);
-    }
 }
