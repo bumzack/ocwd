@@ -1,13 +1,11 @@
 <script lang="ts">
-	import type { ChatResponse } from '$lib/models.ts';
-	import { streaming_response } from '$lib/apiService.ts';
+	import type { PageData } from './$types';
 
-
-
-
+	let { data }: { data: PageData } = $props();
+	let queues = $state(data.queue);
+	let hasData = $derived(queues != undefined && queues != null);
 
 </script>
-
 
 <div class="container-fluid">
 	<div class="row">

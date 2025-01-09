@@ -66,7 +66,7 @@ async fn main() -> Result<(), ()> {
         .build()
         .expect("should work");
 
-    run_queue(pool.clone()).await.expect("should start enqueue");
+    // run_queue(pool.clone()).await.expect("should start enqueue");
 
     // build our application with some routes
     let app = Router::new()
@@ -79,13 +79,13 @@ async fn main() -> Result<(), ()> {
         .route("/api/dbmodel", get(list_db_models))
         .route("/api/prompt", get(prompts_load))
         .route("/api/prompt/{pprompt_id}", get(prompts_load_by_id))
-        .route("/api/chat/{pprompt_id}", get(chat_load_by_prompt_id))
-        .route("/api/chat/result", put(chat_update_result))
         .route("/api/chat", get(chat_load_all))
-        .route("/api/enqueue/stop", post(stop_queue))
-        .route("/api/enqueue/start", post(start_queue))
-        .route("/api/enqueue", get(queue_load))
-        .route("/ollama/api/stream", get(streaming_response))
+        .route("/api/chat/result", put(chat_update_result))
+        .route("/api/chat/byid/{pprompt_id}", get(chat_load_by_prompt_id))
+        .route("/api/queue/stop", post(stop_queue))
+        .route("/api/queue/start", post(start_queue))
+        .route("/api/queue", get(queue_load))
+        .route("/ollama/api/stream", post(streaming_response))
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(|request: &Request<_>| {

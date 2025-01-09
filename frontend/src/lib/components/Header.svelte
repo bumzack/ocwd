@@ -13,21 +13,27 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Models</a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/models/listdb">List DB Models</a></li>
-                        <li><a class="dropdown-item" href="/models/listlocal">List Local Models</a></li>
-                        <li><a class="dropdown-item" href="/models/running">Show Locally Running Models</a></li>
+                        <li><a class="dropdown-item" href="/models/listdb">Database Models</a></li>
+                        <li><a class="dropdown-item" href="/models/listlocal">Local Models</a></li>
+                        <li><a class="dropdown-item" href="/models/running">Locally Running Models</a></li>
                         <li><a class="dropdown-item" href="/models/create">Create Model</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Prompt</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/prompt/add">Add Prompt</a></li>
+                        <li><a class="dropdown-item" href="/prompt/all">All Prompts</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Chat</a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/chat">Live Chat</a></li>
-                        <li><a class="dropdown-item" href="/chat/queue">Chat Queue</a></li>
-                        <li><a class="dropdown-item" href="/prompt">All prompts</a></li>
                         <li><a class="dropdown-item" href="/chat/all">All Chats</a></li>
+                        <li><a class="dropdown-item" href="/chat/streaming">Live Chat</a></li>
                     </ul>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link" href="/queue">Queue</a>
                 </li>

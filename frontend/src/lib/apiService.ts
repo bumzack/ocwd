@@ -3,13 +3,15 @@ import type {
 	FeDbOllamaModel,
 	FeOllamaChat,
 	FeOllamaChatQueue,
-	FeOllamaChatQueueResponse, FeOllamaInformation,
+	FeOllamaChatQueueResponse,
+	FeOllamaInformation,
 	FeOllamaModel,
 	FeOllamaPrompt,
 	FeOllamaRunningModel,
 	FeRunModelRequest,
+	FeStreamingRequest,
 	FeUpdateOllamaChatResult,
-	InsertModelsResponse,
+	InsertModelsResponse
 } from './models';
 
 //const server = 'http://10.0.0.48:3023';
@@ -149,7 +151,7 @@ export const prompts_load = async (): Promise<FeOllamaPrompt[]> => {
 
 export const chats_load_by_prompt_id = async (promptId: number): Promise<FeOllamaChat[]> => {
 	try {
-		const url = `${server}/api/chat/${promptId}`;
+		const url = `${server}/api/chat/byid/${promptId}`;
 
 		const response = await fetch(url, {
 			headers: {
@@ -159,10 +161,11 @@ export const chats_load_by_prompt_id = async (promptId: number): Promise<FeOllam
 			method: 'GET'
 		});
 
+		console.log(`resp ${JSON.stringify(response, null, 4)}`);
 		if (response.ok) {
 			return await response.json();
 		} else {
-			const error = new Error('error loading models');
+			const error = new Error('error loading prompt by id');
 			return Promise.reject(error);
 		}
 	} catch (e) {
@@ -270,14 +273,21 @@ export const ollama_chat_update_result = async (
 
 // https://stackoverflow.com/questions/74330190/how-to-respond-with-a-stream-in-a-sveltekit-server-load-function
 // this is probably not the way
-export const streaming_response = async (): Promise<Response> => {
+export const streaming_response = async (req: FeStreamingRequest): Promise<Response> => {
 	try {
 		const url = `${server}/ollama/api/stream`;
-		return await fetch(url);
+
+		return await fetch(url, {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json, text/plain, */*'
+			},
+			body: JSON.stringify(req),
+			method: 'POST'
+		});
 	} catch (e) {
 		console.info(`error getting the streaming chat data. err: ${e}`);
 	}
-
 	return Promise.reject(new Error(`No chat response received."`));
 };
 
