@@ -148,3 +148,16 @@ pub struct FeOllamaInformation {
     pub license: String,
     pub modified_at: String,
 }
+
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct FeStreamingRequest {
+    pub model_id: i32,
+    pub prompt: String,
+    pub seed: i64,
+    pub num_ctx: i64,
+    pub temperature: f64,
+    pub top_k: f64,
+    pub top_p: f64,
+}

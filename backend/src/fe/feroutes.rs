@@ -8,7 +8,7 @@ use crate::common::db_prompt::{
 use crate::common::db_queue::{ollama_queue_all, ollama_queue_insert};
 use crate::fe::femodels::{
     FeDbOllamaModel, FeOllamaChat, FeOllamaChatQueue, FeOllamaChatQueueResponse,
-    FeOllamaInformation, FeOllamaModel, FeOllamaPrompt, FeRunModelRequest,
+    FeOllamaInformation, FeOllamaModel, FeOllamaPrompt, FeRunModelRequest, FeStreamingRequest,
     FeUpdateOllamaChatResult, InsertModelsResponse,
 };
 use crate::server::ollamachat_error::OllamaChatError;
@@ -43,7 +43,7 @@ pub async fn list_local_models() -> Result<Json<Vec<FeOllamaModel>>, OllamaChatE
         .map(|x| FeOllamaModel {
             name: x.name.clone(),
             model: x.model.clone(),
-            size: x.size as i64,
+            size: x.size,
             detail_format: x.details.format.clone(),
             detail_family: x.details.family.clone(),
             detail_parameter_size: x.details.parameter_size.clone(),
@@ -210,7 +210,7 @@ pub async fn models_loaded() -> Result<Json<Vec<FeOllamaModel>>, OllamaChatError
         .map(|x| FeOllamaModel {
             name: x.name.clone(),
             model: x.model.clone(),
-            size: x.size as i64,
+            size: x.size,
             detail_format: x.details.format.clone(),
             detail_family: x.details.family.clone(),
             detail_parameter_size: x.details.parameter_size.clone(),
@@ -248,11 +248,19 @@ pub async fn queue_load(
 
 // https://github.com/tokio-rs/axum/blob/main/examples/reqwest-response/src/main.rs
 // you have to make sure, that the request has set "streaming" to true, otherwise all bets are off
-pub async fn streaming_response() -> impl IntoResponse {
-    println!("got a request");
-    let o = Ollama::new("http://localhost:11434".to_string()).expect("Couldn't open old sdk SDK");
-    let models = o.local_models().await.expect("Couldn't get local models");
-    let model = models.first().expect("expected at least one model");
+pub async fn streaming_response(
+    State(pool): State<deadpool_diesel::postgres::Pool>,
+    Json(request): Json<FeStreamingRequest>,
+) -> impl IntoResponse {
+    println!("got a request for streaming chat {:?}", request);
+    let db_model = ollama_model_load_by_id(&pool, request.model_id  )
+        .await
+        .expect("expect the model to be present")
+        // hahahahaaaha
+        .expect("expect the model to be present");
+
+    let o = Ollama::new(CONFIG.ollama_url.clone()).expect("should be able to create Ollama");
+    println!("o {:?}", o);
 
     let property_location = Property {
         typ: "string".to_string(),
@@ -288,14 +296,15 @@ pub async fn streaming_response() -> impl IntoResponse {
     };
 
     let request = ChatRequest {
-        model: model.name.clone(),
-        prompt: "Write a Rust program that downloads product data from a SolR server. The products should be sorted be the \"code_string\" field. Write the data to a csv file.".to_string(),
+        model: db_model.name.clone(),
+        prompt: request.prompt.clone(),
         stream: true,
         options: None,
         messages: None,
         format: None,
         tools: Some(vec![tool]),
     };
+
     let res = o
         .chat_streaming(&request)
         .await

@@ -202,3 +202,21 @@ export type CreateModelRequest = {
 export interface CreateModelResponse {
 	status: string;
 }
+
+export interface ModelChatParams {
+	temperature: number;
+	seed: number;
+	numCtx: number;
+	topK: number;
+	topP: number;
+}
+
+export interface FeStreamingRequest {
+	modelId: number;
+	prompt: string;
+	seed: number;
+	numCtx: number;
+	temperature: number;
+	topK: number;
+	topP: number;
+}
