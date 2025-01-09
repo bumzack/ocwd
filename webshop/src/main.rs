@@ -1,10 +1,9 @@
 use crate::client::config::Config;
 use crate::client::stuff::{find_and_insert_items, find_and_insert_orders};
-use crate::error::error::WebshopError;
+use crate::error::webshoperror::WebshopError;
 use dotenvy::dotenv;
 use lazy_static::lazy_static;
 use std::env;
-
 
 mod client;
 mod db;
@@ -28,8 +27,7 @@ lazy_static! {
 
 #[tokio::main]
 async fn main() -> Result<(), WebshopError> {
-
-    let c= CONF.clone();
+    let c = CONF.clone();
     println!("config {:?}", c);
 
     let database_url = &c.database_url;

@@ -2,12 +2,14 @@ use crate::client::api::{get_items, get_orders};
 use crate::client::webmodels::{OrderItemRequest, OrderRequest};
 use crate::db::orderitems::{order_items_insert, order_items_last_item_created, DbNewOrderItem};
 use crate::db::orders::{order_insert, order_last_order_created, DbNewOrder};
-use crate::error::error::WebshopError;
+use crate::error::webshoperror::WebshopError;
 
 pub async fn find_and_insert_orders(
     pool: &deadpool_diesel::postgres::Pool,
 ) -> Result<usize, WebshopError> {
-    let last_order = order_last_order_created(&pool).await?;
+    let last_order = order_last_order_created(pool).await?;
+    println!("last_order: {:?}", last_order);
+
     let mut last_order_date = match last_order {
         Some(last) => Some(last.order_created.and_utc()),
         None => None,
@@ -21,8 +23,16 @@ pub async fn find_and_insert_orders(
             page_size,
         };
 
-        let new_order = get_orders(order_request).await?;
-        let new_orders: Vec<DbNewOrder> = new_order
+        println!("order_request: {:?}", order_request);
+
+        let new_orders = get_orders(order_request).await?;
+
+        if new_orders.is_empty() {
+            println!("no orders found in response. breaking out of loop");
+            break;
+        }
+
+        let new_orders: Vec<DbNewOrder> = new_orders
             .iter()
             .map(|o| DbNewOrder {
                 order_number: o.order_number.clone(),
@@ -33,14 +43,15 @@ pub async fn find_and_insert_orders(
                 additional_info_1: o.additional_info_1.clone(),
                 additional_info_2: o.additional_info_2.clone(),
                 number_items: o.number_items,
-                order_created: o.order_created.clone(),
+                order_created: o.order_created,
             })
             .collect();
 
         let order_cnt = new_orders.len();
+
         total_orders_inserted += order_cnt;
 
-        let r = order_insert(&pool, new_orders).await?;
+        let r = order_insert(pool, new_orders).await?;
         println!("last inserted order: {:?}", r);
 
         if order_cnt < page_size as usize {
@@ -57,7 +68,7 @@ pub async fn find_and_insert_orders(
 pub async fn find_and_insert_items(
     pool: &deadpool_diesel::postgres::Pool,
 ) -> Result<usize, WebshopError> {
-    let last_item = order_items_last_item_created(&pool).await?;
+    let last_item = order_items_last_item_created(pool).await?;
     let mut last_item_date = match last_item {
         Some(last) => Some(last.item_created.and_utc()),
         None => None,
@@ -72,6 +83,11 @@ pub async fn find_and_insert_items(
         };
 
         let new_items = get_items(item_request).await?;
+        if new_items.is_empty() {
+            println!("no items found in response. breaking out of loop");
+            break;
+        }
+
         let new_items: Vec<DbNewOrderItem> = new_items
             .iter()
             .map(|o| DbNewOrderItem {
@@ -90,7 +106,7 @@ pub async fn find_and_insert_items(
         let items_cnt = new_items.len();
         total_items_inserted += items_cnt;
 
-        let r = order_items_insert(&pool, new_items).await?;
+        let r = order_items_insert(pool, new_items).await?;
         println!("last inserted order items: {:?}", r);
 
         if items_cnt < page_size as usize {

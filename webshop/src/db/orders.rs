@@ -1,4 +1,4 @@
-use crate::error::error::WebshopError;
+use crate::error::webshoperror::WebshopError;
 use crate::schema::orders;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;

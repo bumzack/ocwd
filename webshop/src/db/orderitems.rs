@@ -1,5 +1,5 @@
-use crate::error::error::WebshopError;
-use crate::schema::{order_items};
+use crate::error::webshoperror::WebshopError;
+use crate::schema::order_items;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -44,17 +44,15 @@ pub async fn order_items_insert(
 ) -> Result<DbOrderItem, WebshopError> {
     let conn = pool.get().await?;
 
-    // let x = conn.interact(move |conn| {
-    //     diesel::insert_into(order_items::table)
-    //         .values(order_items)
-    //         .returning(DbOrderItem::as_returning())
-    //         .get_result(conn)
-    // })
-    // .await
-    // .map_err(WebshopError::from)?
-    // .map_err(WebshopError::from);
-
-    Err(WebshopError::DataError("testing".to_string()))
+    conn.interact(move |conn| {
+        diesel::insert_into(order_items::table)
+            .values(order_items)
+            .returning(DbOrderItem::as_returning())
+            .get_result(conn)
+    })
+    .await
+    .map_err(WebshopError::from)?
+    .map_err(WebshopError::from)
 }
 
 pub async fn order_items_last_item_created(
@@ -62,18 +60,14 @@ pub async fn order_items_last_item_created(
 ) -> Result<Option<DbOrderItem>, WebshopError> {
     let conn = pool.get().await?;
 
-   // let x =  conn.interact(move |conn| {
-   //      order_items::table
-   //          .order(order_items::item_created.desc())
-   //          .select(DbOrderItem::as_select())
-   //          .first(conn)
-   //          .optional()
-   //  })
-   //  .await
-   //  .map_err(WebshopError::from)?
-   //  .map_err(WebshopError::from);
-
-    Err(WebshopError::DataError("testing".to_string()))
-
-
+    conn.interact(move |conn| {
+        order_items::table
+            .order(order_items::item_created.desc())
+            .select(DbOrderItem::as_select())
+            .first(conn)
+            .optional()
+    })
+    .await
+    .map_err(WebshopError::from)?
+    .map_err(WebshopError::from)
 }
