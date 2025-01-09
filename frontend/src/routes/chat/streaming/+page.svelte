@@ -106,7 +106,7 @@
 
 	$effect(() => {
 		console.log(`disabled ${disabled}`);
-		console.log(`modelParam ${modelParam}`);
+		console.log(`modelParam ${JSON.stringify(modelParam, null, 4)}`);
 		console.log(`selectedModel ${selectedModelId}`);
 	});
 </script>
