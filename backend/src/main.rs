@@ -66,7 +66,7 @@ async fn main() -> Result<(), ()> {
         .build()
         .expect("should work");
 
-    // run_queue(pool.clone()).await.expect("should start enqueue");
+    run_queue(pool.clone()).await.expect("should start queue");
 
     // build our application with some routes
     let app = Router::new()
