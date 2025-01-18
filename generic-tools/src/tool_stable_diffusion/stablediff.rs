@@ -1,6 +1,5 @@
 #[cfg(feature = "accelerate")]
 extern crate accelerate_src;
-
 #[cfg(feature = "mkl")]
 extern crate intel_mkl_src;
 
@@ -26,15 +25,6 @@ impl StableDiffusionWhich {
         match self {
             Self::V3Medium => false,
             Self::V3_5Large | Self::V3_5LargeTurbo | Self::V3_5Medium => true,
-        }
-    }
-
-    fn name(&self) -> String {
-        match self {
-            StableDiffusionWhich::V3Medium => "3-medium".to_string(),
-            StableDiffusionWhich::V3_5Large => "3.5-large".to_string(),
-            StableDiffusionWhich::V3_5LargeTurbo => "3.5-large-turbo".to_string(),
-            StableDiffusionWhich::V3_5Medium => "3.5-medium".to_string(),
         }
     }
 }
@@ -65,7 +55,11 @@ struct Args {
     seed: Option<u64>,
 }
 
-pub fn stable_diffusion_internal(filename: String, args: Args) -> Result<(), Box<dyn Error>> {
+fn stable_diffusion_internal(
+    filename: String,
+    extension: String,
+    args: Args,
+) -> Result<(), Box<dyn Error>> {
     // use tracing_chrome::ChromeLayerBuilder;
     // use tracing_subscriber::prelude::*;
 
@@ -260,6 +254,7 @@ pub fn stable_diffusion_internal(filename: String, args: Args) -> Result<(), Box
         autoencoder.decode(&((x / 1.5305)? + 0.0609)?)?
     };
     let img = ((img.clamp(-1f32, 1f32)? + 1.0)? * 127.5)?.to_dtype(DType::U8)?;
+    let filename = format!("{}.{}", filename, extension);
     let res = save_image(&img.i(0)?, &filename);
     match res {
         Ok(_) => {
@@ -276,6 +271,7 @@ pub fn stable_diffusion_internal(filename: String, args: Args) -> Result<(), Box
 pub fn stable_diffusion(
     prompt: String,
     filename: String,
+    extension: String,
     which: StableDiffusionWhich,
 ) -> Result<(), Box<dyn Error>> {
     let args = Args {
@@ -293,5 +289,5 @@ pub fn stable_diffusion(
         use_slg: false,
     };
 
-    stable_diffusion_internal(filename, args)
+    stable_diffusion_internal(filename, extension, args)
 }

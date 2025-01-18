@@ -4,7 +4,6 @@ extern crate accelerate_src;
 #[cfg(feature = "mkl")]
 extern crate intel_mkl_src;
 
-
 use anyhow::{Ok, Result};
 use candle_core::{DType, IndexOp, Tensor};
 

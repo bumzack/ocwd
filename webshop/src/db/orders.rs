@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct DbOrder {
     pub id: i32,
-    pub order_number: String,
+    pub order_id: String,
     pub buyer_id: String,
     pub buyer_name: Option<String>,
     pub erp_order_number: Option<String>,
@@ -27,7 +27,7 @@ pub struct DbOrder {
 #[diesel(table_name = crate::schema::orders)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct DbNewOrder {
-    pub order_number: String,
+    pub order_id: String,
     pub buyer_id: String,
     pub buyer_name: Option<String>,
     pub erp_order_number: Option<String>,

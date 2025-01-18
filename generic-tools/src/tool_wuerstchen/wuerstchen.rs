@@ -1,13 +1,12 @@
 #[cfg(feature = "accelerate")]
 extern crate accelerate_src;
-
 #[cfg(feature = "mkl")]
 extern crate intel_mkl_src;
 
 use candle_transformers::models::stable_diffusion;
 use candle_transformers::models::wuerstchen;
 
-use crate::candle_tools::candletools::{ get_device, save_image};
+use crate::candle_tools::candletools::{get_device, save_image};
 use anyhow::{Error as E, Result};
 use candle_core::IndexOp;
 use candle_core::{DType, Device, Tensor};
@@ -56,8 +55,8 @@ impl ModelFile {
         match filename {
             Some(filename) => Ok(std::path::PathBuf::from(filename)),
             None => {
-                let repo_main = "warp-ai/tool_wuerstchen";
-                let repo_prior = "warp-ai/tool_wuerstchen-prior";
+                let repo_main = "warp-ai/wuerstchen";
+                let repo_prior = "warp-ai/wuerstchen-prior";
                 let (repo, path) = match self {
                     Self::Tokenizer => (repo_main, "tokenizer/tokenizer.json"),
                     Self::PriorTokenizer => (repo_prior, "tokenizer/tokenizer.json"),
@@ -94,9 +93,9 @@ fn output_filename(
     match timestep_idx {
         None => filename.to_string(),
         Some(timestep_idx) => match filename.rsplit_once('.') {
-            None => format!("{filename}-{timestep_idx}.png"),
+            None => format!("{filename}-{timestep_idx:03}.png"),
             Some((filename_no_extension, extension)) => {
-                format!("{filename_no_extension}-{timestep_idx}.{extension}")
+                format!("{filename_no_extension}-{timestep_idx:03}.{extension}")
             }
         },
     }
@@ -180,15 +179,6 @@ fn run(args: Args) -> Result<()> {
         decoder_weights,
         ..
     } = args;
-
-    // let _guard = if tracing {
-    //     // let (chrome_layer, guard) = ChromeLayerBuilder::new().build();
-    //     // tracing_subscriber::registry().with(chrome_layer).init();
-    //     // Some(guard)
-    //
-    // } else {
-    //     None
-    // };
 
     #[feature(metal, not(cuda))]
     let device = get_device(false)?;
@@ -347,7 +337,14 @@ fn run(args: Args) -> Result<()> {
             .to_dtype(DType::U8)?
             .i(0)?;
         let image_filename = output_filename(&final_image, idx + 1, num_samples, None);
-        save_image(&image, image_filename)?
+        match save_image(&image, image_filename.clone()) {
+            Ok(_) => {
+                println!("image saved successfully: {}", image_filename);
+            }
+            Err(e) => {
+                println!("error saving image {}. error:  {:?}", image_filename, e)
+            }
+        }
     }
     Ok(())
 }
