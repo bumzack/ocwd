@@ -1,3 +1,9 @@
+#[cfg(feature = "accelerate")]
+extern crate accelerate_src;
+
+#[cfg(feature = "mkl")]
+extern crate intel_mkl_src;
+
 use anyhow::{Error as E, Ok, Result};
 use candle_core::{DType, IndexOp, Module, Tensor, D};
 use candle_transformers::models::{stable_diffusion, t5};
@@ -19,7 +25,7 @@ impl ClipWithTokenizer {
         max_position_embeddings: usize,
     ) -> Result<Self> {
         let clip = stable_diffusion::clip::ClipTextTransformer::new(vb, &config)?;
-        let path_buf = hf_hub::api::sync::Api::new()?
+        let path_buf = candle_hf_hub::api::sync::Api::new()?
             .model(tokenizer_path.to_string())
             .get("tokenizer.json")?;
         let tokenizer = Tokenizer::from_file(path_buf.to_str().ok_or(E::msg(
@@ -82,10 +88,10 @@ struct T5WithTokenizer {
 
 impl T5WithTokenizer {
     fn new(vb: candle_nn::VarBuilder, max_position_embeddings: usize) -> Result<Self> {
-        let api = hf_hub::api::sync::Api::new()?;
-        let repo = api.repo(hf_hub::Repo::with_revision(
+        let api = candle_hf_hub::api::sync::Api::new()?;
+        let repo = api.repo(candle_hf_hub::Repo::with_revision(
             "google/t5-v1_1-xxl".to_string(),
-            hf_hub::RepoType::Model,
+            candle_hf_hub::RepoType::Model,
             "refs/pr/2".to_string(),
         ));
         let config_filename = repo.get("config.json")?;

@@ -1,12 +1,13 @@
-// #[cfg(feature = "accelerate")]
-// extern crate accelerate_src;
-// #[cfg(feature = "mkl")]
-// extern crate intel_mkl_src;
+#[cfg(feature = "accelerate")]
+extern crate accelerate_src;
+
+#[cfg(feature = "mkl")]
+extern crate intel_mkl_src;
 
 use candle_transformers::models::stable_diffusion;
 use candle_transformers::models::wuerstchen;
 
-use crate::candle_tools::candletools::{device, save_image};
+use crate::candle_tools::candletools::{ get_device, save_image};
 use anyhow::{Error as E, Result};
 use candle_core::IndexOp;
 use candle_core::{DType, Device, Tensor};
@@ -51,7 +52,7 @@ enum ModelFile {
 
 impl ModelFile {
     fn get(&self, filename: Option<String>) -> Result<std::path::PathBuf> {
-        use hf_hub::api::sync::Api;
+        use candle_hf_hub::api::sync::Api;
         match filename {
             Some(filename) => Ok(std::path::PathBuf::from(filename)),
             None => {
@@ -189,7 +190,17 @@ fn run(args: Args) -> Result<()> {
     //     None
     // };
 
-    let device = device(cpu)?;
+    #[feature(metal, not(cuda))]
+    let device = get_device(false)?;
+
+    #[feature(not(metal))]
+    let device = get_device(false)?;
+
+    #[feature(not(metal, cuda))]
+    let device = get_device(false)?;
+
+    println!("wuerstchen device {:?}", device);
+
     let height = height.unwrap_or(1024);
     let width = width.unwrap_or(1024);
 

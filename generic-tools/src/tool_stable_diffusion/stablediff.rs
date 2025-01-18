@@ -1,8 +1,14 @@
+#[cfg(feature = "accelerate")]
+extern crate accelerate_src;
+
+#[cfg(feature = "mkl")]
+extern crate intel_mkl_src;
+
 use candle_core::{DType, IndexOp, Tensor};
 use candle_transformers::models::mmdit::model::{Config as MMDiTConfig, MMDiT};
 use std::error::Error;
 
-use crate::candle_tools::candletools::{device, save_image};
+use crate::candle_tools::candletools::{get_device, save_image};
 use crate::tool_stable_diffusion::clip::StableDiffusion3TripleClipWithTokenizer;
 use crate::tool_stable_diffusion::sampling;
 use crate::tool_stable_diffusion::vae::{build_sd3_vae_autoencoder, sd3_vae_vb_rename};
@@ -86,8 +92,16 @@ pub fn stable_diffusion_internal(filename: String, args: Args) -> Result<(), Box
     //     None
     // };
 
-    let device = device(cpu)?;
-    println!("device {:?}", device);
+    #[feature(metal, not(cuda))]
+    let device = get_device(false)?;
+
+    #[feature(not(metal))]
+    let device = get_device(false)?;
+
+    #[feature(not(metal, cuda))]
+    let device = get_device(false)?;
+
+    println!("stable diffusion device {:?}", device);
 
     let default_inference_steps = match which {
         StableDiffusionWhich::V3_5Large => 28,
@@ -105,7 +119,7 @@ pub fn stable_diffusion_internal(filename: String, args: Args) -> Result<(), Box
     };
     let cfg_scale = cfg_scale.unwrap_or(default_cfg_scale);
 
-    let api = hf_hub::api::sync::Api::new()?;
+    let api = candle_hf_hub::api::sync::Api::new()?;
     let (mmdit_config, mut triple, vb) = if which.is_3_5() {
         let sai_repo_for_text_encoders = {
             let name = match which {
@@ -126,7 +140,7 @@ pub fn stable_diffusion_internal(filename: String, args: Args) -> Result<(), Box
                 StableDiffusionWhich::V3_5Medium => "stabilityai/stable-diffusion-3.5-large",
                 StableDiffusionWhich::V3Medium => unreachable!(),
             };
-            api.repo(hf_hub::Repo::model(name.to_string()))
+            api.repo(candle_hf_hub::Repo::model(name.to_string()))
         };
         let sai_repo_for_mmdit = {
             let name = match which {
@@ -137,7 +151,7 @@ pub fn stable_diffusion_internal(filename: String, args: Args) -> Result<(), Box
                 StableDiffusionWhich::V3_5Medium => "stabilityai/stable-diffusion-3.5-medium",
                 StableDiffusionWhich::V3Medium => unreachable!(),
             };
-            api.repo(hf_hub::Repo::model(name.to_string()))
+            api.repo(candle_hf_hub::Repo::model(name.to_string()))
         };
         let clip_g_file = sai_repo_for_text_encoders.get("text_encoders/clip_g.safetensors")?;
         let clip_l_file = sai_repo_for_text_encoders.get("text_encoders/clip_l.safetensors")?;
@@ -169,7 +183,7 @@ pub fn stable_diffusion_internal(filename: String, args: Args) -> Result<(), Box
     } else {
         let sai_repo = {
             let name = "stabilityai/stable-diffusion-3-medium";
-            api.repo(hf_hub::Repo::model(name.to_string()))
+            api.repo(candle_hf_hub::Repo::model(name.to_string()))
         };
         let model_file = sai_repo.get("sd3_medium_incl_clips_t5xxlfp16.safetensors")?;
         let vb = unsafe {

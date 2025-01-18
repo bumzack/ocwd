@@ -2,7 +2,7 @@ use candle_core::utils::{cuda_is_available, metal_is_available};
 use candle_core::Result as CandleResult;
 use candle_core::{Device, Tensor};
 
-pub fn device(cpu: bool) -> CandleResult<Device> {
+pub fn get_device(cpu: bool) -> CandleResult<Device> {
     if cpu {
         Ok(Device::Cpu)
     } else if cuda_is_available() {
