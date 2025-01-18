@@ -1,6 +1,7 @@
 use candle_core::utils::{cuda_is_available, metal_is_available};
 use candle_core::Result as CandleResult;
 use candle_core::{Device, Tensor};
+use crate::candle_tools::bs1770;
 
 pub fn get_device(cpu: bool) -> CandleResult<Device> {
     if cpu {
@@ -40,3 +41,59 @@ pub fn save_image<P: AsRef<std::path::Path>>(img: &Tensor, p: P) -> CandleResult
     image.save(p).map_err(candle_core::Error::wrap)?;
     Ok(())
 }
+
+pub fn hub_load_safetensors(
+    repo: &candle_hf_hub::api::sync::ApiRepo,
+    json_file: &str,
+) -> CandleResult<Vec<std::path::PathBuf>> {
+    let json_file = repo.get(json_file).map_err(candle_core::Error::wrap)?;
+    let json_file = std::fs::File::open(json_file)?;
+    let json: serde_json::Value =
+        serde_json::from_reader(&json_file).map_err(candle_core::Error::wrap)?;
+    let weight_map = match json.get("weight_map") {
+        None => candle_core::bail!("no weight map in {json_file:?}"),
+        Some(serde_json::Value::Object(map)) => map,
+        Some(_) => candle_core::bail!("weight map in {json_file:?} is not a map"),
+    };
+    let mut safetensors_files = std::collections::HashSet::new();
+    for value in weight_map.values() {
+        if let Some(file) = value.as_str() {
+            safetensors_files.insert(file.to_string());
+        }
+    }
+    let safetensors_files = safetensors_files
+        .iter()
+        .map(|v| repo.get(v).map_err(candle_core::Error::wrap))
+        .collect::<CandleResult<Vec<_>>>()?;
+    Ok(safetensors_files)
+}
+
+
+// https://github.com/facebookresearch/audiocraft/blob/69fea8b290ad1b4b40d28f92d1dfc0ab01dbab85/audiocraft/data/audio_utils.py#L57
+pub fn normalize_loudness(
+    wav: &Tensor,
+    sample_rate: u32,
+    loudness_compressor: bool,
+) -> CandleResult<Tensor> {
+    let energy = wav.sqr()?.mean_all()?.sqrt()?.to_vec0::<f32>()?;
+    if energy < 2e-3 {
+        return Ok(wav.clone());
+    }
+    let wav_array = wav.to_vec1::<f32>()?;
+    let mut meter  = bs1770::ChannelLoudnessMeter::new(sample_rate);
+    meter.push(wav_array.into_iter());
+    let power = meter.as_100ms_windows();
+    let loudness = match bs1770::gated_mean(power) {
+        None => return Ok(wav.clone()),
+        Some(gp) => gp.loudness_lkfs() as f64,
+    };
+    let delta_loudness = -14. - loudness;
+    let gain = 10f64.powf(delta_loudness / 20.);
+    let wav = (wav * gain)?;
+    if loudness_compressor {
+        wav.tanh()
+    } else {
+        Ok(wav)
+    }
+}
+
