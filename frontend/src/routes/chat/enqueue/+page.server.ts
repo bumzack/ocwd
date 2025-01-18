@@ -7,8 +7,11 @@ export const ssr = true;
 
 export const load: PageServerLoad = async () => {
 	const models = await load_db_models();
+
+	console.log(`models ${JSON.stringify(models, null, 4)}`);
+
 	if (models) {
-		let mms = models.map((mod) => {
+		const mms = models.map((mod) => {
 			const om: OllamaModel = {
 				checked: false,
 				created: mod.created,

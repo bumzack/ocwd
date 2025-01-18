@@ -8,6 +8,8 @@ export const ssr = true;
 export const load: PageServerLoad = async () => {
 	const models = await load_db_models();
 
+	console.log(`models ${JSON.stringify(models, null, 4)}`);
+
 	if (models) {
 		const props: PropsFeDbModels = {
 			models: models

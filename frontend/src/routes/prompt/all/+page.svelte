@@ -9,7 +9,7 @@
 
 </script>
 
-<LoadingSpinner show={!hasData} />
+<!--<LoadingSpinner show={!hasData} />-->
 
 <div class="container-fluid">
 	<div class="row">

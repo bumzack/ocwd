@@ -14,12 +14,16 @@ import type {
 	InsertModelsResponse
 } from './models';
 
-//const server = 'http://10.0.0.48:3023';
-const server = 'http://127.0.0.1:3023';
+const server = 'http://10.0.0.48:3022';
+// const server = 'http://127.0.0.1:3023';
 
 export const load_local_models = async (): Promise<FeOllamaModel[]> => {
+
 	try {
-		const response = await fetch(server + '/api/model', {
+		const url = `${server}/api/model`;
+		console.log(`url ${url}`);
+
+		const response = await fetch(url, {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json, text/plain, */*'
@@ -40,7 +44,10 @@ export const load_local_models = async (): Promise<FeOllamaModel[]> => {
 
 export const load_db_models = async (): Promise<FeDbOllamaModel[]> => {
 	try {
-		const response = await fetch(server + '/api/dbmodel', {
+		const url = `${server}/api/dbmodel`;
+		console.log(`url ${url}`);
+
+		const response = await fetch(url, {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json, text/plain, */*'
@@ -61,7 +68,10 @@ export const load_db_models = async (): Promise<FeDbOllamaModel[]> => {
 
 export const load_running_models = async (): Promise<FeOllamaRunningModel[]> => {
 	try {
-		const response = await fetch(server + '/api/model/loaded', {
+		const url = `${server}/api/model/loaded`;
+		console.log(`url ${url}`);
+
+		const response = await fetch(url, {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json, text/plain, */*'
@@ -84,7 +94,10 @@ export const enqueue_models = async (
 	request: FeRunModelRequest
 ): Promise<FeOllamaChatQueueResponse[]> => {
 	try {
-		const response = await fetch(server + '/api/model/enqueue', {
+		const url = `${server}/api/model/enqueue`;
+		console.log(`url ${url}`);
+
+		const response = await fetch(url, {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json, text/plain, */*'
@@ -107,7 +120,10 @@ export const enqueue_models = async (
 
 export const models_import = async (): Promise<InsertModelsResponse[]> => {
 	try {
-		const response = await fetch(server + '/api/model/import', {
+		const url = `${server}/api/model/import`;
+		console.log(`url ${url}`);
+
+		const response = await fetch(url, {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json, text/plain, */*'
@@ -129,7 +145,10 @@ export const models_import = async (): Promise<InsertModelsResponse[]> => {
 
 export const prompts_load = async (): Promise<FeOllamaPrompt[]> => {
 	try {
-		const response = await fetch(server + '/api/prompt', {
+		const url = `${server}/api/prompt`;
+		console.log(`url ${url}`);
+
+		const response = await fetch(url, {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json, text/plain, */*'
@@ -152,6 +171,7 @@ export const prompts_load = async (): Promise<FeOllamaPrompt[]> => {
 export const chats_load_by_prompt_id = async (promptId: number): Promise<FeOllamaChat[]> => {
 	try {
 		const url = `${server}/api/chat/byid/${promptId}`;
+ 		console.log(`url ${url}`);
 
 		const response = await fetch(url, {
 			headers: {
@@ -177,6 +197,7 @@ export const chats_load_by_prompt_id = async (promptId: number): Promise<FeOllam
 export const prompt_by_id = async (promptId: number): Promise<FeOllamaPrompt> => {
 	try {
 		const url = `${server}/api/prompt/${promptId}`;
+		console.log(`url ${url}`);
 
 		const response = await fetch(url, {
 			headers: {
@@ -201,6 +222,7 @@ export const prompt_by_id = async (promptId: number): Promise<FeOllamaPrompt> =>
 export const chats_load_all = async (): Promise<FeOllamaChat[]> => {
 	try {
 		const url = `${server}/api/chat`;
+ 		console.log(`url ${url}`);
 
 		const response = await fetch(url, {
 			headers: {
@@ -224,7 +246,10 @@ export const chats_load_all = async (): Promise<FeOllamaChat[]> => {
 
 export const queue_load = async (): Promise<FeOllamaChatQueue[]> => {
 	try {
-		const response = await fetch(server + '/api/queue', {
+		const url = `${server}/api/queue`;
+		console.log(`url ${url}`);
+
+		const response = await fetch(url, {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json, text/plain, */*'
@@ -249,6 +274,7 @@ export const ollama_chat_update_result = async (
 ): Promise<FeOllamaChat> => {
 	try {
 		const url = `${server}/api/chat/result`;
+ 		console.log(`url ${url}`);
 
 		const response = await fetch(url, {
 			headers: {
@@ -276,6 +302,7 @@ export const ollama_chat_update_result = async (
 export const streaming_response = async (req: FeStreamingRequest): Promise<Response> => {
 	try {
 		const url = `${server}/ollama/api/stream`;
+		console.log(`url ${url}`);
 
 		return await fetch(url, {
 			headers: {
@@ -294,6 +321,8 @@ export const streaming_response = async (req: FeStreamingRequest): Promise<Respo
 export const create_model = async (request: CreateModelRequest): Promise<Response> => {
 	try {
 		const url = `${server}/api/model/create`;
+		console.log(`url ${url}`);
+
 		return await fetch(url, {
 			headers: {
 				'Content-Type': 'application/json',
@@ -312,8 +341,8 @@ export const create_model = async (request: CreateModelRequest): Promise<Respons
 export const ollama_model_information = async (model: string): Promise<FeOllamaInformation> => {
 	try {
 		const url = `${server}/api/model/details/${model}`;
-
 		console.log(`url  ${url}`);
+
 		const response = await fetch(url, {
 			headers: {
 				'Content-Type': 'application/json',

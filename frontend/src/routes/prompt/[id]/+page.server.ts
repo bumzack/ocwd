@@ -10,6 +10,9 @@ export const load: PageServerLoad = async ({ params }) => {
 	const chats = await chats_load_by_prompt_id(id);
 	const prompt = await prompt_by_id(id);
 
+	console.log(`prompt ${JSON.stringify(prompt, null, 4)}`);
+	console.log(`chats ${JSON.stringify(chats, null, 4)}`);
+
 	if (chats) {
 		const props: PropsChatPrompt = {
 			chats: chats,
