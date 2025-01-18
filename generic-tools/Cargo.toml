@@ -1,0 +1,35 @@
+[package]
+name = "tools"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1.42.0", features = ["macros", "rt-multi-thread"] }
+serde_json = { version = "1.0.135" }
+tokio-postgres = { version = "0.7.12", features = ["with-chrono-0_4", "with-serde_json-1"] }
+chrono = "0.4.39"
+anyhow = "1.0.95"
+candle-core = { version = "0.8.2"  }
+# candle-core = { version = "0.8.2", features = ["cuda", "cudarc", "cudnn", "accelerate"] }
+candle-nn = { version = "0.8.2"  }
+# candle-nn = { version = "0.8.2", features = ["cuda", "accelerate"] }
+candle-hf-hub = "0.3.3"
+candle-transformers = { version = "0.8.2"  }
+#candle-transformers = { version = "0.8.2", features = ["cuda", "accelerate"] }
+candle-flash-attn = { version = "0.8.2", optional = true }
+#candle-flash-attn = { version = "0.8.2", optional = true }
+tokenizers = { version = "0.21.0", features = ["onig"] }
+safetensors = { version = "0.5.2" }
+# accelerate-src = { version = "0.3.2", optional = true }
+hf-hub = "0.4.1"
+image = "0.25.5"
+
+[build-dependencies]
+anyhow = "1.0.95"
+bindgen_cuda = { version = "0.1.1", optional = true }
+
+
+[features]
+default = []
+# cuda = ["candle-core/cuda", "candle-nn/cuda", "candle-transformers/cuda", "cudarc/cudnn", "dep:bindgen_cuda"]
+# cudarc =  features = ["cudnn"]
