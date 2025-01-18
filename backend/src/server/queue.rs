@@ -90,7 +90,10 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
 
                     match db_ollama_queue_update {
                         Ok(res) => {
-                            info!("successfully updated ollamaold enqueue status. id {}", res.id);
+                            info!(
+                                "successfully updated ollama enqueue status. id {}",
+                                res.id
+                            );
                         }
                         Err(e) => {
                             error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");

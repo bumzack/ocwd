@@ -47,7 +47,7 @@ pub async fn ollama_model_insert(
         let u = DbNewOllamaModel {
             name: model.name.clone(),
             model: model.model.clone(),
-            size: model.size ,
+            size: model.size,
             detail_format: model.details.format.clone(),
             detail_family: model.details.family.clone(),
             detail_parameter_size: model.details.parameter_size.clone(),

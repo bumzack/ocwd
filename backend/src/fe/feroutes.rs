@@ -253,7 +253,7 @@ pub async fn streaming_response(
     Json(request): Json<FeStreamingRequest>,
 ) -> impl IntoResponse {
     println!("got a request for streaming chat {:?}", request);
-    let db_model = ollama_model_load_by_id(&pool, request.model_id  )
+    let db_model = ollama_model_load_by_id(&pool, request.model_id)
         .await
         .expect("expect the model to be present")
         // hahahahaaaha
