@@ -2,6 +2,7 @@ use reqwest::Client;
 use serde::Deserialize;
 use serde::Serialize;
 use std::collections::HashMap;
+use serde_json::Value;
 
 #[derive(Debug, Clone)]
 pub struct Ollama {
@@ -12,7 +13,7 @@ pub struct Ollama {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ToolCallFunction {
     pub name: String,
-    pub arguments: Option<HashMap<String, String>>,
+    pub arguments: Option<HashMap<String, Value>>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -21,11 +22,25 @@ pub struct ToolCall {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Content {
+    pub status: String,
+    pub message: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(untagged)]
+pub enum ContentEnum {
+    AString(String),
+    AContent(Content),
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Message {
     pub role: String,
-    pub content: String,
+    pub content: ContentEnum,
     pub images: Option<Vec<String>>,
-    pub tool_calls: Vec<ToolCall>,
+    pub tool_calls: Option<Vec<ToolCall>>,
+    pub tool_call_id: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
@@ -100,11 +115,11 @@ pub struct Tool {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ChatRequest {
     pub model: String,
-    pub prompt: String,
+    pub prompt: Option<String>,
     pub stream: bool,
     pub options: Option<ChatRequestOptions>,
     pub messages: Option<Vec<Message>>,
-    pub format: Option<Format>,
+    pub format: Option<String>,
     pub tools: Option<Vec<Tool>>,
 }
 
@@ -112,7 +127,7 @@ pub struct ChatRequest {
 pub struct ChatResponse {
     pub model: String,
     pub created_at: String,
-    pub response: String,
+    pub response: Option<String>,
     pub done: bool,
     pub context: Option<Vec<u32>>,
     pub total_duration: Option<i64>,

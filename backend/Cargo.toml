@@ -30,6 +30,7 @@ tower-http = { version = "0.6.2", features = ["cors", "trace"] }
 lazy_static = "1.5.0"
 tracing-appender = "0.2.3"
 ollama = { path = "../ollama" }
+generic-tools = { path = "../generic-tools" }
 
 
 [dependencies.uuid]
@@ -39,3 +40,12 @@ features = [
     "fast-rng", # Use a faster (but still sufficiently random) RNG
     "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
 ]
+
+[features]
+default = []
+cuda = ["generic-tools/cuda"]
+cudnn = ["generic-tools/cudnn"]
+accelerate = ["generic-tools/accelerate"]
+flash-attn = ["generic-tools/flash-attn"]
+metal = ["generic-tools/metal"]
+

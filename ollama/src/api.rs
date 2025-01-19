@@ -85,7 +85,7 @@ impl OllamaImpl for Ollama {
     }
 
     async fn chat(&self, request: &ChatRequest) -> Result<ChatResponse, OllamaError> {
-        let url = format!("{}/api/generate", self.url);
+        let url = format!("{}/api/chat", self.url);
         let json = json!(request);
 
         let res = self.client.post(url).body(json.to_string()).send().await?;
@@ -97,6 +97,9 @@ impl OllamaImpl for Ollama {
         }
 
         let body = res.text().await.map_err(OllamaError::from)?;
+        let pretty = serde_json::to_string_pretty(&body).map_err(OllamaError::from)?;
+        println!("pretty {}", pretty);
+
         let res = serde_json::from_str::<ChatResponse>(&body).map_err(OllamaError::from)?;
         Ok(res)
     }

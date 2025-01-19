@@ -278,6 +278,7 @@ pub async fn streaming_response(
     let mut properties = HashMap::new();
     properties.insert("location".to_string(), property_location);
     properties.insert("format".to_string(), property_format);
+
     let parameters = Parameter {
         typ: "object".to_string(),
         properties,
