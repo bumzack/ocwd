@@ -26,7 +26,8 @@ bindgen_cuda = { version = "0.1.5", optional = true }
 
 [features]
 default = []
-cuda = ["candle-core/cuda", "candle-core/cudarc", "candle-core/cudnn", "candle-nn/cuda", "candle-transformers/cuda", "dep:bindgen_cuda"]
+cuda = ["candle-core/cuda", "candle-core/cudarc", "candle-core/cuda", "candle-nn/cuda", "candle-transformers/cuda", "dep:bindgen_cuda"]
+cudnn = ["candle-core/cudnn", "candle-core/cudnn", "candle-core/cudnn", "dep:bindgen_cuda"]
 accelerate = ["accelerate-src", "candle-core/accelerate", "candle-nn/accelerate", "candle-transformers/accelerate", "dep:bindgen_cuda"]
 flash-attn = ["cuda", "candle-transformers/flash-attn", "dep:candle-flash-attn"]
-metal = ["candle-core/metal", "candle-nn/metal"]
+metal = ["candle-core/metal", "candle-nn/metal", "candle-transformers/metal"]

@@ -37,3 +37,14 @@ To use locally building a preview seems sufficient.
 npm run preview
 ```
 
+## for flash-attn: cutlass / BLAS
+
+see https://developer.nvidia.com/cublas
+
+cutlass https://github.com/NVIDIA/cutlass/blob/main/media/docs/quickstart.md
+
+
+build cutlass for NVIDIA 3090 Ti
+```
+cmake ..  -DCUTLASS_NVCC_ARCHS=80      -DCUTLASS_LIBRARY_KERNELS=all
+```
