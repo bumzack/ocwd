@@ -23,8 +23,8 @@ pub struct ToolCall {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Content {
-    pub status: String,
-    pub message: String,
+    pub status: Option<String>,
+    pub message: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -32,6 +32,7 @@ pub struct Content {
 pub enum ContentEnum {
     AString(String),
     AContent(Content),
+    AValue(Value),
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

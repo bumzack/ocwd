@@ -41,8 +41,10 @@ impl OllamaImpl for Ollama {
             .map_err(OllamaError::from)?;
 
         let body = res.text().await.map_err(OllamaError::from)?;
-
         let models = serde_json::from_str::<ListModelResponse>(&body).map_err(OllamaError::from)?;
+        let pretty = serde_json::to_string_pretty(&models).map_err(OllamaError::from)?;
+
+        println!("models {}", pretty);
 
         Ok(models.models)
     }
@@ -87,7 +89,6 @@ impl OllamaImpl for Ollama {
     async fn chat(&self, request: &ChatRequest) -> Result<ChatResponse, OllamaError> {
         let url = format!("{}/api/chat", self.url);
         let json = json!(request);
-
         let res = self.client.post(url).body(json.to_string()).send().await?;
 
         if !res.status().is_success() {
@@ -95,12 +96,9 @@ impl OllamaImpl for Ollama {
             let msg = format!("reqwest returned an error. response body:  {:?}", err);
             return Err(OllamaError::AllTheOtherErrors(msg));
         }
-
         let body = res.text().await.map_err(OllamaError::from)?;
-        let pretty = serde_json::to_string_pretty(&body).map_err(OllamaError::from)?;
-        println!("pretty {}", pretty);
-
         let res = serde_json::from_str::<ChatResponse>(&body).map_err(OllamaError::from)?;
+
         Ok(res)
     }
 

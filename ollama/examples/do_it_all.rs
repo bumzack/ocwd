@@ -7,27 +7,151 @@ use std::collections::HashMap;
 
 #[tokio::main]
 async fn main() -> Result<(), OllamaError> {
-    let model = "llama3-groq-tool-use:8b";
-
+    let mut res = HashMap::new();
     let o = Ollama::new("http://localhost:11434".to_string()).expect("Couldn't open old sdk SDK");
+    let skip = 0;
+    let take = 1;
 
     let local_models = o.local_models().await?;
 
-    local_models
-        .iter()
-        .for_each(|lm| println!("local models: {:?}", lm));
+    let tools = get_tools();
 
-    let loaded_models = o.local_models().await?;
+    for local_model in local_models.iter().skip(skip).take(take) {
+        let mesg = Message {
+            role: "user".to_string(),
+            content: ContentEnum::AString("How is the weather in San Francisco".to_string()),
+            images: None,
+            tool_calls: Some(vec![]),
+            tool_call_id: None,
+        };
 
-    loaded_models
-        .iter()
-        .for_each(|lm| println!("loaded model: {:?}", lm));
+        // let mesg = Message {
+        //     role: "user".to_string(),
+        //     content: ContentEnum::AString("How much is 23 minus 2".to_string()),
+        //     images: None,
+        //     tool_calls: Some(vec![]),
+        //     tool_call_id: None,
+        // };
 
-    let model = local_models
-        .iter()
-        .find(|m| m.model.eq(model))
-        .expect("No model found");
+        let request = ChatRequest {
+            model: local_model.name.to_string(),
+            prompt: None,
+            stream: false,
+            options: None,
+            messages: Some(vec![mesg]),
+            format: Some("json".to_string()),
+            tools: Some(tools.clone()),
+        };
 
+        // let request_pretty = serde_json::to_string_pretty(&request).expect("should be a json");
+        println!("request.model: {}", request.model);
+        println!("request.messages: {:?}", request.messages);
+
+        let mut had_tool_call = false;
+        let mut r = o.chat(&request).await;
+
+        let mut cnt = 0;
+        loop {
+            match r.as_ref() {
+                Ok(res) => {
+                    // let response_pretty =
+                    //     serde_json::to_string_pretty(&res).expect("should be a json response");
+                    println!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
+                    // println!("response: \n {:?}\n", response_pretty);
+                    match res.response.as_ref() {
+                        Some(rrr) => println!("property response: {:?}", rrr),
+                        None => println!("property response empty"),
+                    }
+                    match res.message.as_ref() {
+                        Some(rrr) => println!("property message: {:?}", rrr),
+                        None => println!("property message"),
+                    }
+                    println!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
+                    let mut msg_responses = vec![];
+
+                    if res.message.is_some() {
+                        let msg = res.message.clone().unwrap();
+
+                        println!("content {:?}", msg.content);
+
+                        let old_msg = Message {
+                            role: msg.role.clone(),
+                            content: msg.content.clone(),
+                            images: None,
+                            tool_calls: msg.tool_calls.clone(),
+                            tool_call_id: msg.tool_call_id.clone(),
+                        };
+
+                        println!("old_msg {:?}", old_msg);
+                        msg_responses.push(old_msg);
+
+                        if msg.tool_calls.is_some() {
+                            had_tool_call = true;
+                            let tool_calls = msg.tool_calls.as_ref().unwrap();
+                            for tool_call in tool_calls {
+                                let response_msg = match tool_call.function.name.as_str() {
+                                    "get_current_weather" => Some(Message {
+                                        role: "tool".to_string(),
+                                        content: ContentEnum::AString("23".to_string()),
+                                        images: None,
+                                        tool_call_id: Some("get_current_weather".to_string()),
+                                        tool_calls: None,
+                                    }),
+                                    "subtract_two_numbers" => Some(Message {
+                                        role: "tool".to_string(),
+                                        content: ContentEnum::AString("-222222".to_string()),
+                                        images: None,
+                                        tool_call_id: Some("subtract_two_numbers".to_string()),
+                                        tool_calls: None,
+                                    }),
+                                    _ => None,
+                                };
+
+                                if response_msg.is_some() {
+                                    msg_responses.push(response_msg.unwrap());
+                                }
+                            }
+                        } else {
+                        }
+                    }
+
+                    let new_request = ChatRequest {
+                        model: local_model.name.to_string(),
+                        prompt: None,
+                        stream: false,
+                        options: None,
+                        messages: Some(msg_responses),
+                        format: Some("json".to_string()),
+                        tools: Some(tools.clone()),
+                    };
+
+                    r = o.chat(&new_request).await;
+                }
+                Err(e) => {
+                    println!("Error: {:?}", e);
+                }
+            }
+            cnt += 1;
+
+            if cnt > 5 || !had_tool_call {
+                println!(
+                    "break out of loop. cnt {}, had_tool_call {}",
+                    cnt, had_tool_call
+                );
+                break;
+            }
+        }
+        res.insert(local_model.model.clone(), had_tool_call);
+    }
+
+    res.iter().for_each(|(name, result)| {
+        println!("{} -> {}", name, result);
+    });
+
+    Ok(())
+}
+
+fn get_tools() -> Vec<Tool> {
     let property_location = Property {
         typ: "string".to_string(),
         description: "The location to get the weather for, e.g. San Francisco, CA".to_string(),
@@ -95,123 +219,5 @@ async fn main() -> Result<(), OllamaError> {
         function: function_sub,
     };
 
-    let mesg = Message {
-        role: "user".to_string(),
-        content: ContentEnum::AString("How is the weather in San Francisco".to_string()),
-        images: None,
-        tool_calls: Some(vec![]),
-        tool_call_id: None,
-    };
-
-    let mesg = Message {
-        role: "user".to_string(),
-        content: ContentEnum::AString("How much is 23 minus 2".to_string()),
-        images: None,
-        tool_calls: Some(vec![]),
-        tool_call_id: None,
-    };
-
-    let request = ChatRequest {
-        model: model.name.to_string(),
-        prompt: None,
-        stream: false,
-        options: None,
-        messages: Some(vec![mesg]),
-        format: Some("json".to_string()),
-        tools: Some(vec![tool.clone(), tool_sub.clone()]),
-    };
-
-    let request_pretty = serde_json::to_string_pretty(&request).expect("should be a json");
-
-    println!("request: \n{}\n", request_pretty);
-
-    match o.chat(&request).await {
-        Ok(res) => {
-            let response_pretty =
-                serde_json::to_string_pretty(&res).expect("should be a json response");
-            println!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
-            println!("response: \n {:?}\n", response_pretty);
-            println!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
-            let mut msg_responses = vec![];
-
-            if res.message.is_some() {
-                let msg = res.message.unwrap();
-                let new_req_msg = Message {
-                    role: msg.role.clone(),
-                    content: msg.content.clone(),
-                    images: None,
-                    tool_calls: msg.tool_calls.clone(),
-                    tool_call_id: msg.tool_call_id.clone(),
-                };
-
-                println!("new_req_msg {:?}", new_req_msg);
-                msg_responses.push(new_req_msg);
-
-                if msg.tool_calls.is_some() {
-                    let tool_calls = msg.tool_calls.as_ref().unwrap();
-                    for tool_call in tool_calls {
-                        let response_msg = match tool_call.function.name.as_str() {
-                            "get_current_weather" => Some(Message {
-                                role: "tool".to_string(),
-                                content: ContentEnum::AString("23".to_string()),
-                                images: None,
-                                tool_call_id: Some("get_current_weather".to_string()),
-                                tool_calls: None,
-                            }),
-                            "subtract_two_numbers" => Some(Message {
-                                role: "tool".to_string(),
-                                content: ContentEnum::AString("-222222".to_string()),
-                                images: None,
-                                tool_call_id: Some("subtract_two_numbers".to_string()),
-                                tool_calls: None,
-                            }),
-                            _ => None,
-                        };
-
-                        if response_msg.is_some() {
-                            msg_responses.push(response_msg.unwrap());
-                        }
-                    }
-                }
-            }
-
-            let new_request = ChatRequest {
-                model: model.name.to_string(),
-                prompt: None,
-                stream: false,
-                options: None,
-                messages: Some(msg_responses),
-                format: Some("json".to_string()),
-                tools: Some(vec![tool.clone(), tool_sub.clone()]),
-            };
-
-            println!("------------------------------------------------------------------------------------------------------");
-            println!("new_request {:?}", new_request);
-            println!("------------------------------------------------------------------------------------------------------");
-
-            match o.chat(&new_request).await {
-                Ok(new_res) => {
-                    println!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-                    println!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-                    println!("new_response {:?}", new_res);
-                    println!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-                    println!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-                }
-                Err(e) => {
-                    println!("new error: {:?}", e);
-                }
-            }
-        }
-        Err(e) => {
-            println!("Error: {:?}", e);
-        }
-    }
-
-    if loaded_models.len() > 0 {
-        let model = loaded_models.first().expect("no model    found    ");
-        let model = &model.name;
-        o.unload(model).await?;
-    }
-
-    Ok(())
+    vec![tool.clone(), tool_sub.clone()]
 }
