@@ -11,14 +11,43 @@ use std::time::Instant;
 //  using async fn in a trait, which could be a problem for multithreaded use cases
 // if problems arise, read again here: https://blog.rust-lang.org/2023/12/21/async-fn-rpit-in-traits.html
 pub trait OllamaImpl {
-    async fn local_models(&self) -> Result<Vec<ListModel>, OllamaError>;
-    async fn loaded_models(&self) -> Result<Vec<RunningModel>, OllamaError>;
-    async fn chat(&self, request: &ChatRequest) -> Result<ChatResponse, OllamaError>;
-    async fn chat_dump(&self, request: &ChatRequest) -> Result<(ChatResponse, u64), OllamaError>;
-    async fn chat_streaming(&self, request: &ChatRequest) -> Result<Response, OllamaError>;
-    async fn unload(&self, model: &str) -> Result<(), OllamaError>;
-    async fn details(&self, model: &str) -> Result<OllamaInformation, OllamaError>;
-    async fn create(&self, request: CreateModelRequest) -> Result<Response, OllamaError>;
+    fn local_models(
+        &self,
+    ) -> impl std::future::Future<Output = Result<Vec<ListModel>, OllamaError>> + Send;
+
+    fn loaded_models(
+        &self,
+    ) -> impl std::future::Future<Output = Result<Vec<RunningModel>, OllamaError>> + Send;
+
+    fn chat(
+        &self,
+        request: &ChatRequest,
+    ) -> impl std::future::Future<Output = Result<ChatResponse, OllamaError>> + Send;
+
+    fn chat_dump(
+        &self,
+        request: &ChatRequest,
+    ) -> impl std::future::Future<Output = Result<(ChatResponse, u64), OllamaError>> + Send;
+
+    fn chat_streaming(
+        &self,
+        request: &ChatRequest,
+    ) -> impl std::future::Future<Output = Result<Response, OllamaError>> + Send;
+
+    fn unload(
+        &self,
+        model: &str,
+    ) -> impl std::future::Future<Output = Result<(), OllamaError>> + Send;
+
+    fn details(
+        &self,
+        model: &str,
+    ) -> impl std::future::Future<Output = Result<OllamaInformation, OllamaError>> + Send;
+
+    fn create(
+        &self,
+        request: CreateModelRequest,
+    ) -> impl std::future::Future<Output = Result<Response, OllamaError>> + Send;
 }
 
 impl Ollama {
@@ -86,6 +115,9 @@ impl OllamaImpl for Ollama {
     async fn chat(&self, request: &ChatRequest) -> Result<ChatResponse, OllamaError> {
         let url = format!("{}/api/chat", self.url);
         let json = json!(request);
+
+        println!("request.prompt {:?} ", request.prompt);
+
         let res = self.client.post(url).body(json.to_string()).send().await?;
 
         if !res.status().is_success() {
@@ -95,6 +127,9 @@ impl OllamaImpl for Ollama {
         }
         let body = res.text().await.map_err(OllamaError::from)?;
         let res = serde_json::from_str::<ChatResponse>(&body).map_err(OllamaError::from)?;
+
+        println!("response.response {:?} ", res.response);
+        println!("response.message  {:?} ", res.message);
 
         Ok(res)
     }
