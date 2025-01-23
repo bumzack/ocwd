@@ -9,7 +9,7 @@ use crate::fe::feroutes::{
 };
 use crate::fe::feroutes::{list_db_models, model_create, models_details};
 use crate::server::models::Config;
-use crate::server::queue::{run_queue, start_queue, stop_queue};
+use crate::server::queue::{start_queue, stop_queue};
 use crate::server::utils::cors_layer;
 use axum::extract::MatchedPath;
 use axum::http::Request;
