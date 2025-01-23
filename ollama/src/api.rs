@@ -131,6 +131,9 @@ impl OllamaImpl for Ollama {
             let msg = format!("reqwest returned an error. response body:  {:?}", err);
             return Err(OllamaError::AllTheOtherErrors(msg));
         }
+
+        println!("response status: {:?}", res.status());
+
         let body = res.text().await.map_err(OllamaError::from)?;
         let res = serde_json::from_str::<ChatResponse>(&body).map_err(OllamaError::from)?;
 
