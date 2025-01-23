@@ -6,7 +6,7 @@ use crate::models::{
 };
 use reqwest::{Client, Response};
 use serde_json::json;
-use std::time::Instant;
+use tokio::time::Instant;
 
 //  using async fn in a trait, which could be a problem for multithreaded use cases
 // if problems arise, read again here: https://blog.rust-lang.org/2023/12/21/async-fn-rpit-in-traits.html
@@ -115,8 +115,11 @@ impl OllamaImpl for Ollama {
     async fn chat(&self, request: &ChatRequest) -> Result<ChatResponse, OllamaError> {
         let url = format!("{}/api/chat", self.url);
         let json = json!(request);
-
-        println!("request.prompt {:?} ", request.prompt);
+        let start = Instant::now();
+        println!(
+            "model {}, request.prompt {:?} ",
+            request.model, request.prompt
+        );
 
         let res = self.client.post(url).body(json.to_string()).send().await?;
 
@@ -128,9 +131,19 @@ impl OllamaImpl for Ollama {
         let body = res.text().await.map_err(OllamaError::from)?;
         let res = serde_json::from_str::<ChatResponse>(&body).map_err(OllamaError::from)?;
 
-        println!("response.response {:?} ", res.response);
-        println!("response.message  {:?} ", res.message);
-
+        println!(
+            "request.model: {}, response.response {:?} ",
+            request.model, res.response
+        );
+        println!(
+            "request.model: {}, response.message  {:?} ",
+            request.model, res.message
+        );
+        println!(
+            "request.model: {}, duration {}ms",
+            request.model,
+            start.elapsed().as_millis()
+        );
         Ok(res)
     }
 
