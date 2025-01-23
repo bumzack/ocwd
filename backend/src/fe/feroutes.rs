@@ -44,10 +44,10 @@ pub async fn list_local_models() -> Result<Json<Vec<FeOllamaModel>>, OllamaChatE
             name: x.name.clone(),
             model: x.model.clone(),
             size: x.size,
-            detail_format: x.details.format.clone(),
-            detail_family: x.details.family.clone(),
-            detail_parameter_size: x.details.parameter_size.clone(),
-            detail_quantization_level: x.details.quantization_level.clone(),
+            detail_format: x.details.format.clone().unwrap_or_default(),
+            detail_family: x.details.family.clone().unwrap_or_default(),
+            detail_parameter_size: x.details.parameter_size.clone().unwrap_or_default(),
+            detail_quantization_level: x.details.quantization_level.clone().unwrap_or_default(),
         })
         .collect();
 
@@ -211,10 +211,10 @@ pub async fn models_loaded() -> Result<Json<Vec<FeOllamaModel>>, OllamaChatError
             name: x.name.clone(),
             model: x.model.clone(),
             size: x.size,
-            detail_format: x.details.format.clone(),
-            detail_family: x.details.family.clone(),
-            detail_parameter_size: x.details.parameter_size.clone(),
-            detail_quantization_level: x.details.quantization_level.clone(),
+            detail_format: x.details.format.clone().unwrap_or_default(),
+            detail_family: x.details.family.clone().unwrap_or_default(),
+            detail_parameter_size: x.details.parameter_size.clone().unwrap_or_default(),
+            detail_quantization_level: x.details.quantization_level.clone().unwrap_or_default(),
         })
         .collect();
 
@@ -298,7 +298,7 @@ pub async fn streaming_response(
 
     let request = ChatRequest {
         model: db_model.name.clone(),
-        prompt: request.prompt.clone(),
+        prompt: Some(request.prompt.clone()),
         stream: true,
         options: None,
         messages: None,
@@ -388,8 +388,8 @@ pub async fn models_details(
         template: details.template.to_string(),
         details: details.details,
         model_info: details.model_info,
-        license: details.license.to_string(),
-        modified_at: details.modified_at.clone(),
+        license: details.license.unwrap_or_default(),
+        modified_at: details.modified_at.clone().unwrap_or_default(),
     };
     Ok(Json(details))
 }

@@ -195,7 +195,7 @@ impl OllamaImpl for Ollama {
 
         let duration = start.elapsed().as_millis();
         let body = res.text().await.map_err(OllamaError::from)?;
-        println!("body {:?}", body);
+        println!("call to /api/show tool {}ms,  body {:?}", duration, body);
         let res = serde_json::from_str::<OllamaInformation>(&body).map_err(OllamaError::from)?;
         Ok(res)
     }

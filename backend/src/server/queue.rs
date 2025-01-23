@@ -74,7 +74,7 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
 
                     let request = ChatRequest {
                         model: db_model.model,
-                        prompt: db_prompt.prompt.clone(),
+                        prompt: Some(db_prompt.prompt.clone()),
                         stream: false,
                         options: Some(opt),
                         messages: None,

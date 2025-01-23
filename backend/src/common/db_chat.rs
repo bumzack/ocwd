@@ -72,11 +72,13 @@ pub async fn ollama_chat_insert(
         None => (-1.0, 0, 0, -1.0, -1.0),
     };
 
+    let response_txt = ollama_response.response.clone().unwrap_or_default();
+
     let new_chat = DbNewOllamaChat {
         model_id: mmodel_id,
         parent_id: None,
         prompt_id: pprompt_id,
-        response: ollama_response.response.clone(),
+        response: response_txt,
         ollama_response_json: json!(ollama_response),
         ollama_request_json: json!(ollama_request),
         temperature: temperature as f64,

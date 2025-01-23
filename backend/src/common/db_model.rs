@@ -48,10 +48,10 @@ pub async fn ollama_model_insert(
             name: model.name.clone(),
             model: model.model.clone(),
             size: model.size,
-            detail_format: model.details.format.clone(),
-            detail_family: model.details.family.clone(),
-            detail_parameter_size: model.details.parameter_size.clone(),
-            detail_quantization_level: model.details.quantization_level.clone(),
+            detail_format: model.details.format.clone().unwrap_or_default(),
+            detail_family: model.details.family.clone().unwrap_or_default(),
+            detail_parameter_size: model.details.parameter_size.clone().unwrap_or_default(),
+            detail_quantization_level: model.details.quantization_level.clone().unwrap_or_default(),
         };
 
         let db_ollama_model = conn
