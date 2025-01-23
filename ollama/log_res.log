@@ -1,0 +1,395 @@
+cnt models 44
+START: model.name athene-v2:72b, prompt 'Get me a list of all products in the shop.''
+END model.name athene-v2:72b, prompt 'Get me a list of all products in the shop.'', duration 90
+mini {
+  "prompt": "Get me a list of all products in the shop.'",
+  "response_txt": "",
+  "duration": 90,
+  "error": null,
+  "success": true,
+  "message": {
+    "role": "assistant",
+    "content": "",
+    "images": null,
+    "tool_calls": [
+      {
+        "function": {
+          "name": "get_postgres_access_db",
+          "arguments": {
+            "prompt": "SELECT * FROM products;",
+            "secret": "demo_secret"
+          }
+        }
+      }
+    ],
+    "tool_call_id": null
+  }
+}
+START: model.name athene-v2:72b, prompt 'How many orders have been made in the Q1 and Q3 of 2022 compared to 2023 compared to 2024.''
+END model.name athene-v2:72b, prompt 'How many orders have been made in the Q1 and Q3 of 2022 compared to 2023 compared to 2024.'', duration 144
+mini {
+  "prompt": "How many orders have been made in the Q1 and Q3 of 2022 compared to 2023 compared to 2024.'",
+  "response_txt": "",
+  "duration": 144,
+  "error": null,
+  "success": true,
+  "message": {
+    "role": "assistant",
+    "content": "",
+    "images": null,
+    "tool_calls": [
+      {
+        "function": {
+          "name": "get_postgres_access_db",
+          "arguments": {
+            "secret": "user_provided_secret",
+            "prompt": "SELECT EXTRACT(YEAR FROM order_date) AS year, EXTRACT(QUARTER FROM order_date) AS quarter, COUNT(*) AS orders_count FROM orders WHERE (EXTRACT(YEAR FROM order_date), EXTRACT(QUARTER FROM order_date)) IN ((2022, 1), (2022, 3), (2023, 1), (2023, 3), (2024, 1), (2024, 3)) GROUP BY year, quarter ORDER BY year, quarter;"
+          }
+        }
+      }
+    ],
+    "tool_call_id": null
+  }
+}
+START: model.name athene-v2:72b, prompt 'What are the top 3 most sold articles.''
+END model.name athene-v2:72b, prompt 'What are the top 3 most sold articles.'', duration 87
+mini {
+  "prompt": "What are the top 3 most sold articles.'",
+  "response_txt": "",
+  "duration": 87,
+  "error": null,
+  "success": true,
+  "message": {
+    "role": "assistant",
+    "content": "",
+    "images": null,
+    "tool_calls": [
+      {
+        "function": {
+          "name": "get_postgres_access_db",
+          "arguments": {
+            "secret": "example_secret",
+            "prompt": "SELECT article_name, SUM(quantity) AS total_sold FROM sales GROUP BY article_name ORDER BY total_sold DESC LIMIT 3;"
+          }
+        }
+      }
+    ],
+    "tool_call_id": null
+  }
+}
+START: model.name athene-v2:72b, prompt 'Which shop databases do you have access to and can me show some basic statistics about?''
+END model.name athene-v2:72b, prompt 'Which shop databases do you have access to and can me show some basic statistics about?'', duration 86
+mini {
+  "prompt": "Which shop databases do you have access to and can me show some basic statistics about?'",
+  "response_txt": "",
+  "duration": 86,
+  "error": null,
+  "success": true,
+  "message": {
+    "role": "assistant",
+    "content": "",
+    "images": null,
+    "tool_calls": [
+      {
+        "function": {
+          "name": "get_postgres_access_db",
+          "arguments": {
+            "secret": "<user-provided-secret>",
+            "prompt": "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'; -- This query lists all tables in the public schema which are typically used for shop databases. For statistics, we can run additional queries on each table."
+          }
+        }
+      }
+    ],
+    "tool_call_id": null
+  }
+}
+START: model.name athene-v2:72b, prompt 'Create an image using the prompt 'A astronaut riding a dolphin on the moon.''
+END model.name athene-v2:72b, prompt 'Create an image using the prompt 'A astronaut riding a dolphin on the moon.'', duration 24
+mini {
+  "prompt": "Create an image using the prompt 'A astronaut riding a dolphin on the moon.'",
+  "response_txt": "",
+  "duration": 24,
+  "error": null,
+  "success": true,
+  "message": {
+    "role": "assistant",
+    "content": "",
+    "images": null,
+    "tool_calls": [
+      {
+        "function": {
+          "name": "get_image_from_txt2img_stable_diffusion",
+          "arguments": {
+            "prompt": "An astronaut riding a dolphin on the moon."
+          }
+        }
+      }
+    ],
+    "tool_call_id": null
+  }
+}
+START: model.name athene-v2:72b, prompt 'How is the weather in Vienna?'
+END model.name athene-v2:72b, prompt 'How is the weather in Vienna?', duration 19
+mini {
+  "prompt": "How is the weather in Vienna?",
+  "response_txt": "",
+  "duration": 19,
+  "error": null,
+  "success": true,
+  "message": {
+    "role": "assistant",
+    "content": "",
+    "images": null,
+    "tool_calls": [
+      {
+        "function": {
+          "name": "get_current_weather",
+          "arguments": {
+            "location": "Vienna, Austria",
+            "format": "celsius"
+          }
+        }
+      }
+    ],
+    "tool_call_id": null
+  }
+}
+START: model.name aya-expanse:32b, prompt 'Get me a list of all products in the shop.''
+END model.name aya-expanse:32b, prompt 'Get me a list of all products in the shop.'', duration 8
+mini {
+  "prompt": "Get me a list of all products in the shop.'",
+  "response_txt": "",
+  "duration": 8,
+  "error": null,
+  "success": true,
+  "message": {
+    "role": "assistant",
+    "content": "",
+    "images": null,
+    "tool_calls": [
+      {
+        "function": {
+          "name": "get_postgres_access_db",
+          "arguments": {
+            "prompt": "SELECT * FROM products;",
+            "secret": ""
+          }
+        }
+      }
+    ],
+    "tool_call_id": null
+  }
+}
+START: model.name aya-expanse:32b, prompt 'How many orders have been made in the Q1 and Q3 of 2022 compared to 2023 compared to 2024.''
+END model.name aya-expanse:32b, prompt 'How many orders have been made in the Q1 and Q3 of 2022 compared to 2023 compared to 2024.'', duration 2
+mini {
+  "prompt": "How many orders have been made in the Q1 and Q3 of 2022 compared to 2023 compared to 2024.'",
+  "response_txt": "",
+  "duration": 2,
+  "error": null,
+  "success": true,
+  "message": {
+    "role": "assistant",
+    "content": "",
+    "images": null,
+    "tool_calls": [
+      {
+        "function": {
+          "name": "get_postgres_access_db",
+          "arguments": {
+            "prompt": "SELECT COUNT(*) FROM orders WHERE EXTRACT(YEAR FROM order_date) IN (2022, 2023, 2024) AND EXTRACT(QUARTER FROM order_date) IN (1, 3);",
+            "secret": "<your_secret>"
+          }
+        }
+      }
+    ],
+    "tool_call_id": null
+  }
+}
+START: model.name aya-expanse:32b, prompt 'What are the top 3 most sold articles.''
+END model.name aya-expanse:32b, prompt 'What are the top 3 most sold articles.'', duration 2
+mini {
+  "prompt": "What are the top 3 most sold articles.'",
+  "response_txt": "",
+  "duration": 2,
+  "error": null,
+  "success": true,
+  "message": {
+    "role": "assistant",
+    "content": "",
+    "images": null,
+    "tool_calls": [
+      {
+        "function": {
+          "name": "get_postgres_access_db",
+          "arguments": {
+            "secret": "<your_secret>",
+            "prompt": "SELECT product_name, SUM(quantity) as total_sold FROM sales GROUP BY product_name ORDER BY total_sold DESC LIMIT 3;"
+          }
+        }
+      }
+    ],
+    "tool_call_id": null
+  }
+}
+START: model.name aya-expanse:32b, prompt 'Which shop databases do you have access to and can me show some basic statistics about?''
+END model.name aya-expanse:32b, prompt 'Which shop databases do you have access to and can me show some basic statistics about?'', duration 3
+mini {
+  "prompt": "Which shop databases do you have access to and can me show some basic statistics about?'",
+  "response_txt": "",
+  "duration": 3,
+  "error": null,
+  "success": true,
+  "message": {
+    "role": "assistant",
+    "content": "",
+    "images": null,
+    "tool_calls": [
+      {
+        "function": {
+          "name": "get_postgres_access_db",
+          "arguments": {
+            "secret": "",
+            "prompt": "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
+          }
+        }
+      },
+      {
+        "function": {
+          "name": "get_postgres_access_db",
+          "arguments": {
+            "secret": "",
+            "prompt": "SELECT table_name, column_name, data_type FROM information_schema.columns WHERE table_schema = 'public';"
+          }
+        }
+      }
+    ],
+    "tool_call_id": null
+  }
+}
+START: model.name aya-expanse:32b, prompt 'Create an image using the prompt 'A astronaut riding a dolphin on the moon.''
+END model.name aya-expanse:32b, prompt 'Create an image using the prompt 'A astronaut riding a dolphin on the moon.'', duration 1
+mini {
+  "prompt": "Create an image using the prompt 'A astronaut riding a dolphin on the moon.'",
+  "response_txt": "",
+  "duration": 1,
+  "error": null,
+  "success": true,
+  "message": {
+    "role": "assistant",
+    "content": "",
+    "images": null,
+    "tool_calls": [
+      {
+        "function": {
+          "name": "get_image_from_txt2img_stable_diffusion",
+          "arguments": {
+            "prompt": "A astronaut riding a dolphin on the moon."
+          }
+        }
+      }
+    ],
+    "tool_call_id": null
+  }
+}
+START: model.name aya-expanse:32b, prompt 'How is the weather in Vienna?'
+END model.name aya-expanse:32b, prompt 'How is the weather in Vienna?', duration 1
+mini {
+  "prompt": "How is the weather in Vienna?",
+  "response_txt": "",
+  "duration": 1,
+  "error": null,
+  "success": true,
+  "message": {
+    "role": "assistant",
+    "content": "",
+    "images": null,
+    "tool_calls": [
+      {
+        "function": {
+          "name": "get_current_weather",
+          "arguments": {
+            "format": "celsius",
+            "location": "Vienna"
+          }
+        }
+      }
+    ],
+    "tool_call_id": null
+  }
+}
+START: model.name command-r-plus:104b, prompt 'Get me a list of all products in the shop.''
+END model.name command-r-plus:104b, prompt 'Get me a list of all products in the shop.'', duration 107
+mini {
+  "prompt": "Get me a list of all products in the shop.'",
+  "response_txt": "",
+  "duration": 107,
+  "error": null,
+  "success": true,
+  "message": {
+    "role": "assistant",
+    "content": "",
+    "images": null,
+    "tool_calls": [
+      {
+        "function": {
+          "name": "get_postgres_access_db",
+          "arguments": {
+            "secret": null,
+            "prompt": "SELECT * FROM products;"
+          }
+        }
+      }
+    ],
+    "tool_call_id": null
+  }
+}
+START: model.name command-r-plus:104b, prompt 'How many orders have been made in the Q1 and Q3 of 2022 compared to 2023 compared to 2024.''
+END model.name command-r-plus:104b, prompt 'How many orders have been made in the Q1 and Q3 of 2022 compared to 2023 compared to 2024.'', duration 2040
+mini {
+  "prompt": "How many orders have been made in the Q1 and Q3 of 2022 compared to 2023 compared to 2024.'",
+  "response_txt": "Action: ```json\n[\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(orderid) FROM orders WHERE EXTRACT('year' from orderdate) = 2022 AND (EXTRACT(\\\"quarter\\\" from orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3); SELECT COUNT(orderid) FROM orders WHERE EXTRACT('year' from orderdate) = 2024;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\" \\nFROM orders\\nWHERE EXTRACT('year' from orderdate) = 2023 AND (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" FROM orderdate )=3);\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2024;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2025;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2026;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2027;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2028;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2029;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2030;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2031;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2032;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2033;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2034;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2035;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2045;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2055;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2065;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EX0TRACT(\\\"quarter\\\" from orderdate )=3) AND 2075;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EX0TRACT(\\\"quarter\\\" from orderdate )=3) AND 2085;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EX0TRACT(\\\"quarter\\\" from orderdate )=3) AND 2095;\",\n            \"secret-name\\\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EX0TRACT(\\\"quarter\\\" from orderdate )=3) AND 2105;\",\n            \"secret-name\\\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_Multiplier\",\n        \"parameters\": {\n            \"prompt\": \"* SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EX0TRACT(\\\"quarter\\\" from orderdate )=3) AND 215;\",\n            \"secret-name\\\": null,\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access\",\n        \"parameters\": {\n            \"prompt\": \"* SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EX0TRACT(\\\"quarter\\\" from orderdate )=3) AND 25;\",\n            \"secret-name\\\": null,\n        }\n    },\n]",
+  "duration": 2040,
+  "error": null,
+  "success": true,
+  "message": {
+    "role": "assistant",
+    "content": "Action: ```json\n[\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(orderid) FROM orders WHERE EXTRACT('year' from orderdate) = 2022 AND (EXTRACT(\\\"quarter\\\" from orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3); SELECT COUNT(orderid) FROM orders WHERE EXTRACT('year' from orderdate) = 2024;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\" \\nFROM orders\\nWHERE EXTRACT('year' from orderdate) = 2023 AND (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" FROM orderdate )=3);\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2024;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2025;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2026;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2027;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2028;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2029;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2030;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2031;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2032;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2033;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2034;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2035;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2045;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2055;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EXTRACT(\\\"quarter\\\" from orderdate )=3) AND 2065;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EX0TRACT(\\\"quarter\\\" from orderdate )=3) AND 2075;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EX0TRACT(\\\"quarter\\\" from orderdate )=3) AND 2085;\",\n            \"secret\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EX0TRACT(\\\"quarter\\\" from orderdate )=3) AND 2095;\",\n            \"secret-name\\\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_db\",\n        \"parameters\": {\n            \"prompt\": \"SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EX0TRACT(\\\"quarter\\\" from orderdate )=3) AND 2105;\",\n            \"secret-name\\\": null\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access_Multiplier\",\n        \"parameters\": {\n            \"prompt\": \"* SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EX0TRACT(\\\"quarter\\\" from orderdate )=3) AND 215;\",\n            \"secret-name\\\": null,\n        }\n    },\n    {\n        \"tool_name\": \"get_postgres_access\",\n        \"parameters\": {\n            \"prompt\": \"* SELECT COUNT(*) as \\\"Number of Orders\\\"\\nFROM orders\\nWHERE (EXTRACT(\\\"quarter\\\" FROM orderdate)=1 OR EX0TRACT(\\\"quarter\\\" from orderdate )=3) AND 25;\",\n            \"secret-name\\\": null,\n        }\n    },\n]",
+    "images": null,
+    "tool_calls": null,
+    "tool_call_id": null
+  }
+}
+START: model.name command-r-plus:104b, prompt 'What are the top 3 most sold articles.''
+END model.name command-r-plus:104b, prompt 'What are the top 3 most sold articles.'', duration 14
+mini {
+  "prompt": "What are the top 3 most sold articles.'",
+  "response_txt": "Action: ```json\n[]\n```",
+  "duration": 14,
+  "error": null,
+  "success": true,
+  "message": {
+    "role": "assistant",
+    "content": "Action: ```json\n[]\n```",
+    "images": null,
+    "tool_calls": null,
+    "tool_call_id": null
+  }
+}
+START: model.name command-r-plus:104b, prompt 'Which shop databases do you have access to and can me show some basic statistics about?''
+END model.name command-r-plus:104b, prompt 'Which shop databases do you have access to and can me show some basic statistics about?'', duration 11
+mini {
+  "prompt": "Which shop databases do you have access to and can me show some basic statistics about?'",
+  "response_txt": "Action: ```json\n[]\n```",
+  "duration": 11,
+  "error": null,
+  "success": true,
+  "message": {
+    "role": "assistant",
+    "content": "Action: ```json\n[]\n```",
+    "images": null,
+    "tool_calls": null,
+    "tool_call_id": null
+  }
+}
+START: model.name command-r-plus:104b, prompt 'Create an image using the prompt 'A astronaut riding a dolphin on the moon.''

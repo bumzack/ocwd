@@ -6,8 +6,6 @@ use tokio::time::Instant;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let ts = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs();
-
     let prompt = "Write a rust server using axum that is serving product data for a webshop.";
     let start = Instant::now();
     starcoder2(prompt.to_string()).expect("starcoder should work");

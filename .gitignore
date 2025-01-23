@@ -16,3 +16,9 @@ Cargo.lock
 *.jpg
 
 **/venv
+
+ollama/*.json
+
+*.wav
+*.safetensors
+*.lst

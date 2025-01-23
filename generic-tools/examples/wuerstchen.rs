@@ -11,9 +11,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .duration_since(SystemTime::UNIX_EPOCH)
         .unwrap()
         .as_secs();
-    let filename = format!("wuerstchen_alien_cheeseburger_{}", ts);
 
+    let filename = format!("wuerstchen_alien_cheeseburger_{}", ts);
     let start = Instant::now();
+
     run_wuerstchen(
         "A alien cheeseburger creature eating itself, claymation, cinematic, moody lighting"
             .to_string(),

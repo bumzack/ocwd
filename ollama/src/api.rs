@@ -14,10 +14,10 @@ pub trait OllamaImpl {
     async fn local_models(&self) -> Result<Vec<ListModel>, OllamaError>;
     async fn loaded_models(&self) -> Result<Vec<RunningModel>, OllamaError>;
     async fn chat(&self, request: &ChatRequest) -> Result<ChatResponse, OllamaError>;
+    async fn chat_dump(&self, request: &ChatRequest) -> Result<(ChatResponse, u64), OllamaError>;
     async fn chat_streaming(&self, request: &ChatRequest) -> Result<Response, OllamaError>;
     async fn unload(&self, model: &str) -> Result<(), OllamaError>;
     async fn details(&self, model: &str) -> Result<OllamaInformation, OllamaError>;
-
     async fn create(&self, request: CreateModelRequest) -> Result<Response, OllamaError>;
 }
 
@@ -42,9 +42,6 @@ impl OllamaImpl for Ollama {
 
         let body = res.text().await.map_err(OllamaError::from)?;
         let models = serde_json::from_str::<ListModelResponse>(&body).map_err(OllamaError::from)?;
-        let pretty = serde_json::to_string_pretty(&models).map_err(OllamaError::from)?;
-
-        println!("models {}", pretty);
 
         Ok(models.models)
     }
@@ -102,16 +99,31 @@ impl OllamaImpl for Ollama {
         Ok(res)
     }
 
+    async fn chat_dump(&self, request: &ChatRequest) -> Result<(ChatResponse, u64), OllamaError> {
+        let url = format!("{}/api/chat", self.url);
+        let json = json!(request);
+
+        let start = tokio::time::Instant::now();
+        let res = self.client.post(url).body(json.to_string()).send().await?;
+        let duration = start.elapsed().as_secs();
+
+        if !res.status().is_success() {
+            return Err(OllamaError::AllTheOtherErrors(
+                "model does not support tools".to_string(),
+            ));
+        }
+        let body = res.text().await.map_err(OllamaError::from)?;
+        let response = serde_json::from_str::<ChatResponse>(&body).map_err(OllamaError::from)?;
+        Ok((response, duration))
+    }
+
     async fn chat_streaming(&self, request: &ChatRequest) -> Result<Response, OllamaError> {
         let url = format!("{}/api/generate", self.url);
         let start = Instant::now();
         let json = json!(request);
-
         let res = self.client.post(url).body(json.to_string()).send().await?;
-
         let duration = start.elapsed();
         println!("request took {:?}", duration);
-
         Ok(res)
     }
 

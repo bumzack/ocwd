@@ -1,8 +1,8 @@
 use reqwest::Client;
 use serde::Deserialize;
 use serde::Serialize;
-use std::collections::HashMap;
 use serde_json::Value;
+use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
 pub struct Ollama {
@@ -32,7 +32,6 @@ pub struct Content {
 pub enum ContentEnum {
     AString(String),
     AContent(Content),
-    AValue(Value),
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -155,12 +154,12 @@ pub struct CreateModelResponse {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ModelDetails {
-    pub parent_model: String,
-    pub format: String,
-    pub family: String,
+    pub parent_model: Option<String>,
+    pub format: Option<String>,
+    pub family: Option<String>,
     pub families: Option<Vec<String>>,
-    pub parameter_size: String,
-    pub quantization_level: String,
+    pub parameter_size: Option<String>,
+    pub quantization_level: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -223,6 +222,11 @@ pub struct OllamaInformation {
     pub template: String,
     pub details: ModelDetails,
     pub model_info: Option<HashMap<String, Option<StringOrNumber>>>,
-    pub license: String,
-    pub modified_at: String,
+    pub license: Option<String>,
+    pub modified_at: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct OllamaErrorResponse {
+    pub error: Option<String>,
 }

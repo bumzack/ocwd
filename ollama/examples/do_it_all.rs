@@ -39,7 +39,7 @@ async fn main() -> Result<(), OllamaError> {
             stream: false,
             options: None,
             messages: Some(vec![mesg]),
-            format: Some("json".to_string()),
+            format: None,
             tools: Some(tools.clone()),
         };
 
