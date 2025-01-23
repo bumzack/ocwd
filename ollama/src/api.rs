@@ -116,10 +116,13 @@ impl OllamaImpl for Ollama {
         let url = format!("{}/api/chat", self.url);
         let json = json!(request);
         let start = Instant::now();
+
         println!(
-            "model {}, request.prompt {:?} ",
-            request.model, request.prompt
+            "model {}, url {}, request.prompt {:?} ",
+            request.model, url, request.prompt
         );
+
+        println!("request \n{:?}\n ", request);
 
         let res = self.client.post(url).body(json.to_string()).send().await?;
 
