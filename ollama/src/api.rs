@@ -135,6 +135,7 @@ impl OllamaImpl for Ollama {
         println!("response status: {:?}", res.status());
 
         let body = res.text().await.map_err(OllamaError::from)?;
+        println!("response body: \n\n\n{:?}\n\n\n\n\n\n", body);
         let res = serde_json::from_str::<ChatResponse>(&body).map_err(OllamaError::from)?;
 
         println!(
