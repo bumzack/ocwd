@@ -3,7 +3,7 @@ use ollama::error::OllamaError;
 use ollama::models::{
     ChatRequest, ChatRequestOptions, ChatResponse, ContentEnum, ListModel, Message, Ollama,
 };
-use ollama::tools_v1::get_tools_v1;
+use ollama::tools_v2::get_tools_v2;
 use serde::Serialize;
 use std::fs;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -126,12 +126,12 @@ async fn main() -> Result<(), OllamaError> {
         .duration_since(UNIX_EPOCH)
         .expect("Time went backwards");
 
-    let filename = format!("results_tools_v1_{}.json", since_the_epoch.as_millis());
+    let filename = format!("results_tools_v2_{}.json", since_the_epoch.as_millis());
     let results = serde_json::to_string(&all).expect("couldn't serialize results");
     fs::write(filename, &results).expect("Unable to write file");
 
     let filename = format!(
-        "results_tools_v1_res_only_{}.json",
+        "results_tools_v2_res_only_{}.json",
         since_the_epoch.as_millis()
     );
     let results = serde_json::to_string(&all_res_only).expect("couldn't serialize results");
@@ -176,7 +176,7 @@ async fn doit(
     prompt: &str,
     ollama: &Ollama,
 ) -> Result<TestResult, OllamaError> {
-    let tools = get_tools_v1();
+    let tools = get_tools_v2();
 
     let msg = Message {
         role: "user".to_string(),
