@@ -23,26 +23,18 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
 
             let running = QUEUE_RUNNING.lock().await;
 
-            info!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
             info!("processing enqueue @ {:?}. running {:?}", now, *running);
-            info!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
             if !*running {
                 let sleep_duration = Duration::from_secs(60);
-
-                info!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
                 info!(
                     "processing enqueue NOT running @ {:?}. waiting for {:?}",
                     now, sleep_duration
                 );
-                info!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-
                 sleep(sleep_duration).await;
                 continue;
             } else {
-                info!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
                 info!("processing enqueue  running @ {:?}", now);
-                info!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
             }
 
             let next = ollama_queue_next(&p).await.expect("enqueue next failed");
@@ -93,12 +85,10 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
                             info!("successfully updated ollama enqueue status. id {}", res.id);
                         }
                         Err(e) => {
-                            error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
                             error!(
                                 "error updating enqueue in DB, enqueue.id {} {:?}",
                                 db_queue.id, e
                             );
-                            error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
                         }
                     }
 
@@ -106,7 +96,7 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
                     info!("starting request to Ollama.");
                     let ollama_response = o.chat(&request).await;
                     let duration = start.elapsed().as_millis();
-                    info!("finished request to Ollama.");
+                    info!("finished request to Ollama. duration {}ms", duration);
                     info!("------------------------------------------------------------------------------------------");
 
                     match ollama_response {
@@ -118,17 +108,15 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
                             match db_ollama_queue_update {
                                 Ok(res) => {
                                     info!(
-                                        "successfully updated ollamaold enqueue status. id {}",
+                                        "successfully updated ollama enqueue status. id {}",
                                         res.id
                                     );
                                 }
                                 Err(e) => {
-                                    error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
                                     error!(
                                         "error updating enqueue in DB, enqueue.id {} {:?}",
                                         db_queue.id, e
                                     );
-                                    error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
                                 }
                             }
 
@@ -146,22 +134,15 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
 
                             match db_ollama_chat {
                                 Ok(res) => {
-                                    info!(
-                                        "successfully inserted new ollamaold chat. id {}",
-                                        res.id
-                                    );
+                                    info!("successfully inserted new ollama chat. id {}", res.id);
                                 }
                                 Err(e) => {
-                                    error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
                                     error!("error inserting into DB {:?}", e);
-                                    error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
                                 }
                             }
                         }
                         Err(e) => {
-                            error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
-                            error!("error executing request by ollamaold server {:?}", e);
-                            error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
+                            error!("error executing request by ollama server {:?}", e);
                             let db_ollama_queue_update =
                                 ollama_queue_update_state(&pool, db_queue.id, QueueState::Error)
                                     .await;
@@ -171,12 +152,7 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
                                     info!("successfully updated enqueue status. id {}", res.id);
                                 }
                                 Err(e) => {
-                                    error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
-                                    error!(
-                    "error updating enqueue status in DB. enqueue.id {}, error: {:?}",
-                    db_queue.id, e
-                    );
-                                    error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
+                                    error!("error updating enqueue status in DB. enqueue.id {}, error: {:?}", db_queue.id, e);
                                 }
                             }
                         }
@@ -218,13 +194,11 @@ async fn ollama_unload_all_models_except(model: &str) {
         );
 
         if res_unload.is_err() {
-            error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
             error!(
                 "error unloading model {}, ignoring the error and continuing. err.msg {:?}",
                 db_model.model,
                 res_unload.unwrap_err()
             );
-            error!("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEvEEEEEEEEEEEEEEEEEEEEEEEE");
         }
 
         let sleep_duration = Duration::from_secs(1);
