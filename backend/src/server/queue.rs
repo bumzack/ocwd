@@ -94,7 +94,7 @@ pub async fn run_queue(pool: Pool) -> Result<(), OllamaChatError> {
 
                     info!("------------------------------------------------------------------------------------------");
                     info!("starting request to Ollama.");
-                    let ollama_response = o.chat(&request).await;
+                    let ollama_response = o.generate(&request).await;
                     let duration = start.elapsed().as_millis();
                     info!("finished request to Ollama. duration {}ms", duration);
                     info!("------------------------------------------------------------------------------------------");

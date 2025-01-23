@@ -8,7 +8,7 @@ use reqwest::{Client, Response};
 use serde_json::json;
 use tokio::time::Instant;
 
-//  using async fn in a trait, which could be a problem for multithreaded use cases
+// using async fn in a trait, which could be a problem for multithreaded use cases
 // if problems arise, read again here: https://blog.rust-lang.org/2023/12/21/async-fn-rpit-in-traits.html
 pub trait OllamaImpl {
     fn local_models(
@@ -19,7 +19,7 @@ pub trait OllamaImpl {
         &self,
     ) -> impl std::future::Future<Output = Result<Vec<RunningModel>, OllamaError>> + Send;
 
-    fn chat(
+    fn generate(
         &self,
         request: &ChatRequest,
     ) -> impl std::future::Future<Output = Result<ChatResponse, OllamaError>> + Send;
@@ -112,8 +112,8 @@ impl OllamaImpl for Ollama {
         Ok(models.models)
     }
 
-    async fn chat(&self, request: &ChatRequest) -> Result<ChatResponse, OllamaError> {
-        let url = format!("{}/api/chat", self.url);
+    async fn generate(&self, request: &ChatRequest) -> Result<ChatResponse, OllamaError> {
+        let url = format!("{}/api/generate", self.url);
         let json = json!(request);
         let start = Instant::now();
 
@@ -122,7 +122,8 @@ impl OllamaImpl for Ollama {
             request.model, url, request.prompt
         );
 
-        println!("request \n{:?}\n ", request);
+        // let req_pretty = serde_json::to_string_pretty(&request).map_err(OllamaError::from)?;
+        // println!("req_pretty \n{:?}\n ", req_pretty);
 
         let res = self.client.post(url).body(json.to_string()).send().await?;
 
@@ -135,17 +136,17 @@ impl OllamaImpl for Ollama {
         println!("response status: {:?}", res.status());
 
         let body = res.text().await.map_err(OllamaError::from)?;
-        println!("response body: \n\n\n{:?}\n\n\n\n\n\n", body);
+        // println!("response body: \n\n\n{:?}\n\n\n\n\n\n", body);
         let res = serde_json::from_str::<ChatResponse>(&body).map_err(OllamaError::from)?;
 
-        println!(
-            "request.model: {}, response.response {:?} ",
-            request.model, res.response
-        );
-        println!(
-            "request.model: {}, response.message  {:?} ",
-            request.model, res.message
-        );
+        // println!(
+        //     "request.model: {}, response.response {:?} ",
+        //     request.model, res.response
+        // );
+        // println!(
+        //     "request.model: {}, response.message  {:?} ",
+        //     request.model, res.message
+        // );
         println!(
             "request.model: {}, duration {}ms",
             request.model,
@@ -158,7 +159,7 @@ impl OllamaImpl for Ollama {
         let url = format!("{}/api/chat", self.url);
         let json = json!(request);
 
-        let start = tokio::time::Instant::now();
+        let start = Instant::now();
         let res = self.client.post(url).body(json.to_string()).send().await?;
         let duration = start.elapsed().as_secs();
 
