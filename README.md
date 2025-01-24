@@ -45,6 +45,11 @@ psql postgres -U webshop
 ```
 GRANT ALL on  SCHEMA public  TO  webshop;
 ```
+or this should help
+```
+ALTER DATABASE webshop OWNER TO webshop;
+```
+
 
 
 ```

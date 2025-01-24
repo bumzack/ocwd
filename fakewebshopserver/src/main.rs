@@ -1,4 +1,3 @@
-use std::env;
 use crate::fake_data::{buyer_names, get_description, get_names};
 use crate::handler::cors_layer;
 use crate::handler::server_orders;
@@ -6,10 +5,11 @@ use crate::models::{AppState, Order, OrderItem};
 use axum::routing::post;
 use axum::Router;
 use chrono::{TimeDelta, Utc};
-use rand::Rng;
-use std::net::SocketAddr;
-use std::ops::Sub;
 use dotenvy::dotenv;
+use rand::Rng;
+use std::env;
+use std::net::SocketAddr;
+use std::ops::{Add, Sub};
 
 mod fake_data;
 mod handler;
@@ -20,13 +20,35 @@ mod webshoperror;
 async fn main() -> Result<(), ()> {
     dotenv().ok();
 
-    let min_orders = env::var("MIN_ORDERS").expect("MIN_ORDERS must be set").parse::<i32>().expect("should be a number");
-    let max_orders = env::var("MAX_ORDERS").expect("MAX_ORDERS must be set").parse::<i32>().expect("should be a number");
+    let min_orders = env::var("MIN_ORDERS")
+        .expect("MIN_ORDERS must be set")
+        .parse::<i32>()
+        .expect("should be a number");
 
-    let min_items = env::var("MIN_ITEMS").expect("MIN_ITEMS must be set").parse::<i32>().expect("should be a number");
-    let max_items = env::var("MAX_ITEMS").expect("MAX_ITEMS must be set").parse::<i32>().expect("should be a number");
+    let max_orders = env::var("MAX_ORDERS")
+        .expect("MAX_ORDERS must be set")
+        .parse::<i32>()
+        .expect("should be a number");
 
-    let max_order_age_days = env::var("MAX_ORDER_AGE_DAYS").expect("MAX_ORDER_AGE_DAYS must be set").parse::<i64>().expect("should be a number");
+    let min_items = env::var("MIN_ITEMS")
+        .expect("MIN_ITEMS must be set")
+        .parse::<i32>()
+        .expect("should be a number");
+
+    let max_items = env::var("MAX_ITEMS")
+        .expect("MAX_ITEMS must be set")
+        .parse::<i32>()
+        .expect("should be a number");
+
+    let max_order_age_days = env::var("MAX_ORDER_AGE_DAYS")
+        .expect("MAX_ORDER_AGE_DAYS must be set")
+        .parse::<i64>()
+        .expect("should be a number");
+
+    println!(
+        "min_order {}, max_orders {}, min_items {}, max_itemns {}, max_order_age_days {}",
+        min_orders, max_orders, min_items, max_items, max_order_age_days
+    );
 
     let mut orders = vec![];
 
@@ -52,17 +74,29 @@ async fn main() -> Result<(), ()> {
 
     for i in 0..cnt_orders {
         let delta_days: i64 = rng.random_range(3..max_order_age_days);
-        let created = Utc::now().sub(TimeDelta::days(delta_days));
+        let delta_seconds: i64 = rng.random_range(60..1_000 * max_order_age_days);
+
+        let now = Utc::now();
+        let created = now.sub(TimeDelta::days(delta_days));
+        let created = created.sub(TimeDelta::seconds(delta_seconds));
+
+        if cnt_orders < 1_000 {
+            println!(
+                "delta_days {}, delta_seconds {}, now {}, created {}",
+                delta_days, delta_seconds, now, created
+            );
+        }
 
         let ts = created.timestamp_millis();
-        let order_number = format!("order_nr_{:05}_{}", i, ts);
+        let order_number = format!("order_nr_{:010}_{}", i, ts);
         let cnt_items = rng.random_range(min_items..max_items);
 
         let items = (0..cnt_items)
             .into_iter()
             .map(|_| {
                 let price: f64 = rng.random_range(0.95..2323.23);
-                let state = "finished".to_string();
+                let r: f64 = rng.random(); // generates a float between 0 and 1
+                let state = if r > 0.98 { "canceled" } else { "finished" };
 
                 let article_idx: usize = rng.random_range(0..articles.len()); // generates a float between 0 and 1
                 let (item_id, name) = articles[article_idx].clone();
@@ -73,7 +107,7 @@ async fn main() -> Result<(), ()> {
                     name,
                     description,
                     price,
-                    state: Some(state),
+                    state: Some(state.to_string()),
                     additional_info_1: None,
                     additional_info_2: None,
                     item_created: created,
@@ -88,7 +122,6 @@ async fn main() -> Result<(), ()> {
         let erp_order_number = format!("erp_{:0>10}", rng.random_range(100_000..1_000_000));
 
         let r: f64 = rng.random(); // generates a float between 0 and 1
-
         let state = if r > 0.95 { "processing" } else { "finished" };
         let state = state.to_string();
 
@@ -110,6 +143,12 @@ async fn main() -> Result<(), ()> {
 
     orders.sort_by(|a, b| a.order_created.cmp(&b.order_created));
 
+    if orders.len() < 1_000 {
+        orders
+            .iter()
+            .for_each(|o| println!("orderNumber: {}, created {}", o.order_id, o.order_created));
+    }
+
     let state = AppState { orders };
     // build our application with some routes
     let app = Router::new()
@@ -123,7 +162,7 @@ async fn main() -> Result<(), ()> {
 
     axum::serve(listener, app)
         .await
-        .expect("should listen on port 3023");
+        .expect("should listen on port 2002");
 
     Ok(())
 }
