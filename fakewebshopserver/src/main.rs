@@ -78,18 +78,18 @@ async fn main() -> Result<(), ()> {
         let delta_millis: i64 = rng.random_range(10_000..100_000 * max_order_age_days);
 
         let now = Utc::now();
-        let created = now.sub(TimeDelta::days(delta_days));
-        let created = created.sub(TimeDelta::seconds(delta_seconds));
-        let created = created.sub(TimeDelta::milliseconds(delta_millis));
+        let created1 = now.sub(TimeDelta::days(delta_days));
+        let created1 = created1.sub(TimeDelta::seconds(delta_seconds));
+        let created1 = created1.sub(TimeDelta::milliseconds(delta_millis));
 
         if cnt_orders < 1_000 {
             println!(
                 "delta_days {}, delta_seconds {}, now {}, created {}",
-                delta_days, delta_seconds, now, created
+                delta_days, delta_seconds, now, created1
             );
         }
 
-        let ts = created.timestamp_millis();
+        let ts = created1.timestamp_millis();
         let order_number = format!("order_nr_{:010}_{}", i, ts);
         let cnt_items = rng.random_range(min_items..max_items);
 
@@ -112,7 +112,7 @@ async fn main() -> Result<(), ()> {
                     state: Some(state.to_string()),
                     additional_info_1: None,
                     additional_info_2: None,
-                    item_created: created,
+                    item_created: created1,
                 };
                 item
             })
@@ -137,7 +137,7 @@ async fn main() -> Result<(), ()> {
             additional_info_2: None,
             number_items: items.len() as i32,
             blacklisted: false,
-            order_created: created,
+            order_created: created1,
             items,
         };
         orders.push(order);

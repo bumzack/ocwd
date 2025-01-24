@@ -4,7 +4,7 @@ use crate::db::orderitems::{order_items_insert, DbNewOrderItem};
 use crate::db::orders::{order_insert, order_last_order_created, DbNewOrder};
 use crate::error::webshoperror::WebshopError;
 use chrono::{TimeDelta, Utc};
-use std::ops::Sub;
+use std::ops::{Add, Sub};
 
 pub async fn find_and_insert_orders(
     pool: &deadpool_diesel::postgres::Pool,
@@ -94,7 +94,9 @@ pub async fn find_and_insert_orders(
             .await?
             .expect("should be an order")
             .order_created
-            .and_utc();
+            .and_utc()
+            // why on earth is this  working on Mac OSX without this, but not on ubuntu linux 24.10 ??
+            .add(TimeDelta::milliseconds(1));
 
         println!("last_order_created: {:?}", last_order_date);
     }
