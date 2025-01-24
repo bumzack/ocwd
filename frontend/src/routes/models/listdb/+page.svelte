@@ -38,7 +38,7 @@
 			<p>{models.length} models</p>
 
 			{#if hasData}
-				<table class="table table-striped">
+				<table class="table table-striped table-bordered table-sm">
 					<thead>
 					<tr>
 						<th>
@@ -115,7 +115,7 @@
 			<div class="col-lg-12">
 				<h1>imported Ollama models local</h1>
 				<p>{importedModels.length} models imported</p>
-				<table class="table table-striped">
+				<table class="table table-striped table-bordered table-sm">
 					<thead>
 					<tr>
 						<th>

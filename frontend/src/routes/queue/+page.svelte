@@ -13,7 +13,7 @@
 			<h1>Ollama chat queue</h1>
 			{#if hasData}
 				<p>{queues.length} entries in queue</p>
-				<table class="table table-striped">
+				<table class="table table-striped table-bordered table-sm">
 					<thead>
 					<tr>
 						<td>
