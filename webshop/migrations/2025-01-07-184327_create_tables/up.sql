@@ -20,9 +20,9 @@ CREATE TABLE order_items
 (
     id                SERIAL PRIMARY KEY,
     order_id          VARCHAR(1000) REFERENCES orders (order_id)                  NOT NULL,
-    item_id      VARCHAR(1000)                                               NOT NULL,
+    item_id           VARCHAR(1000)                                               NOT NULL,
     name              VARCHAR(1000),
-    description       VARCHAR(1000),
+    description       TEXT,
     price             DOUBLE PRECISION                                            NOT NULL,
     state             VARCHAR(1000),
     additional_info_1 VARCHAR(1000),

@@ -12,14 +12,11 @@ pub async fn get_orders(order_request: OrderRequest) -> Result<Vec<Order>, Websh
     let client = get_client(300).expect("should get a reqwest client");
     let body = json!(order_request);
     let response = client.post(url).json(&body).send().await?;
-
-    println!("orders response {:?}", response);
-
     let body = response.text().await?;
-
     let response: Vec<Order> = serde_json::from_str(&body)?;
-
-    println!("orders:  {:#?}", response);
+    let order_ids: Vec<String> = response.iter().map(|o| o.order_id.clone()).collect();
+    let order_ids = order_ids.join(" // ");
+    println!("got order ids:  {:#?}", order_ids);
 
     Ok(response)
 }

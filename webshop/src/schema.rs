@@ -4,13 +4,12 @@ diesel::table! {
     order_items (id) {
         id -> Int4,
         #[max_length = 1000]
-        order_number -> Varchar,
+        order_id -> Varchar,
         #[max_length = 1000]
-        code -> Varchar,
+        item_id -> Varchar,
         #[max_length = 1000]
         name -> Nullable<Varchar>,
-        #[max_length = 1000]
-        description -> Nullable<Varchar>,
+        description -> Nullable<Text>,
         price -> Float8,
         #[max_length = 1000]
         state -> Nullable<Varchar>,
@@ -28,7 +27,7 @@ diesel::table! {
     orders (id) {
         id -> Int4,
         #[max_length = 1000]
-        order_number -> Varchar,
+        order_id -> Varchar,
         #[max_length = 1000]
         buyer_id -> Varchar,
         #[max_length = 1000]

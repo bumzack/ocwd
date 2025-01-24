@@ -17,3 +17,4 @@ uuid = { version = "1.12.1", features = [
     "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
 ] }
 rand = {version = "0.9.0-beta.3"}
+dotenvy = "0.15.7"

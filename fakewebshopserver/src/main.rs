@@ -1,163 +1,121 @@
-use crate::models::{Order, OrderItem, OrderRequest};
-use crate::webshoperror::WebshopError;
-use axum::extract::MatchedPath;
-use axum::http::Request;
-use axum::response::Response;
+use std::env;
+use crate::fake_data::{buyer_names, get_description, get_names};
+use crate::handler::cors_layer;
+use crate::handler::server_orders;
+use crate::models::{AppState, Order, OrderItem};
 use axum::routing::post;
-use axum::{Json, Router};
-use chrono::Utc;
+use axum::Router;
+use chrono::{TimeDelta, Utc};
 use rand::Rng;
 use std::net::SocketAddr;
-use std::time::Duration;
-use tower_http::classify::ServerErrorsFailureClass;
-use tower_http::cors::CorsLayer;
-use tower_http::trace::TraceLayer;
-use tracing::Span;
+use std::ops::Sub;
+use dotenvy::dotenv;
 
+mod fake_data;
+mod handler;
 mod models;
 mod webshoperror;
 
-pub fn cors_layer() -> CorsLayer {
-    CorsLayer::permissive()
-}
-
-#[axum::debug_handler]
-pub async fn orders(Json(request): Json<OrderRequest>) -> Result<Json<Vec<Order>>, WebshopError> {
-    println!("orders request {:?}", request);
-    Ok(Json(vec![]))
-}
-
-#[axum::debug_handler]
-pub async fn items(
-    Json(request): Json<OrderRequest>,
-) -> Result<Json<Vec<OrderItem>>, WebshopError> {
-    println!("items request {:?}", request);
-    Ok(Json(vec![]))
-}
-
 #[tokio::main]
 async fn main() -> Result<(), ()> {
+    dotenv().ok();
+
+    let min_orders = env::var("MIN_ORDERS").expect("MIN_ORDERS must be set").parse::<i32>().expect("should be a number");
+    let max_orders = env::var("MAX_ORDERS").expect("MAX_ORDERS must be set").parse::<i32>().expect("should be a number");
+
+    let min_items = env::var("MIN_ITEMS").expect("MIN_ITEMS must be set").parse::<i32>().expect("should be a number");
+    let max_items = env::var("MAX_ITEMS").expect("MAX_ITEMS must be set").parse::<i32>().expect("should be a number");
+
+    let max_order_age_days = env::var("MAX_ORDER_AGE_DAYS").expect("MAX_ORDER_AGE_DAYS must be set").parse::<i64>().expect("should be a number");
+
     let mut orders = vec![];
-    let mut items = vec![];
 
     let mut rng = rand::rng();
-    let y: f64 = rng.random(); // generates a float between 0 and 1
 
-    let cnt_buyer_ids = rng.random_range(0..30);
-    let buyer_ids = (0..cnt_buyer_ids)
-        .into_iter()
-        .map(|id| uuid::Uuid::new_v4())
-        .collect::<Vec<_>>();
+    let article_names: Vec<String> = get_names().iter().map(|s| s.trim().to_string()).collect();
+    let article_descriptions: Vec<String> = get_description()
+        .iter()
+        .map(|s| s.trim().to_string())
+        .collect();
 
-    let article_code_cnt = rng.random_range(10..50);
-    let article_codes = (0..article_code_cnt)
-        .into_iter()
-        .map(|id| format!("article_{0:10}", id))
-        .collect::<Vec<_>>();
+    let buyer_names: Vec<String> = buyer_names().iter().map(|s| s.trim().to_string()).collect();
 
-    let cnt_orders = rng.random_range(100..200);
+    let mut articles = vec![];
+
+    for idx in 0..article_names.len() {
+        let article_code = format!("{:04}", idx);
+        let article_name = article_names[idx].to_string();
+        articles.push((article_code, article_name));
+    }
+
+    let cnt_orders = rng.random_range(min_orders..max_orders);
 
     for i in 0..cnt_orders {
-        let order_number = format!("order_nr_{}", i);
+        let delta_days: i64 = rng.random_range(3..max_order_age_days);
+        let created = Utc::now().sub(TimeDelta::days(delta_days));
 
-        let cnt_items = rng.random_range(2..50);
+        let ts = created.timestamp_millis();
+        let order_number = format!("order_nr_{:05}_{}", i, ts);
+        let cnt_items = rng.random_range(min_items..max_items);
 
         let items = (0..cnt_items)
             .into_iter()
-            .map(|i| {
-                let price: f64 = rng.random_range(0.95..2323.23); // generates a float between 0 and 1
+            .map(|_| {
+                let price: f64 = rng.random_range(0.95..2323.23);
                 let state = "finished".to_string();
-                let now = Utc::now();
-                let code = format!("code_{}", i);
+
+                let article_idx: usize = rng.random_range(0..articles.len()); // generates a float between 0 and 1
+                let (item_id, name) = articles[article_idx].clone();
+                let description = article_descriptions[article_idx].clone();
 
                 let item = OrderItem {
-                    order_number: order_number.clone(),
-                    code: "".to_string(),
-                    name: None,
-                    description: None,
+                    item_id,
+                    name,
+                    description,
                     price,
                     state: Some(state),
                     additional_info_1: None,
                     additional_info_2: None,
-                    item_created: now,
+                    item_created: created,
                 };
                 item
             })
             .collect::<Vec<_>>();
 
-        let mut chars = vec![];
-
-        for c in 0..20 {
-            let c = rng.random_range('a'..'z');
-            chars.push(c);
-        }
-
-        let name = chars.concat();
-        let buyer_id = rng.random_range(0..cnt_buyer_ids);
-
-        let buyer_id = buyer_ids.get(buyer_id).expect("should be there").clone();
-        let buyer_name = format!("name_{}", buyer_id);
-        let erp_order_number = format!("{}", rng.random_range(100_000..1_000_000));
+        let buyer_name_idx: usize = rng.random_range(0..buyer_names.len()); // generates a float between 0 and 1
+        let buyer_name = buyer_names[buyer_name_idx].clone();
+        let buyer_id = format!("id_{}", buyer_name.to_ascii_lowercase());
+        let erp_order_number = format!("erp_{:0>10}", rng.random_range(100_000..1_000_000));
 
         let r: f64 = rng.random(); // generates a float between 0 and 1
 
-        let state = if r > 0.9 { "processing" } else { "finished" };
-
+        let state = if r > 0.95 { "processing" } else { "finished" };
         let state = state.to_string();
-        let now = Utc::now();
 
         let order = Order {
-            order_number: order_number,
-            buyer_id: buyer_id.to_string(),
-            buyer_name: Some(buyer_name),
+            order_id: order_number,
+            buyer_id,
+            buyer_name,
             erp_order_number: Some(erp_order_number),
             state: Some(state),
             additional_info_1: None,
             additional_info_2: None,
-            number_items: 0,
+            number_items: items.len() as i32,
             blacklisted: false,
-            order_created: now,
+            order_created: created,
+            items,
         };
+        orders.push(order);
     }
 
+    orders.sort_by(|a, b| a.order_created.cmp(&b.order_created));
+
+    let state = AppState { orders };
     // build our application with some routes
     let app = Router::new()
-        .route("/api/orders", post(orders))
-        .route("/api/items", post(items))
+        .route("/api/orders", post(server_orders))
         .layer(cors_layer())
-        .layer(
-            TraceLayer::new_for_http()
-                .make_span_with(|request: &Request<_>| {
-                    let matched_path = request
-                        .extensions()
-                        .get::<MatchedPath>()
-                        .map(MatchedPath::as_str);
-
-                    tracing::info!("match path {:?}", matched_path);
-
-                    let request_id = uuid::Uuid::new_v4();
-                    tracing::span!(
-                        tracing::Level::INFO,
-                        "http_request",
-                        method = display(request.method()),
-                        uri = display(request.uri()),
-                        version = debug(request.version()),
-                        request_id = display(request_id)
-                    )
-                })
-                .on_request(|_request: &Request<_>, _span: &Span| {
-                    tracing::info!("tracing::on_request {:?}", _request);
-                })
-                .on_response(|_response: &Response, _latency: Duration, _span: &Span| {
-                    tracing::info!("response {:?}", _response);
-                })
-                .on_failure(
-                    |_error: ServerErrorsFailureClass, _latency: Duration, _span: &Span| {
-                        tracing::error!("tracing::on_failure");
-                        tracing::error!("error {:?}", &_error);
-                    },
-                ),
-        );
+        .with_state(state);
 
     // run it with hyper
     let addr = SocketAddr::from(([127, 0, 0, 1], 2002));
