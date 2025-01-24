@@ -42,6 +42,7 @@
 
 	// close
 	const send_request = async (): Promise<void> => {
+		console.log("sending request to BE server");
 		let req: FeLiveChatRequest = {
 			modelId: +selectedModelId,
 			numCtx: modelParam.numCtx,
@@ -71,6 +72,7 @@
 	});
 </script>
 
+
 <div class="container-fluid">
 
 	{#each dialogue.req_resp as req_res }
@@ -82,42 +84,49 @@
 						<div class="card">
 							<h5 class="card-header">You</h5>
 							<div class="card-body">
-							<textarea bind:value={prompt} class="form-control" id="exampleFormControlTextarea1" rows="3"
-												placeholder="Do your worst!"></textarea>
-							</div>
-							<div class="col-md-12">
-								<div class="form-check">
-									<button class="btn btn-primary" onclick={send_request}>Chat!!</button>
-								</div>
+								<form class="row g-3">
+									<div class="col-md-12">
+										<textarea bind:value={prompt} class="form-control" id="exampleFormControlTextarea1" rows="3"
+															placeholder="Do your worst!"></textarea>
+									</div>
+									<div class="col-12 ">
+										<button  onclick={send_request} class="btn btn-primary float-end">Have a Chat!</button>
+									</div>
+								</form>
 							</div>
 							<div class="card-footer">
-								<div class="row">
-									<div class="col-md-8">
+								<form class="row gx-3 gy-2 align-items-center   ">
+									<div class="col-sm-5 input-group-sm">
+										<label class="visually-hidden" for="specificSizeSelect">Preference</label>
 										{#if hasData}
-											<select
-												bind:value={selectedModelId}
-											>
+											<select class="form-select" id="specificSizeSelect" bind:value={selectedModelId}>
 												{#each models as model}
 													<option value={model.id}>
 														{model.model}
 													</option>
 												{/each}
 											</select>
-											<br />
 										{:else}
 											<p>no models available</p>
 										{/if}
 									</div>
-									<div class="col-md-4">
+									<div class="col-auto">
 										<div class="form-check">
-											<input class="form-check-input" type="checkbox" bind:checked={showInsights} value=""
-														 id="flexCheckChecked">
-											<label class="form-check-label" for="flexCheckChecked">
-												Show insights
+											<input class="form-check-input" type="checkbox" id="checkBoxInsights">
+											<label class="form-check-label" for="checkBoxInsights">
+												Insights
 											</label>
 										</div>
 									</div>
-								</div>
+									<div class="col-auto">
+										<div class="form-check">
+											<input class="form-check-input" type="checkbox" id="checkBoxTools">
+											<label class="form-check-label" for="checkBoxTools">
+												Tools
+											</label>
+										</div>
+									</div>
+								</form>
 							</div>
 						</div>
 					</div>
