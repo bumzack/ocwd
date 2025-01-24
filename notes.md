@@ -13,6 +13,8 @@ pg_dump works the same I guess
 
 pg_restore --dbname=postgresql://ollamachat:ollamachat@127.0.0.1:5432/ollamachat
 
+pg_dump --dbname=postgresql://webshop:webshop@127.0.0.1:5432/webshop
+
 
 ## start ubuntu in textmode
 
