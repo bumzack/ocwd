@@ -15,6 +15,7 @@ import type {
 } from './models';
 
 import { env } from '$env/dynamic/public';
+import type { FeLiveChatRequest, FeLiveChatResponse } from '$lib/livemodels.ts';
 
 export const load_local_models = async (): Promise<FeOllamaModel[]> => {
 	const server = env.PUBLIC_BACKEND_URL;
@@ -228,7 +229,7 @@ export const prompt_by_id = async (promptId: number): Promise<FeOllamaPrompt> =>
 export const chats_load_all = async (): Promise<FeOllamaChat[]> => {
 	const server = env.PUBLIC_BACKEND_URL;
 	try {
-		const url = `${server}/api/chat`;
+		const url = `${server}/api/chat/all`;
 		console.log(`url ${url}`);
 
 		const response = await fetch(url, {
@@ -374,4 +375,30 @@ export const ollama_model_information = async (model: string): Promise<FeOllamaI
 		console.info(`error getting the model information ${e}`);
 	}
 	return Promise.reject(new Error(`No model information received."`));
+};
+
+export const chat = async (req: FeLiveChatRequest): Promise<FeLiveChatResponse> => {
+	const server = env.PUBLIC_BACKEND_URL;
+	try {
+		const url = `${server}/api/chat`;
+		console.log(`url ${url}`);
+
+		const response = await fetch(url, {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json, text/plain, */*'
+			},
+			body: JSON.stringify(req),
+			method: 'POST'
+		});
+		if (response.ok) {
+			return await response.json();
+		} else {
+			const error = new Error('error getting chat response');
+			return Promise.reject(error);
+		}
+	} catch (e) {
+		console.info(`error getting the chat data. err: ${e}`);
+	}
+	return Promise.reject(new Error(`No chat response received."`));
 };
