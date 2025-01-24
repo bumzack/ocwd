@@ -75,10 +75,12 @@ async fn main() -> Result<(), ()> {
     for i in 0..cnt_orders {
         let delta_days: i64 = rng.random_range(3..max_order_age_days);
         let delta_seconds: i64 = rng.random_range(60..1_000 * max_order_age_days);
+        let delta_millis: i64 = rng.random_range(10_000..100_000 * max_order_age_days);
 
         let now = Utc::now();
         let created = now.sub(TimeDelta::days(delta_days));
         let created = created.sub(TimeDelta::seconds(delta_seconds));
+        let created = created.sub(TimeDelta::milliseconds(delta_millis));
 
         if cnt_orders < 1_000 {
             println!(
