@@ -11,15 +11,9 @@ chrono = { version = "0.4.39", features = ["serde"] }
 axum = { version = "0.8.1", features = ["macros"] }
 tower-http = { version = "0.6.2", features = ["cors", "trace"] }
 tracing = "0.1.41"
-tracing-subscriber = { version = "0.3.19", features = [
-    "env-filter",
-    "std",
-    "json",
-    "fmt",
-] }
-uuid = { version = "1.12.0", features = [
+uuid = { version = "1.12.1", features = [
     "v4", # Lets you generate random UUIDs
     "fast-rng", # Use a faster (but still sufficiently random) RNG
     "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
 ] }
-rand = {version = "0.9.0-beta.2"}
+rand = {version = "0.9.0-beta.3"}

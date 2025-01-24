@@ -19,7 +19,9 @@ async fn main() -> Result<(), OllamaError> {
     for local_model in local_models.iter().skip(skip).take(take) {
         let mesg = Message {
             role: "user".to_string(),
-            content: ContentEnum::AString("How is the weather in San Francisco".to_string()),
+            content: Some(ContentEnum::AString(
+                "How is the weather in San Francisco".to_string(),
+            )),
             images: None,
             tool_calls: Some(vec![]),
             tool_call_id: None,

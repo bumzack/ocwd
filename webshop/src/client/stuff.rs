@@ -1,6 +1,6 @@
 use crate::client::api::get_orders;
 use crate::client::webmodels::OrderRequest;
-use crate::db::orderitems::{order_items_insert, order_items_last_item_created, DbNewOrderItem};
+use crate::db::orderitems::{order_items_insert, DbNewOrderItem};
 use crate::db::orders::{order_insert, order_last_order_created, DbNewOrder};
 use crate::error::webshoperror::WebshopError;
 
