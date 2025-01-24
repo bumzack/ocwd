@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
+<nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">Ollama Chat with Database</a>
         <button aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"
@@ -31,6 +31,7 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="/chat/all">All Chats</a></li>
                         <li><a class="dropdown-item" href="/chat/streaming">Live Chat</a></li>
+                        <li><a class="dropdown-item" href="/chat/live">Chat</a></li>
                     </ul>
                 </li>
 
