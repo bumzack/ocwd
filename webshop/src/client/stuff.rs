@@ -82,8 +82,7 @@ pub async fn find_and_insert_orders(
             let items_cnt = new_items.len();
             total_items_inserted += items_cnt;
 
-            let item = order_items_insert(pool, new_items).await?;
-            println!("last inserted order item_id: {:?}", item.item_id);
+            let _ = order_items_insert(pool, new_items).await?;
         }
 
         if order_cnt < page_size as usize {
@@ -96,6 +95,8 @@ pub async fn find_and_insert_orders(
             .expect("should be an order")
             .order_created
             .and_utc();
+
+        println!("last_order_created: {:?}", last_order_date);
     }
     println!("finished inserting {} orders.", total_orders_inserted);
     Ok(total_orders_inserted)
