@@ -1,5 +1,5 @@
 use chrono::{DateTime, Utc};
-use ollama::models::{ModelDetails, StringOrNumber};
+use ollama::models::{ChatRequest, ChatResponse, ModelDetails, StringOrNumber};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -159,4 +159,26 @@ pub struct FeStreamingRequest {
     pub temperature: f64,
     pub top_k: f64,
     pub top_p: f64,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct RequestResponsesPingPong {
+    pub user_prompt: String,
+    pub model_id: i32,
+    pub seed: Option<i64>,
+    pub num_ctx: Option<i64>,
+    pub temperature: Option<f64>,
+    pub top_k: Option<f64>,
+    pub top_p: Option<f64>,
+    pub enable_tools: bool,
+    pub assistant_answer: Option<String>,
+    pub request: ChatRequest,
+    pub responses: Vec<ChatResponse>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct FeLiveChat {
+    pub req_resp: Vec<RequestResponsesPingPong>,
 }

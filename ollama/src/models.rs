@@ -37,7 +37,7 @@ pub enum ContentEnum {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Message {
     pub role: String,
-    pub content: ContentEnum,
+    pub content: Option<ContentEnum>,
     pub images: Option<Vec<String>>,
     pub tool_calls: Option<Vec<ToolCall>>,
     pub tool_call_id: Option<String>,

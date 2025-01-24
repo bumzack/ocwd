@@ -7,7 +7,7 @@ use crate::common::db_prompt::{
 };
 use crate::common::db_queue::{ollama_queue_all, ollama_queue_insert};
 use crate::fe::femodels::{
-    FeDbOllamaModel, FeOllamaChat, FeOllamaChatQueue, FeOllamaChatQueueResponse,
+    FeDbOllamaModel, FeLiveChat, FeOllamaChat, FeOllamaChatQueue, FeOllamaChatQueueResponse,
     FeOllamaInformation, FeOllamaModel, FeOllamaPrompt, FeRunModelRequest, FeStreamingRequest,
     FeUpdateOllamaChatResult, InsertModelsResponse,
 };
@@ -19,9 +19,13 @@ use axum::http::{Response, StatusCode};
 use axum::response::IntoResponse;
 use axum::Json;
 use ollama::api::OllamaImpl;
+use ollama::error::OllamaError;
+use ollama::models::ContentEnum::{AContent, AString};
 use ollama::models::{
-    ChatRequest, CreateModelRequest, Function, Ollama, Parameter, Property, Tool,
+    ChatRequest, ChatResponse, ContentEnum, CreateModelRequest, Function, Message, Ollama,
+    Parameter, Property, Tool,
 };
+use ollama::tools_v2::get_tools_v2;
 use std::collections::HashMap;
 use tracing::info;
 
@@ -416,4 +420,95 @@ pub async fn model_create(Json(request): Json<CreateModelRequest>) -> impl IntoR
                 .unwrap()
         }
     }
+}
+
+// https://github.com/tokio-rs/axum/blob/main/examples/reqwest-response/src/main.rs
+// you have to make sure, that the request has set "streaming" to true, otherwise all bets are off
+pub async fn chat(
+    State(pool): State<deadpool_diesel::postgres::Pool>,
+    Json(request): Json<FeLiveChat>,
+) -> Result<Json<FeLiveChat>, OllamaChatError> {
+    println!("got a request for streaming chat \n{:?}\n", request);
+    // let db_model = ollama_model_load_by_id(&pool, request.model_id)
+    //     .await
+    //     .expect("expect the model to be present")
+    //     // hahahahaaaha
+    //     .expect("expect the model to be present");
+    //
+    // let o = Ollama::new(CONFIG.ollama_url.clone()).expect("should be able to create Ollama");
+    //
+    // let tools = match request.enable_tools {
+    //     true => Some(get_tools_v2()),
+    //     false => None,
+    // };
+    //
+    // let new_message = Message {
+    //     role: "user".to_string(),
+    //     content: Some(AString(fe_request.prompt.clone())),
+    //     images: None,
+    //     tool_calls: None,
+    //     tool_call_id: None,
+    // };
+    //
+    // let mut messages = fe_request.messages;
+    //
+    // messages.push(new_message);
+    //
+    // println!("messages {:?}", messages);
+    //
+    // let request = ChatRequest {
+    //     model: db_model.name.clone(),
+    //     prompt: None,
+    //     stream: false,
+    //     options: None,
+    //     messages: Some(messages.clone()),
+    //     format: None,
+    //     tools,
+    // };
+    //
+    // let (response, duration) = o
+    //     .chat(&request)
+    //     .await
+    //     .expect("couldn't send chat plain response");
+    //
+    // println!(
+    //     "request for model {} took {}ms. prompt {}",
+    //     db_model.model, duration, fe_request.prompt
+    // );
+    //
+    // // TODO loop and satisfy tool_calls until there are no tool calls any more ..
+    // let markdown = match response.message {
+    //     Some(ref msg) => {
+    //         messages.push(msg.clone());
+    //         match &msg.content {
+    //             Some(content) => match content {
+    //                 ContentEnum::AString(s) => s.to_string(),
+    //                 ContentEnum::AContent(con) => {
+    //                     format!("{:?}", con)
+    //                 }
+    //             },
+    //             None => {
+    //                 println!("no content in chat response found in  response message from Ollama?");
+    //                 "no content in chat response found in  response message from Ollama?"
+    //                     .to_string()
+    //             }
+    //         }
+    //     }
+    //     None => {
+    //         println!("this does not seem right, there is no response message from Ollama?");
+    //         "no response from ollama :-(".to_string()
+    //     }
+    // };
+    //
+    // let message_ping_pong = MessagePingPong {
+    //     request,
+    //     responses: vec![response],
+    //     markdown,
+    // };
+    //
+    // let r = FeLiveChatResponse {
+    //     req_resp: vec![message_ping_pong],
+    // };
+
+    Ok(Json(request))
 }

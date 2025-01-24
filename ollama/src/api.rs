@@ -24,6 +24,11 @@ pub trait OllamaImpl {
         request: &ChatRequest,
     ) -> impl std::future::Future<Output = Result<ChatResponse, OllamaError>> + Send;
 
+    fn chat(
+        &self,
+        request: &ChatRequest,
+    ) -> impl std::future::Future<Output = Result<(ChatResponse, u64), OllamaError>> + Send;
+
     fn chat_dump(
         &self,
         request: &ChatRequest,
@@ -153,6 +158,21 @@ impl OllamaImpl for Ollama {
             start.elapsed().as_millis()
         );
         Ok(res)
+    }
+
+    async fn chat(&self, request: &ChatRequest) -> Result<(ChatResponse, u64), OllamaError> {
+        let url = format!("{}/api/chat", self.url);
+        let json = json!(request);
+
+        let start = Instant::now();
+        let res = self.client.post(url).body(json.to_string()).send().await?;
+        let duration = start.elapsed().as_secs();
+
+        let body = res.text().await.map_err(OllamaError::from)?;
+        println!("response body {}", body);
+
+        let response = serde_json::from_str::<ChatResponse>(&body).map_err(OllamaError::from)?;
+        Ok((response, duration))
     }
 
     async fn chat_dump(&self, request: &ChatRequest) -> Result<(ChatResponse, u64), OllamaError> {
