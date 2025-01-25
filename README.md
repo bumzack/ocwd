@@ -1,7 +1,8 @@
 # OCWD - Ollama Chat With Database
 
-Naming things is hard, finding a good project name is even harder. It started out as a Rust backend with 
-the ability to call the Ollama API and store the responses in a postgres database. Now it is a little bit more than that.
+Naming things is hard, finding a good project name is even harder. It started out as a Rust backend with
+the ability to call the Ollama API and store the responses in a postgres database. Now it is a little bit more than
+that.
 
 > This is under heavy development. Breaking changes are to be expected on a daily basis!!
 
@@ -56,3 +57,28 @@ One near-future goal is to try implementing tools for the following use cases:
   used by the ```postgres``` tool in the ```generic-tools``` crate and the LLMwrites/provides the SQL queries to answer
   the users questions.
 
+## Goals
+
+### Tools
+
+Implement the existing tools so that LLMs get real responses.
+
+List of goals:
+
+- WebShop statistics via chat
+- show arbitrary database data in a table in the SvelteKit FrontEnd (needs probably access to the filesystem, as this
+  might be too much data for the chat to handle.)
+- create audio file, show it in the chat conversation
+- generate images and show them in the chat conversation
+
+### my own assistant
+
+In a chat I want to be able to add ToDos, appointments and notes. it should be possible to include a URL or multiple
+URLs (e.g. links to JIRA tickets)
+Then I want to be able to "query" these entries. Just use a simple postgres database that can store text and a type.
+For the fun of it maybe add [meilisearch](https://github.com/meilisearch/meilisearch)  for full text search.
+Not sure about RAGs, but meilisearch supports vector search.
+
+### overall goal
+
+Use Rust, not python :-)
