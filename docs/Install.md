@@ -49,5 +49,4 @@ build cutlass for NVIDIA 3090 Ti
 cmake ..  -DCUTLASS_NVCC_ARCHS=80      -DCUTLASS_LIBRARY_KERNELS=all
 ```
 
-
 https://developer.nvidia.com/nccl

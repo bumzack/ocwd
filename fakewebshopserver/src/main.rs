@@ -9,7 +9,7 @@ use dotenvy::dotenv;
 use rand::Rng;
 use std::env;
 use std::net::SocketAddr;
-use std::ops::{Add, Sub};
+use std::ops::Sub;
 
 mod fake_data;
 mod handler;
@@ -64,9 +64,9 @@ async fn main() -> Result<(), ()> {
 
     let mut articles = vec![];
 
-    for idx in 0..article_names.len() {
+    for (idx, item) in article_names.iter().enumerate() {
         let article_code = format!("{:04}", idx);
-        let article_name = article_names[idx].to_string();
+        let article_name = item.to_string();
         articles.push((article_code, article_name));
     }
 
@@ -94,7 +94,6 @@ async fn main() -> Result<(), ()> {
         let cnt_items = rng.random_range(min_items..max_items);
 
         let items = (0..cnt_items)
-            .into_iter()
             .map(|_| {
                 let price: f64 = rng.random_range(0.95..2323.23);
                 let r: f64 = rng.random(); // generates a float between 0 and 1
@@ -104,7 +103,7 @@ async fn main() -> Result<(), ()> {
                 let (item_id, name) = articles[article_idx].clone();
                 let description = article_descriptions[article_idx].clone();
 
-                let item = OrderItem {
+                OrderItem {
                     item_id,
                     name,
                     description,
@@ -113,8 +112,7 @@ async fn main() -> Result<(), ()> {
                     additional_info_1: None,
                     additional_info_2: None,
                     item_created: created1,
-                };
-                item
+                }
             })
             .collect::<Vec<_>>();
 

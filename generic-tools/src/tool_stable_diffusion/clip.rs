@@ -1,9 +1,6 @@
 #[cfg(feature = "accelerate")]
 extern crate accelerate_src;
 
-#[cfg(feature = "mkl")]
-extern crate intel_mkl_src;
-
 use anyhow::{Error as E, Ok, Result};
 use candle_core::{DType, IndexOp, Module, Tensor, D};
 use candle_transformers::models::{stable_diffusion, t5};
