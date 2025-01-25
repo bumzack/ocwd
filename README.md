@@ -39,6 +39,8 @@ One near-future goal is to try implementing tools for the following use cases:
 - other stuff used:
   [candle](https://github.com/huggingface/candle) (it would be great to replace all the ollama stuff with candle...)
 
+Ollama - big ❤️, but candle ❤️❤️❤️.
+
 ## what you find here
 
 - ```backend```: Axum web server for a SPA implementing different Ollama APIs to "chat" with a LLM. It should support
