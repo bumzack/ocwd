@@ -1,7 +1,5 @@
 #[cfg(feature = "accelerate")]
 extern crate accelerate_src;
-#[cfg(feature = "mkl")]
-extern crate intel_mkl_src;
 
 use anyhow::{Error as E, Result};
 use std::error::Error;
@@ -114,7 +112,7 @@ impl TextGeneration {
 }
 
 struct Starcoder2Args {
-    use_flash_attn: bool,
+    _use_flash_attn: bool,
     prompt: String,
     /// The temperature used to generate samples.
     temperature: Option<f64>,
@@ -182,6 +180,8 @@ fn run_star_coder(args: Starcoder2Args) -> Result<(), Box<dyn Error>> {
     let start = std::time::Instant::now();
     let config = serde_json::from_reader(std::fs::File::open(config_file)?)?;
     let device = get_device(false)?;
+    println!("starcoder2 device {:?}", device);
+
     let dtype = if device.is_cuda() {
         DType::BF16
     } else {
@@ -208,7 +208,7 @@ fn run_star_coder(args: Starcoder2Args) -> Result<(), Box<dyn Error>> {
 
 pub fn starcoder2(prompt: String) -> Result<(), Box<dyn Error>> {
     let args = Starcoder2Args {
-        use_flash_attn: true,
+        _use_flash_attn: true,
         prompt,
         temperature: Some(0.1),
         top_p: None,

@@ -55,11 +55,8 @@ async fn main() -> Result<(), OllamaError> {
         let mut cnt = 0;
         loop {
             match r.as_ref() {
-                Ok(res) => {
-                    // let response_pretty =
-                    //     serde_json::to_string_pretty(&res).expect("should be a json response");
+                Ok((res, _duration)) => {
                     println!("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
-                    // println!("response: \n {:?}\n", response_pretty);
                     match res.response.as_ref() {
                         Some(rrr) => println!("property response: {:?}", rrr),
                         None => println!("property response empty"),
@@ -94,14 +91,14 @@ async fn main() -> Result<(), OllamaError> {
                                 let response_msg = match tool_call.function.name.as_str() {
                                     "get_current_weather" => Some(Message {
                                         role: "tool".to_string(),
-                                        content: ContentEnum::AString("23".to_string()),
+                                        content: Some(ContentEnum::AString("23".to_string())),
                                         images: None,
                                         tool_call_id: Some("get_current_weather".to_string()),
                                         tool_calls: None,
                                     }),
                                     "subtract_two_numbers" => Some(Message {
                                         role: "tool".to_string(),
-                                        content: ContentEnum::AString("-222222".to_string()),
+                                        content: Some(ContentEnum::AString("-222222".to_string())),
                                         images: None,
                                         tool_call_id: Some("subtract_two_numbers".to_string()),
                                         tool_calls: None,

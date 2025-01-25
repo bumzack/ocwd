@@ -55,6 +55,7 @@ pub async fn order_items_insert(
     .map_err(WebshopError::from)
 }
 
+#[allow(dead_code)]
 pub async fn order_items_last_item_created(
     pool: &deadpool_diesel::postgres::Pool,
 ) -> Result<Option<DbOrderItem>, WebshopError> {

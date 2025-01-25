@@ -1,7 +1,5 @@
 #[cfg(feature = "accelerate")]
 extern crate accelerate_src;
-#[cfg(feature = "mkl")]
-extern crate intel_mkl_src;
 
 use candle_core::{DType, IndexOp, Tensor};
 use candle_transformers::models::mmdit::model::{Config as MMDiTConfig, MMDiT};
@@ -78,23 +76,7 @@ fn stable_diffusion_internal(
         use_slg,
     } = args;
 
-    // let _guard = if tracing {
-    //     let (chrome_layer, guard) = ChromeLayerBuilder::new().build();
-    //     tracing_subscriber::registry().with(chrome_layer).init();
-    //     Some(guard)
-    // } else {
-    //     None
-    // };
-
-    #[feature(metal, not(cuda))]
     let device = get_device(false)?;
-
-    #[feature(not(metal))]
-    let device = get_device(false)?;
-
-    #[feature(not(metal, cuda))]
-    let device = get_device(false)?;
-
     println!("stable diffusion device {:?}", device);
 
     let default_inference_steps = match which {

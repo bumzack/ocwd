@@ -76,7 +76,6 @@ pub async fn tokio_postgres(
             };
             map.insert(column.name().to_string(), value);
         }
-        let v = serde_json::to_string_pretty(&map).unwrap();
         row_as_values.push(map);
     }
 

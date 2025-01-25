@@ -1,7 +1,5 @@
 #[cfg(feature = "accelerate")]
 extern crate accelerate_src;
-#[cfg(feature = "mkl")]
-extern crate intel_mkl_src;
 
 use candle_transformers::models::stable_diffusion;
 use candle_transformers::models::wuerstchen;
@@ -23,7 +21,7 @@ struct Args {
     /// The prompt to be used for image generation.
     prompt: String,
     uncond_prompt: String,
-    cpu: bool,
+    _cpu: bool,
     use_flash_attn: bool,
     height: Option<usize>,
     width: Option<usize>,
@@ -167,7 +165,6 @@ fn run(args: Args) -> Result<()> {
     let Args {
         prompt,
         uncond_prompt,
-        cpu,
         height,
         width,
         tokenizer,
@@ -180,15 +177,7 @@ fn run(args: Args) -> Result<()> {
         ..
     } = args;
 
-    #[feature(metal, not(cuda))]
     let device = get_device(false)?;
-
-    #[feature(not(metal))]
-    let device = get_device(false)?;
-
-    #[feature(not(metal, cuda))]
-    let device = get_device(false)?;
-
     println!("wuerstchen device {:?}", device);
 
     let height = height.unwrap_or(1024);
@@ -354,7 +343,7 @@ pub fn run_wuerstchen(prompt: String, file_name: String) -> Result<()> {
     let args = Args {
         prompt,
         uncond_prompt: "".to_string(),
-        cpu: false,
+        _cpu: false,
         use_flash_attn: false,
         height: Some(512),
         width: Some(512),

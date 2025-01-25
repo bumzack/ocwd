@@ -9,7 +9,6 @@ pub enum WebshopError {
     ReqwestErr(ReqwestError),
     DieselInteractError(InteractError),
     DieselError(DieselErr),
-    DataError(String),
     DeadpoolErr(deadpool_diesel::Error),
     DeadpoolPoolError(deadpool_diesel::PoolError),
     SerdeJsonErr(serde_json::error::Error),
@@ -24,9 +23,6 @@ impl fmt::Display for WebshopError {
             }
             WebshopError::DieselError(err) => {
                 write!(f, "Diesel error. err: {} ", err)
-            }
-            WebshopError::DataError(err) => {
-                write!(f, "data error. err {}", err)
             }
             WebshopError::DeadpoolErr(err) => {
                 write!(f, "deadpool error. err {}", err)

@@ -1,7 +1,7 @@
 use generic_tools::tool_starcoder2::starcoder2::starcoder2;
 use std::error::Error;
-use std::time::SystemTime;
 use tokio::time::Instant;
+
 // prompt taken from: https://huggingface.co/docs/diffusers/using-diffusers/kandinsky?text-to-image=Kandinsky+3
 
 #[tokio::main]

@@ -1,7 +1,7 @@
+use crate::candle_tools::bs1770;
 use candle_core::utils::{cuda_is_available, metal_is_available};
 use candle_core::Result as CandleResult;
 use candle_core::{Device, Tensor};
-use crate::candle_tools::bs1770;
 
 pub fn get_device(cpu: bool) -> CandleResult<Device> {
     if cpu {
@@ -68,7 +68,6 @@ pub fn hub_load_safetensors(
     Ok(safetensors_files)
 }
 
-
 // https://github.com/facebookresearch/audiocraft/blob/69fea8b290ad1b4b40d28f92d1dfc0ab01dbab85/audiocraft/data/audio_utils.py#L57
 pub fn normalize_loudness(
     wav: &Tensor,
@@ -80,7 +79,7 @@ pub fn normalize_loudness(
         return Ok(wav.clone());
     }
     let wav_array = wav.to_vec1::<f32>()?;
-    let mut meter  = bs1770::ChannelLoudnessMeter::new(sample_rate);
+    let mut meter = bs1770::ChannelLoudnessMeter::new(sample_rate);
     meter.push(wav_array.into_iter());
     let power = meter.as_100ms_windows();
     let loudness = match bs1770::gated_mean(power) {
@@ -96,4 +95,3 @@ pub fn normalize_loudness(
         Ok(wav)
     }
 }
-

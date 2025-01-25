@@ -81,10 +81,11 @@ async fn main() -> Result<(), OllamaError> {
                     .map(|cr| cr.message.clone())
                     .map(|m| {
                         m.map_or("no_msg".to_string(), |msg| match msg.content {
-                            ContentEnum::AString(a) => a,
-                            ContentEnum::AContent(content) => {
-                                content.message.unwrap_or("no content messsage".to_string())
+                            Some(ContentEnum::AString(a)) => a,
+                            Some(ContentEnum::AContent(content)) => {
+                                content.message.unwrap_or("no content message".to_string())
                             }
+                            None => "nope nada".to_string(),
                         })
                     })
                     .unwrap_or("n/a".to_string());
@@ -180,7 +181,7 @@ async fn doit(
 
     let msg = Message {
         role: "user".to_string(),
-        content: ContentEnum::AString(prompt.to_string()),
+        content: Some(ContentEnum::AString(prompt.to_string())),
         images: None,
         tool_calls: None,
         tool_call_id: None,

@@ -1,7 +1,5 @@
 #[cfg(feature = "accelerate")]
 extern crate accelerate_src;
-#[cfg(feature = "mkl")]
-extern crate intel_mkl_src;
 
 use crate::candle_tools::candletools::{get_device, hub_load_safetensors, normalize_loudness};
 use crate::candle_tools::wav;
@@ -100,6 +98,8 @@ pub fn run_parler(args: ParlerArgs) -> anyhow::Result<()> {
 
     let start = std::time::Instant::now();
     let device = get_device(false)?;
+    println!("parlor device {:?}", device);
+
     let vb = unsafe { VarBuilder::from_mmaped_safetensors(&model_files, DType::F32, &device)? };
     let config: Config = serde_json::from_reader(std::fs::File::open(config)?)?;
     let mut model = Model::new(&config, vb)?;

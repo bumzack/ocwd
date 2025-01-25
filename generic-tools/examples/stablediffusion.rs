@@ -7,8 +7,11 @@ use tokio::time::Instant;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let ts = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs();
-    let filename = format!( "stable_diffusion_alien_cheeseburger_{}", ts);
+    let ts = SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
+    let filename = format!("stable_diffusion_alien_cheeseburger_{}", ts);
 
     let start = Instant::now();
     stable_diffusion(

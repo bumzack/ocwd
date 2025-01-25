@@ -100,6 +100,9 @@ pub async fn find_and_insert_orders(
 
         println!("last_order_created: {:?}", last_order_date);
     }
-    println!("finished inserting {} orders.", total_orders_inserted);
+    println!(
+        "finished inserting {} orders and {} items",
+        total_orders_inserted, total_items_inserted
+    );
     Ok(total_orders_inserted)
 }

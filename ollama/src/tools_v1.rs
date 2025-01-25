@@ -1,7 +1,7 @@
-use std::collections::HashMap;
 use crate::models::{Function, Parameter, Property, Tool};
+use std::collections::HashMap;
 
-pub  fn get_tools_v1() -> Vec<Tool> {
+pub fn get_tools_v1() -> Vec<Tool> {
     vec![
         get_weather(),
         get_sub_numbers(),
@@ -33,12 +33,10 @@ fn get_stable_diffusion() -> Tool {
             parameters,
         };
 
-    let tool = Tool {
+    Tool {
         typ: "function".to_string(),
         function,
-    };
-
-    tool
+    }
 }
 
 fn get_psql() -> Tool {
@@ -71,12 +69,10 @@ fn get_psql() -> Tool {
             parameters,
         };
 
-    let tool = Tool {
+    Tool {
         typ: "function".to_string(),
         function,
-    };
-
-    tool
+    }
 }
 
 fn get_wuerstchen() -> Tool {
@@ -101,12 +97,10 @@ fn get_wuerstchen() -> Tool {
             parameters,
         };
 
-    let tool = Tool {
+    Tool {
         typ: "function".to_string(),
         function,
-    };
-
-    tool
+    }
 }
 
 fn get_sub_numbers() -> Tool {
@@ -138,12 +132,10 @@ fn get_sub_numbers() -> Tool {
         parameters: parameters_sub,
     };
 
-    let tool_sub = Tool {
+    Tool {
         typ: "function".to_string(),
         function: function_sub,
-    };
-
-    tool_sub
+    }
 }
 
 fn get_weather() -> Tool {
@@ -176,10 +168,8 @@ fn get_weather() -> Tool {
         parameters,
     };
 
-    let tool = Tool {
+    Tool {
         typ: "function".to_string(),
         function,
-    };
-
-    tool
+    }
 }

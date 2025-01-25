@@ -6,8 +6,6 @@ backend/target
 **/node_modules
 
 .env
-Cargo.lock
-
 .idea
 
 **/*logs
