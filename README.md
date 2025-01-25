@@ -28,7 +28,7 @@ is to have a relatively generic database that can store ToDos, appointments and 
 - backend: Rust (axum, diesel, reqwest)
 - frontend: SvelteKit (a "new" version of sycamore is available, that would be interesting to try again).
 - other stuff used: 
-  [candle](https://github.com/huggingface/candle) (it would be great to get replace all the ollama stuff with candle...)
+  [candle](https://github.com/huggingface/candle) (it would be great to replace all the ollama stuff with candle...)
  
 
 ## what you find here
