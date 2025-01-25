@@ -7,6 +7,9 @@ export const ssr = true;
 
 export const load: PageServerLoad = async () => {
 	const chats = await chats_load_all();
+
+	console.log(`chats ${JSON.stringify(chats, null, 4)}`);
+
 	if (chats) {
 		const props: PropsAllChats = {
 			chats: chats

@@ -6,19 +6,53 @@ use crate::models::{
 };
 use reqwest::{Client, Response};
 use serde_json::json;
-use std::time::Instant;
+use tokio::time::Instant;
 
-//  using async fn in a trait, which could be a problem for multithreaded use cases
+// using async fn in a trait, which could be a problem for multithreaded use cases
 // if problems arise, read again here: https://blog.rust-lang.org/2023/12/21/async-fn-rpit-in-traits.html
 pub trait OllamaImpl {
-    async fn local_models(&self) -> Result<Vec<ListModel>, OllamaError>;
-    async fn loaded_models(&self) -> Result<Vec<RunningModel>, OllamaError>;
-    async fn chat(&self, request: &ChatRequest) -> Result<ChatResponse, OllamaError>;
-    async fn chat_streaming(&self, request: &ChatRequest) -> Result<Response, OllamaError>;
-    async fn unload(&self, model: &str) -> Result<(), OllamaError>;
-    async fn details(&self, model: &str) -> Result<OllamaInformation, OllamaError>;
+    fn local_models(
+        &self,
+    ) -> impl std::future::Future<Output = Result<Vec<ListModel>, OllamaError>> + Send;
 
-    async fn create(&self, request: CreateModelRequest) -> Result<Response, OllamaError>;
+    fn loaded_models(
+        &self,
+    ) -> impl std::future::Future<Output = Result<Vec<RunningModel>, OllamaError>> + Send;
+
+    fn generate(
+        &self,
+        request: &ChatRequest,
+    ) -> impl std::future::Future<Output = Result<ChatResponse, OllamaError>> + Send;
+
+    fn chat(
+        &self,
+        request: &ChatRequest,
+    ) -> impl std::future::Future<Output = Result<(ChatResponse, u64), OllamaError>> + Send;
+
+    fn chat_dump(
+        &self,
+        request: &ChatRequest,
+    ) -> impl std::future::Future<Output = Result<(ChatResponse, u64), OllamaError>> + Send;
+
+    fn chat_streaming(
+        &self,
+        request: &ChatRequest,
+    ) -> impl std::future::Future<Output = Result<Response, OllamaError>> + Send;
+
+    fn unload(
+        &self,
+        model: &str,
+    ) -> impl std::future::Future<Output = Result<(), OllamaError>> + Send;
+
+    fn details(
+        &self,
+        model: &str,
+    ) -> impl std::future::Future<Output = Result<OllamaInformation, OllamaError>> + Send;
+
+    fn create(
+        &self,
+        request: CreateModelRequest,
+    ) -> impl std::future::Future<Output = Result<Response, OllamaError>> + Send;
 }
 
 impl Ollama {
@@ -41,7 +75,6 @@ impl OllamaImpl for Ollama {
             .map_err(OllamaError::from)?;
 
         let body = res.text().await.map_err(OllamaError::from)?;
-
         let models = serde_json::from_str::<ListModelResponse>(&body).map_err(OllamaError::from)?;
 
         Ok(models.models)
@@ -84,9 +117,18 @@ impl OllamaImpl for Ollama {
         Ok(models.models)
     }
 
-    async fn chat(&self, request: &ChatRequest) -> Result<ChatResponse, OllamaError> {
+    async fn generate(&self, request: &ChatRequest) -> Result<ChatResponse, OllamaError> {
         let url = format!("{}/api/generate", self.url);
         let json = json!(request);
+        let start = Instant::now();
+
+        println!(
+            "model {}, url {}, request.prompt {:?} ",
+            request.model, url, request.prompt
+        );
+
+        // let req_pretty = serde_json::to_string_pretty(&request).map_err(OllamaError::from)?;
+        // println!("req_pretty \n{:?}\n ", req_pretty);
 
         let res = self.client.post(url).body(json.to_string()).send().await?;
 
@@ -96,21 +138,68 @@ impl OllamaImpl for Ollama {
             return Err(OllamaError::AllTheOtherErrors(msg));
         }
 
+        println!("response status: {:?}", res.status());
+
         let body = res.text().await.map_err(OllamaError::from)?;
+        // println!("response body: \n\n\n{:?}\n\n\n\n\n\n", body);
         let res = serde_json::from_str::<ChatResponse>(&body).map_err(OllamaError::from)?;
+
+        // println!(
+        //     "request.model: {}, response.response {:?} ",
+        //     request.model, res.response
+        // );
+        // println!(
+        //     "request.model: {}, response.message  {:?} ",
+        //     request.model, res.message
+        // );
+        println!(
+            "request.model: {}, duration {}ms",
+            request.model,
+            start.elapsed().as_millis()
+        );
         Ok(res)
+    }
+
+    async fn chat(&self, request: &ChatRequest) -> Result<(ChatResponse, u64), OllamaError> {
+        let url = format!("{}/api/chat", self.url);
+        let json = json!(request);
+
+        let start = Instant::now();
+        let res = self.client.post(url).body(json.to_string()).send().await?;
+        let duration = start.elapsed().as_secs();
+
+        let body = res.text().await.map_err(OllamaError::from)?;
+        println!("response body {}", body);
+
+        let response = serde_json::from_str::<ChatResponse>(&body).map_err(OllamaError::from)?;
+        Ok((response, duration))
+    }
+
+    async fn chat_dump(&self, request: &ChatRequest) -> Result<(ChatResponse, u64), OllamaError> {
+        let url = format!("{}/api/chat", self.url);
+        let json = json!(request);
+
+        let start = Instant::now();
+        let res = self.client.post(url).body(json.to_string()).send().await?;
+        let duration = start.elapsed().as_secs();
+
+        if !res.status().is_success() {
+            return Err(OllamaError::AllTheOtherErrors(
+                "model does not support tools".to_string(),
+            ));
+        }
+        let body = res.text().await.map_err(OllamaError::from)?;
+        let response = serde_json::from_str::<ChatResponse>(&body).map_err(OllamaError::from)?;
+        Ok((response, duration))
     }
 
     async fn chat_streaming(&self, request: &ChatRequest) -> Result<Response, OllamaError> {
         let url = format!("{}/api/generate", self.url);
         let start = Instant::now();
         let json = json!(request);
-
         let res = self.client.post(url).body(json.to_string()).send().await?;
-
         let duration = start.elapsed();
         println!("request took {:?}", duration);
-
         Ok(res)
     }
 
@@ -182,7 +271,7 @@ impl OllamaImpl for Ollama {
 
         let duration = start.elapsed().as_millis();
         let body = res.text().await.map_err(OllamaError::from)?;
-        println!("body {:?}", body);
+        println!("call to /api/show tool {}ms,  body {:?}", duration, body);
         let res = serde_json::from_str::<OllamaInformation>(&body).map_err(OllamaError::from)?;
         Ok(res)
     }

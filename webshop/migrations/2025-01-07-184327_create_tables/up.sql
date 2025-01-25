@@ -1,7 +1,7 @@
 CREATE TABLE orders
 (
     id                SERIAL PRIMARY KEY,
-    order_number      VARCHAR(1000)                                               NOT NULL,
+    order_id          VARCHAR(1000)                                               NOT NULL,
     buyer_id          VARCHAR(1000)                                               NOT NULL,
     buyer_name        VARCHAR(1000),
     erp_order_number  VARCHAR(1000),
@@ -13,16 +13,16 @@ CREATE TABLE orders
     order_created     timestamp with time zone default (now() at time zone 'utc') NOT NULL,
     created           timestamp with time zone default (now() at time zone 'utc') NOT NULL,
     updated           timestamp with time zone default (now() at time zone 'utc') NOT NULL,
-    UNIQUE (order_number)
+    UNIQUE (order_id)
 );
 
 CREATE TABLE order_items
 (
     id                SERIAL PRIMARY KEY,
-    order_number      VARCHAR(1000) REFERENCES orders (order_number)              NOT NULL,
-    code              VARCHAR(1000)                                               NOT NULL,
+    order_id          VARCHAR(1000) REFERENCES orders (order_id)                  NOT NULL,
+    item_id           VARCHAR(1000)                                               NOT NULL,
     name              VARCHAR(1000),
-    description       VARCHAR(1000),
+    description       TEXT,
     price             DOUBLE PRECISION                                            NOT NULL,
     state             VARCHAR(1000),
     additional_info_1 VARCHAR(1000),

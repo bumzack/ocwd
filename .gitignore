@@ -1,3 +1,5 @@
+**/*.DS_Store
+
 backend/target
 
 **/target
@@ -11,3 +13,14 @@ Cargo.lock
 **/*logs
 
 /code_by_ai/python/ai_stuff
+
+*.png
+*.jpg
+
+**/venv
+
+ollama/*.json
+
+*.wav
+*.safetensors
+*.lst

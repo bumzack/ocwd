@@ -9,6 +9,10 @@ export const load: PageServerLoad = async () => {
 	const models = await load_db_models();
 	const localModels = await load_local_models();
 
+	console.log(`models ${JSON.stringify(models, null, 4)}`);
+	console.log(`localModels ${JSON.stringify(localModels, null, 4)}`);
+
+
 	if (models) {
 		const props: PropsFeLocalModels = {
 			localModels: localModels

@@ -9,6 +9,8 @@ export const load: PageServerLoad = async ({ params }) => {
 	const model = params.model;
 	const information = await ollama_model_information(model);
 
+	console.log(`information ${JSON.stringify(information, null, 4)}`);
+
 	if (information) {
 		const props: PropsModelInformation = {
 			information: information

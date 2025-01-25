@@ -4,7 +4,7 @@ mod schema;
 mod server;
 
 use crate::fe::feroutes::{
-    chat_load_all, chat_load_by_prompt_id, chat_update_result, models_loaded, prompts_load,
+    chat, chat_load_all, chat_load_by_prompt_id, chat_update_result, models_loaded, prompts_load,
     prompts_load_by_id, queue_load, streaming_response,
 };
 use crate::fe::feroutes::{list_db_models, model_create, models_details};
@@ -79,7 +79,8 @@ async fn main() -> Result<(), ()> {
         .route("/api/dbmodel", get(list_db_models))
         .route("/api/prompt", get(prompts_load))
         .route("/api/prompt/{pprompt_id}", get(prompts_load_by_id))
-        .route("/api/chat", get(chat_load_all))
+        .route("/api/chat", post(chat))
+        .route("/api/chat/all", get(chat_load_all))
         .route("/api/chat/result", put(chat_update_result))
         .route("/api/chat/byid/{pprompt_id}", get(chat_load_by_prompt_id))
         .route("/api/queue/stop", post(stop_queue))

@@ -9,7 +9,7 @@
 
 </script>
 
-<LoadingSpinner show={!hasData} />
+<!--<LoadingSpinner show={!hasData} />-->
 
 <div class="container-fluid">
 	<div class="row">
@@ -17,7 +17,7 @@
 			<h1>Prompts</h1>
 			{#if hasData}
 				<p>{prompts.length} prompts</p>
-				<table class="table table-striped">
+				<table class="table table-striped table-bordered table-sm">
 					<thead>
 					<tr>
 						<th width="120px">

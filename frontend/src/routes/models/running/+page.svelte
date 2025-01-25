@@ -13,7 +13,7 @@
             <h1>Locally Running Ollama Models</h1>
             {#if hasData}
                 <p>{models.length} models</p>
-                <table class="table table-striped">
+                <table class="table table-striped table-bordered table-sm">
                     <thead>
                     <tr>
                         <th>

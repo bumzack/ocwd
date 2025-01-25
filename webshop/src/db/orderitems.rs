@@ -9,8 +9,8 @@ use serde::{Deserialize, Serialize};
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct DbOrderItem {
     pub id: i32,
-    pub order_number: String,
-    pub code: String,
+    pub order_id: String,
+    pub item_id: String,
     pub name: Option<String>,
     pub description: Option<String>,
     pub price: f64,
@@ -27,8 +27,8 @@ pub struct DbOrderItem {
 #[diesel(check_for_backend(diesel::pg::Pg))]
 #[diesel(belongs_to(DbOrders, foreign_key = order_number))]
 pub struct DbNewOrderItem {
-    pub order_number: String,
-    pub code: String,
+    pub order_id: String,
+    pub item_id: String,
     pub name: Option<String>,
     pub description: Option<String>,
     pub price: f64,

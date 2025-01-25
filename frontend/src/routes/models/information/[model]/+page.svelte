@@ -10,7 +10,7 @@
 	<div class="row">
 		<div class="col-lg-12">
 			<h1>Model Information</h1>
-			<table class="table table-striped">
+			<table class="table table-striped table-bordered table-sm">
 				<tbody>
 				<tr>
 					<td>modelfile</td>

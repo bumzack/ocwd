@@ -1,0 +1,33 @@
+[package]
+name = "generic-tools"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1.43.0", features = ["macros", "rt-multi-thread"] }
+serde_json = { version = "1.0.137" }
+tokio-postgres = { version = "0.7.12", features = ["with-chrono-0_4", "with-serde_json-1"] }
+chrono = "0.4.39"
+anyhow = "1.0.95"
+candle-core = { version = "0.8.2" }
+candle-nn = { version = "0.8.2" }
+candle-transformers = { version = "0.8.2" }
+candle-flash-attn = { version = "0.8.2", optional = true }
+tokenizers = { version = "0.21.0", features = ["onig"] }
+accelerate-src = { version = "0.3.2", optional = true }
+image = "0.25.5"
+candle-hf-hub = { version = "0.3.3", features = ["tokio"] }
+
+
+[build-dependencies]
+anyhow = "1.0.95"
+bindgen_cuda = { version = "0.1.5", optional = true }
+
+
+[features]
+default = []
+cuda = ["candle-core/cuda", "candle-core/cudarc", "candle-core/cuda", "candle-nn/cuda", "candle-transformers/cuda", "dep:bindgen_cuda"]
+cudnn = ["candle-core/cudnn", "candle-core/cudnn", "candle-core/cudnn", "dep:bindgen_cuda"]
+accelerate = ["accelerate-src", "candle-core/accelerate", "candle-nn/accelerate", "candle-transformers/accelerate", "dep:bindgen_cuda"]
+flash-attn = ["cuda", "candle-transformers/flash-attn", "dep:candle-flash-attn"]
+metal = ["candle-core/metal", "candle-nn/metal", "candle-transformers/metal"]

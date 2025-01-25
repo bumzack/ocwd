@@ -1,5 +1,5 @@
 use crate::client::config::Config;
-use crate::client::stuff::{find_and_insert_items, find_and_insert_orders};
+use crate::client::stuff::find_and_insert_orders;
 use crate::error::webshoperror::WebshopError;
 use dotenvy::dotenv;
 use lazy_static::lazy_static;
@@ -41,9 +41,6 @@ async fn main() -> Result<(), WebshopError> {
 
     let res_orders = find_and_insert_orders(&pool).await?;
     println!("inserted {} orders", res_orders);
-
-    let res_items = find_and_insert_items(&pool).await?;
-    println!("inserted {} items", res_items);
 
     Ok(())
 }

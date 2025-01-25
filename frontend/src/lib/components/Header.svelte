@@ -31,6 +31,7 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="/chat/all">All Chats</a></li>
                         <li><a class="dropdown-item" href="/chat/streaming">Live Chat</a></li>
+                        <li><a class="dropdown-item" href="/chat/live">Chat</a></li>
                     </ul>
                 </li>
 
