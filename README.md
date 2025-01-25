@@ -39,7 +39,7 @@ One near-future goal is to try implementing tools for the following use cases:
 - other stuff used:
   [candle](https://github.com/huggingface/candle) (it would be great to replace all the ollama stuff with candle...)
 
-Ollama - big ❤️, but candle ❤️❤️❤️.
+Ollama - big ❤️, but candle ❤️❤️❤️ (long term goal would be to replace Ollama with candle, if there is support for more resp. more interesting models).
 
 ## what you find here
 
@@ -84,3 +84,10 @@ Not sure about RAGs, but meilisearch supports vector search.
 ### overall goal
 
 Use Rust, not python :-)
+
+
+
+## License
+
+This work is released under the **MIT License**. Exceptions for files in folders containing 
+their own license file.
