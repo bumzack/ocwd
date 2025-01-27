@@ -117,9 +117,10 @@ fn run_flux(prompts: &Vec<(String, String)>) {
         );
 
         if res.is_err() {
-            println!("error creating image {}", filename);
+            let err = res.err().unwrap();
+            println!("flux_schnell error creating image {}, error {:?}", filename, err );
         } else {
-            println!("success creating image {}", filename);
+            println!("flux_schnell success creating image {}", filename);
         }
         let duration = start.elapsed();
         println!("flux_schnell finished after {}secs", duration.as_secs());
@@ -143,9 +144,10 @@ fn run_flux(prompts: &Vec<(String, String)>) {
             seed,
         );
         if res.is_err() {
-            println!("error creating image {}", filename);
+            let err = res.err().unwrap();
+            println!("flux_dev error creating image {}, error {:?}", filename, err );
         } else {
-            println!("success creating image {}", filename);
+            println!("flux_dev success creating image {}", filename);
         }
         let duration = start.elapsed();
         println!("flux_dev finished after {}secs", duration.as_secs());
@@ -168,9 +170,10 @@ fn run_stable_diffusion(prompts: &Vec<(String, String)>) {
             StableDiffusionWhich::V3_5Large,
         );
         if res.is_err() {
-            println!("error creating image {}", filename);
+            let err = res.err().unwrap();
+            println!("stable_diffusion error creating image {}, error {:?}", filename, err );
         } else {
-            println!("success creating image {}", filename);
+            println!("stable_diffusion success creating image {}", filename);
         }
 
         let duration = start.elapsed();
@@ -191,9 +194,10 @@ fn run_wwwwuerstchen(prompts: &Vec<(String, String)>) {
 
         let res = run_wuerstchen(prompt.to_string(), filename.clone());
         if res.is_err() {
-            println!("error creating image {}", filename);
+            let err = res.err().unwrap();
+            println!("wuerstchen error creating image {}, error {:?}", filename, err );
         } else {
-            println!("success creating image {}", filename);
+            println!("wuerstchen success creating image {}", filename);
         }
         let duration = start.elapsed();
 
