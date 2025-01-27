@@ -118,7 +118,10 @@ fn run_flux(prompts: &Vec<(String, String)>) {
 
         if res.is_err() {
             let err = res.err().unwrap();
-            println!("flux_schnell error creating image {}, error {:?}", filename, err );
+            println!(
+                "flux_schnell error creating image {}, error {:?}",
+                filename, err
+            );
         } else {
             println!("flux_schnell success creating image {}", filename);
         }
@@ -145,7 +148,10 @@ fn run_flux(prompts: &Vec<(String, String)>) {
         );
         if res.is_err() {
             let err = res.err().unwrap();
-            println!("flux_dev error creating image {}, error {:?}", filename, err );
+            println!(
+                "flux_dev error creating image {}, error {:?}",
+                filename, err
+            );
         } else {
             println!("flux_dev success creating image {}", filename);
         }
@@ -171,7 +177,10 @@ fn run_stable_diffusion(prompts: &Vec<(String, String)>) {
         );
         if res.is_err() {
             let err = res.err().unwrap();
-            println!("stable_diffusion error creating image {}, error {:?}", filename, err );
+            println!(
+                "stable_diffusion error creating image {}, error {:?}",
+                filename, err
+            );
         } else {
             println!("stable_diffusion success creating image {}", filename);
         }
@@ -195,7 +204,10 @@ fn run_wwwwuerstchen(prompts: &Vec<(String, String)>) {
         let res = run_wuerstchen(prompt.to_string(), filename.clone());
         if res.is_err() {
             let err = res.err().unwrap();
-            println!("wuerstchen error creating image {}, error {:?}", filename, err );
+            println!(
+                "wuerstchen error creating image {}, error {:?}",
+                filename, err
+            );
         } else {
             println!("wuerstchen success creating image {}", filename);
         }

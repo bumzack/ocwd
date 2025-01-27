@@ -2,6 +2,7 @@
 extern crate accelerate_src;
 
 use candle_transformers::models::{clip, flux, t5};
+use std::error::Error;
 
 use crate::candle_tools::candletools::{get_device, save_image};
 use anyhow::{Error as E, Result};
@@ -35,7 +36,7 @@ pub enum WhichFlux {
     Dev,
 }
 
-fn run(args: Args) -> Result<()> {
+fn run(args: Args) -> Result<(), Box<dyn Error>> {
     let Args {
         prompt,
         height,
@@ -93,7 +94,7 @@ fn run(args: Args) -> Result<()> {
 
                 tokens.resize(256, 0);
                 let input_token_ids = Tensor::new(&tokens[..], &device)?.unsqueeze(0)?;
-               //  println!("{input_token_ids}");
+                //  println!("{input_token_ids}");
                 model.forward(&input_token_ids)?
             };
             // println!("T5\n{t5_emb}");
@@ -126,7 +127,7 @@ fn run(args: Args) -> Result<()> {
                     .get_ids()
                     .to_vec();
                 let input_token_ids = Tensor::new(&tokens[..], &device)?.unsqueeze(0)?;
-                println!("{input_token_ids}");
+                //  println!("{input_token_ids}");
                 model.forward(&input_token_ids)?
             };
             // println!("CLIP\n{clip_emb}");
@@ -151,7 +152,7 @@ fn run(args: Args) -> Result<()> {
                     }
                     WhichFlux::Schnell => flux::sampling::get_schedule(4, None),
                 };
-               //  println!("{state:?}");
+                //  println!("{state:?}");
                 // println!("{timesteps:?}");
                 if quantized {
                     let model_file = match model {
@@ -224,13 +225,18 @@ fn run(args: Args) -> Result<()> {
     };
 
     // error saving file flux_dev_1737845077/./.jpg. error The image format could not be determined
-    println!("filename: {filename}");
+    println!("flux filename: {filename}");
     let res = save_image(&img.i(0)?, &filename);
-    if res.is_err() {
-        let e = res.err().unwrap();
-        println!("error saving file {}. error {:?}", filename, e);
+    match res {
+        Ok(_) => {
+            println!("flux saved image to {}", &filename);
+            Ok(())
+        }
+        Err(e) => {
+            let msg = format!("flux error saving image: {}", e);
+            *Box::new(Err(msg.into()))
+        }
     }
-    Ok(())
 }
 
 pub fn run_flux(
@@ -242,7 +248,7 @@ pub fn run_flux(
     file_name: String,
     which: WhichFlux,
     seed: u64,
-) -> Result<()> {
+) -> std::result::Result<(), Box<dyn Error>> {
     #[cfg(feature = "cuda")]
     candle_core::quantized::cuda::set_force_dmmv(use_dmmv);
 

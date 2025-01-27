@@ -3,12 +3,12 @@ extern crate accelerate_src;
 
 use candle_transformers::models::stable_diffusion;
 use candle_transformers::models::wuerstchen;
+use std::error::Error;
 
 use crate::candle_tools::candletools::{get_device, save_image};
 use anyhow::{Error as E, Result};
 use candle_core::IndexOp;
 use candle_core::{DType, Device, Tensor};
-use candle_transformers::models::mimi::candle;
 use tokenizers::Tokenizer;
 
 const PRIOR_GUIDANCE_SCALE: f64 = 4.0;
@@ -124,7 +124,7 @@ fn encode_prompt(
     }
     let tokens = Tensor::new(tokens.as_slice(), device)?.unsqueeze(0)?;
 
-    println!("Building the clip transformer.");
+    // println!("Building the clip transformer.");
     let text_model =
         stable_diffusion::build_clip_transformer(&clip_config, clip_weights, device, DType::F32)?;
     let text_embeddings = text_model.forward_with_mask(&tokens, tokens_len - 1)?;
@@ -150,17 +150,17 @@ fn encode_prompt(
     }
 }
 
-fn run(args: Args) -> Result<()> {
+fn run(args: Args) -> std::result::Result<(), Box<dyn Error>> {
     // use tracing_chrome::ChromeLayerBuilder;
     // use tracing_subscriber::prelude::*;
 
-    println!(
-        "avx: {}, neon: {}, simd128: {}, f16c: {}",
-        candle::utils::with_avx(),
-        candle::utils::with_neon(),
-        candle::utils::with_simd128(),
-        candle::utils::with_f16c()
-    );
+    // println!(
+    //     "avx: {}, neon: {}, simd128: {}, f16c: {}",
+    //     candle::utils::with_avx(),
+    //     candle::utils::with_neon(),
+    //     candle::utils::with_simd128(),
+    //     candle::utils::with_f16c()
+    // );
 
     let Args {
         prompt,
@@ -195,7 +195,7 @@ fn run(args: Args) -> Result<()> {
             &device,
         )?
     };
-    println!("generated prior text embeddings {prior_text_embeddings:?}");
+    // println!("generated prior text embeddings {prior_text_embeddings:?}");
 
     let text_embeddings = {
         let tokenizer = ModelFile::Tokenizer.get(tokenizer)?;
@@ -209,9 +209,9 @@ fn run(args: Args) -> Result<()> {
             &device,
         )?
     };
-    println!("generated text embeddings {text_embeddings:?}");
+    // println!("generated text embeddings {text_embeddings:?}");
 
-    println!("Building the prior.");
+    // println!("Building the prior.");
     let b_size = 1;
     let image_embeddings = {
         // https://huggingface.co/warp-ai/wuerstchen-prior/blob/main/prior/config.json
@@ -243,7 +243,7 @@ fn run(args: Args) -> Result<()> {
         let prior_scheduler = wuerstchen::ddpm::DDPMWScheduler::new(60, Default::default())?;
         let timesteps = prior_scheduler.timesteps();
         let timesteps = &timesteps[..timesteps.len() - 1];
-        println!("prior denoising");
+        // println!("prior denoising");
         for (index, &t) in timesteps.iter().enumerate() {
             let start_time = std::time::Instant::now();
             let latent_model_input = Tensor::cat(&[&latents, &latents], 0)?;
@@ -260,16 +260,23 @@ fn run(args: Args) -> Result<()> {
         ((latents * 42.)? - 1.)?
     };
 
-    println!("Building the vqgan.");
+    // println!("Building the vqgan.");
     let vqgan = {
         let file = ModelFile::VqGan.get(vqgan_weights)?;
         let vb = unsafe {
             candle_nn::VarBuilder::from_mmaped_safetensors(&[file], DType::F32, &device)?
         };
-        wuerstchen::paella_vq::PaellaVQ::new(vb)?
+        let vqgan = wuerstchen::paella_vq::PaellaVQ::new(vb);
+        match vqgan {
+            Ok(v) => v,
+            Err(e) => {
+                let msg = format!("wuerstchen error crating PaellaVQ. error {:?}", e);
+                return *Box::new(Err(msg.into()));
+            }
+        }
     };
 
-    println!("Building the decoder.");
+    // println!("Building the decoder.");
 
     // https://huggingface.co/warp-ai/wuerstchen/blob/main/decoder/config.json
     let decoder = {
@@ -303,7 +310,7 @@ fn run(args: Args) -> Result<()> {
             &device,
         )?;
 
-        println!("diffusion process with prior {image_embeddings:?}");
+        //  println!("diffusion process with prior {image_embeddings:?}");
         let scheduler = wuerstchen::ddpm::DDPMWScheduler::new(12, Default::default())?;
         let timesteps = scheduler.timesteps();
         let timesteps = &timesteps[..timesteps.len() - 1];
@@ -338,7 +345,10 @@ fn run(args: Args) -> Result<()> {
     Ok(())
 }
 
-pub fn run_wuerstchen(prompt: String, file_name: String) -> Result<()> {
+pub fn run_wuerstchen(
+    prompt: String,
+    file_name: String,
+) -> std::result::Result<(), Box<dyn Error>> {
     let final_image = format!("final_{}", file_name);
     let args = Args {
         prompt,
