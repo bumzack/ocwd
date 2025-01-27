@@ -10,7 +10,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Error: Metal error Metal seed must be less than or equal to u32::MAX
     let seed: u64 = rand::rng().random_range(0..u32::MAX - 10) as u64;
 
-
     let ts = SystemTime::now()
         .duration_since(SystemTime::UNIX_EPOCH)
         .unwrap()

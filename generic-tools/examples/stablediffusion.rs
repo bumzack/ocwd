@@ -18,7 +18,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         "A alien cheeseburger creature eating itself, claymation, cinematic, moody lighting"
             .to_string(),
         filename,
-        "jpg".to_string(),
+        "png".to_string(),
         StableDiffusionWhich::V3_5Large,
     )?;
     let duration = start.elapsed();

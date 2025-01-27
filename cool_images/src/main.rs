@@ -90,12 +90,18 @@ fn main() {
 
     // let prompts = prompts.iter().take(1).cloned().collect();
 
-    run_flux(&prompts);
+    // FullHD because why not 3.840 x 2.160
+    run_flux(&prompts, Some(3840), Some(2160));
+    // HD ? 1920 x 1080
+    run_flux(&prompts, Some(1920), Some(1080));
+    // normal :)
+    run_flux(&prompts, None, None);
+
     run_stable_diffusion(&prompts);
     run_wwwwuerstchen(&prompts);
 }
 
-fn run_flux(prompts: &Vec<(String, String)>) {
+fn run_flux(prompts: &Vec<(String, String)>, width: Option<usize>, height: Option<usize>) {
     for (ffilename, prompt) in prompts {
         let seed: u64 = rand::rng().random_range(0..u32::MAX - 10) as u64;
         let ts = SystemTime::now()
@@ -108,8 +114,8 @@ fn run_flux(prompts: &Vec<(String, String)>) {
         let res = generic_tools::tool_flux::flux::run_flux(
             prompt.to_string(),
             true,
-            1280,
-            720,
+            width,
+            height,
             "./".to_string(),
             filename.clone(),
             WhichFlux::Schnell,
@@ -136,12 +142,13 @@ fn run_flux(prompts: &Vec<(String, String)>) {
         let filename = format!("flux_dev_{}_{}", &ffilename, ts);
 
         let start = Instant::now();
+
         let seed: u64 = rand::rng().random_range(0..u32::MAX - 10) as u64;
         let res = generic_tools::tool_flux::flux::run_flux(
             prompt.to_string(),
             true,
-            1280,
-            720,
+            width,
+            height,
             "./".to_string(),
             filename.clone(),
             WhichFlux::Dev,
@@ -174,7 +181,7 @@ fn run_stable_diffusion(prompts: &Vec<(String, String)>) {
         let res = stable_diffusion(
             prompt.to_string(),
             filename.clone(),
-            "jpg".to_string(),
+            "png".to_string(),
             StableDiffusionWhich::V3_5Large,
         );
         if res.is_err() {

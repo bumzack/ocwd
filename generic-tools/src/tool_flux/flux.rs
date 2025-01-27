@@ -22,13 +22,11 @@ struct Args {
     decode_only: Option<String>,
     // default = schnell
     model: WhichFlux,
-    /// Use the slower kernels.
-    use_dmmv: bool,
     /// The seed to use when generating random samples.
     seed: Option<u64>,
     file_path: String,
     file_name: String,
-    use_cpu:bool,
+    use_cpu: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -63,7 +61,10 @@ fn run(args: Args) -> Result<(), Box<dyn Error>> {
     println!("flux using device {:?}", device);
 
     if let Some(seed) = args.seed {
-        device.set_seed(seed)?;
+        // if using CPU setting seed does not work ¯\_(ツ)_/
+        if !args.use_cpu {
+            device.set_seed(seed)?;
+        }
     }
 
     let dtype = device.bf16_default_to_f32();
@@ -221,8 +222,8 @@ fn run(args: Args) -> Result<(), Box<dyn Error>> {
     // println!("img\n{img}");
     let img = ((img.clamp(-1f32, 1f32)? + 1.0)? * 127.5)?.to_dtype(candle_core::DType::U8)?;
     let filename = match args.seed {
-        None => format!("{}/{}.jpg", args.file_path, args.file_name),
-        Some(s) => format!("{}/{}-{s}.jpg", args.file_path, args.file_name),
+        None => format!("{}/{}.png", args.file_path, args.file_name),
+        Some(s) => format!("{}/{}-{s}.png", args.file_path, args.file_name),
     };
 
     // error saving file flux_dev_1737845077/./.jpg. error The image format could not be determined
@@ -243,8 +244,8 @@ fn run(args: Args) -> Result<(), Box<dyn Error>> {
 pub fn run_flux(
     prompt: String,
     use_dmmv: bool,
-    width: usize,
-    height: usize,
+    width: Option<usize>,
+    height: Option<usize>,
     file_path: String,
     file_name: String,
     which: WhichFlux,
@@ -257,11 +258,10 @@ pub fn run_flux(
     let args = Args {
         prompt,
         quantized: false,
-        height: Some(height),
-        width: Some(width),
+        height,
+        width,
         decode_only: None,
         model: which,
-        use_dmmv,
         seed: Some(seed),
         file_path,
         file_name,
