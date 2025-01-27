@@ -114,6 +114,7 @@ fn run_flux(prompts: &Vec<(String, String)>) {
             filename.clone(),
             WhichFlux::Schnell,
             seed,
+            true,
         );
 
         if res.is_err() {
@@ -145,6 +146,7 @@ fn run_flux(prompts: &Vec<(String, String)>) {
             filename.clone(),
             WhichFlux::Dev,
             seed,
+            true,
         );
         if res.is_err() {
             let err = res.err().unwrap();

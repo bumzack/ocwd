@@ -28,6 +28,7 @@ struct Args {
     seed: Option<u64>,
     file_path: String,
     file_name: String,
+    use_cpu:bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -58,7 +59,7 @@ fn run(args: Args) -> Result<(), Box<dyn Error>> {
         };
         api.repo(candle_hf_hub::Repo::model(name.to_string()))
     };
-    let device = get_device(false)?;
+    let device = get_device(args.use_cpu)?;
     println!("flux using device {:?}", device);
 
     if let Some(seed) = args.seed {
@@ -248,6 +249,7 @@ pub fn run_flux(
     file_name: String,
     which: WhichFlux,
     seed: u64,
+    use_cpu: bool,
 ) -> std::result::Result<(), Box<dyn Error>> {
     #[cfg(feature = "cuda")]
     candle_core::quantized::cuda::set_force_dmmv(use_dmmv);
@@ -263,6 +265,7 @@ pub fn run_flux(
         seed: Some(seed),
         file_path,
         file_name,
+        use_cpu,
     };
 
     run(args)
