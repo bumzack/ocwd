@@ -88,7 +88,7 @@ fn main() {
     //  "Qw-Sketch, An eye-level sketch of a mans face is depicted in a vibrant pink background. The mans eyes are squinted, and he has a mustache and goatee. His hair is a dark shade of purple, and his eyebrows are a lighter shade of brown. His mouth is slightly open, with a smile on its face. He is wearing a collared button-down shirt with a collar and long sleeves. The shirt is adorned with black lines, adding a pop of color to the scene".to_string()
     //  "Qw-Sketch, An eye-level sketch of a young man with curly dark brown hair and glasses. His eyes are a calm gray, and he has a soft smirk on his lips. His face is framed by a navy-blue hoodie, slightly pulled over his head, and a silver pendant is visible around his neck. The background is a misty gray with faint white lines radiating from the figure, suggesting a subtle glow.".to_string()
 
-    let prompts = prompts.iter().take(1).cloned().collect();
+    // let prompts = prompts.iter().take(1).cloned().collect();
 
     run_flux(&prompts);
     run_stable_diffusion(&prompts);
