@@ -91,7 +91,8 @@ fn main() {
     // let prompts = prompts.iter().take(1).cloned().collect();
 
     // FullHD because why not 3.840 x 2.160
-    run_flux(&prompts, Some(3840), Some(2160));
+    // well 196GB of RAM are obvisouly not enough :-(
+    // run_flux(&prompts, Some(3840), Some(2160));
     // HD ? 1920 x 1080
     run_flux(&prompts, Some(1920), Some(1080));
     // normal :)
