@@ -2,8 +2,8 @@ use generic_tools::tool_flux::flux::WhichFlux;
 use generic_tools::tool_stable_diffusion::stablediff::{stable_diffusion, StableDiffusionWhich};
 use generic_tools::tool_wuerstchen::wuerstchen::run_wuerstchen;
 use rand::Rng;
-use std::time::SystemTime;
 use std::time::Instant;
+use std::time::SystemTime;
 
 fn main() {
     println!("starting, world!");
@@ -54,6 +54,7 @@ fn main() {
         ("grungy_wolam_rainbow_hair".to_string(), "a grungy woman with rainbow hair, travelling between dimensions, dynamic pose, happy, soft eyes and narrow chin, extreme bokeh, dainty figure, long hair straight down, torn kawaii shirt and baggy jeans, In style of by Jordan Grimmer and greg rutkowski, crisp lines and color, complex background, particles, lines, wind, concept art, sharp focus, vivid colors".to_string()),
         ("rocket_ship_space".to_string(), "rocket ship in deep space".to_string()),
         ("lone_soldier_post_apocalyptic".to_string(), "lone soldier in a post apocalyptic city street".to_string()),
+        ("sunset_vibrant".to_string(), "A vibrant sunset in the mountains, 4k, high quality.".to_string())
     ];
 
     // https://huggingface.co/dreamlike-art/dreamlike-diffusion-1.0
@@ -95,7 +96,7 @@ fn main() {
 }
 
 fn run_flux(prompts: &Vec<(String, String)>) {
-    for (prompt, ffilename) in prompts {
+    for (ffilename, prompt) in prompts {
         let seed: u64 = rand::rng().random_range(0..u32::MAX - 10) as u64;
         let ts = SystemTime::now()
             .duration_since(SystemTime::UNIX_EPOCH)
@@ -152,7 +153,7 @@ fn run_flux(prompts: &Vec<(String, String)>) {
 }
 
 fn run_stable_diffusion(prompts: &Vec<(String, String)>) {
-    for (prompt, ffilename) in prompts {
+    for (ffilename, prompt) in prompts {
         let ts = SystemTime::now()
             .duration_since(SystemTime::UNIX_EPOCH)
             .unwrap()
@@ -178,7 +179,7 @@ fn run_stable_diffusion(prompts: &Vec<(String, String)>) {
 }
 
 fn run_wwwwuerstchen(prompts: &Vec<(String, String)>) {
-    for (prompt, ffilename) in prompts {
+    for (ffilename, prompt) in prompts {
         let ts = SystemTime::now()
             .duration_since(SystemTime::UNIX_EPOCH)
             .unwrap()
