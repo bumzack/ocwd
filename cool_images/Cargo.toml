@@ -1,0 +1,17 @@
+[package]
+name = "cool_images"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+generic-tools = { path = "../generic-tools" }
+rand = { version = "0.9.0-beta.3" }
+
+
+[features]
+default = []
+cuda = ["generic-tools/cuda"]
+cudnn = ["generic-tools/cudnn"]
+accelerate = ["generic-tools/accelerate"]
+flash-attn = ["generic-tools/flash-attn"]
+metal = ["generic-tools/metal"]
