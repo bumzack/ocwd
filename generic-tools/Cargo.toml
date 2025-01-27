@@ -17,7 +17,7 @@ tokenizers = { version = "0.21.0", features = ["onig"] }
 accelerate-src = { version = "0.3.2", optional = true }
 image = "0.25.5"
 candle-hf-hub = { version = "0.3.3", features = ["tokio"] }
-
+rand= { version = "0.9.0-beta.3", features = [] }
 
 [build-dependencies]
 anyhow = "1.0.95"
@@ -31,3 +31,22 @@ cudnn = ["candle-core/cudnn", "candle-core/cudnn", "candle-core/cudnn", "dep:bin
 accelerate = ["accelerate-src", "candle-core/accelerate", "candle-nn/accelerate", "candle-transformers/accelerate", "dep:bindgen_cuda"]
 flash-attn = ["cuda", "candle-transformers/flash-attn", "dep:candle-flash-attn"]
 metal = ["candle-core/metal", "candle-nn/metal", "candle-transformers/metal"]
+
+
+[[example]]
+name = "flux"
+
+[[example]]
+name = "parler"
+
+[[example]]
+name = "postgres"
+
+[[example]]
+name = "stablediffusion"
+
+[[example]]
+name = "starcoder2"
+
+[[example]]
+name = "wuerstchen"
